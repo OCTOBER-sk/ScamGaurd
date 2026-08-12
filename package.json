@@ -5,7 +5,7 @@
   "description": "BYOK scam-risk checker for OLX & Quikr listings + Message & Payment Check.",
   "type": "module",
   "scripts": {
-    "test": "node --test",
+    "test": "node --test test/*.test.js",
     "lint": "node scripts/lint-strings.js"
   },
   "devDependencies": {
