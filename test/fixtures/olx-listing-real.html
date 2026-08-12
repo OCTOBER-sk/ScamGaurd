@@ -1,0 +1,52 @@
+<!--
+  FIXTURE: olx-listing-real.html (SYNTHETIC PLACEHOLDER)
+  ------------------------------------------------------------------
+  STATUS: SYNTHETIC — modeled on the structure verified in PLAN-BACKEND.md §2.1/§8.1
+  (og:title / og:description / og:image / "AD ID <number>" / member-since /
+  "N Items listed" / location breadcrumb, React SPA with hashed class names).
+  OLX.in blocks this build VPS's egress (curl/web_extract timed out), so a live
+  capture could not be taken here.
+
+  TO REPLACE WITH A REAL CAPTURE:
+  1. Open a live OLX.in listing (/item/<slug>-iid-<numeric>) in Chrome DevTools.
+  2. After the page fully hydrates, right-click <html> → Copy → Copy outerHTML.
+  3. Save over this file, then run: node scripts/redact-fixture.js test/fixtures/olx-listing-real.html
+  4. Update the "data-aut-id / observed attributes" note below with what you saw.
+  ------------------------------------------------------------------
+  Observed attributes at capture time: N/A (synthetic) — expect data-aut-id
+  or data-testid variants; verify live per PLAN-FRONTEND.md §10.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Mi LED 32" Smart Android LED TV - TVs &amp; Video - 1827354630 | OLX</title>
+  <meta property="og:title" content="Mi LED 32&quot; Smart Android LED TV">
+  <meta property="og:description" content="Mi 32 inch smart android led tv. Working condition, no issues. Selling because moving out of city. Price negotiable.">
+  <meta property="og:image" content="https://images.olx.in/example/photo1.jpg">
+</head>
+<body>
+  <div class="css-1x9g1b2">
+    <div class="css-1yjvs5a">
+      <span>Mi LED 32&quot; Smart Android LED TV</span>
+      <span class="css-1q2b3c4">₹ 6,500</span>
+      <div>AD ID 1827354630</div>
+    </div>
+    <div class="css-9z8y7x">
+      <div class="css-4w5v6b">
+        <span>Posted by Test Seller</span>
+        <span>Member since Feb 2014</span>
+        <span>9 Items listed</span>
+      </div>
+      <div>Location: Haidarganj, Lucknow</div>
+      <div>Posted: Today</div>
+    </div>
+    <div class="css-7u8i9o">
+      <p>Mi 32 inch smart android led tv. Working condition, no issues. Selling because moving out of city. Price negotiable.</p>
+    </div>
+    <div class="css-2a3b4c">
+      <img src="https://images.olx.in/example/photo1.jpg" alt="photo">
+    </div>
+  </div>
+</body>
+</html>

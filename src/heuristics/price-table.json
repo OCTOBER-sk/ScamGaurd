@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "note": "v1 approximation — rough INR ranges for common second-hand categories. Not authoritative. See PLAN-BACKEND.md §5.1. Midpoint of rangeInr is used as ratioVsCategoryTypical's denominator (price / midpoint).",
+  "categories": {
+    "phones": {
+      "keywords": ["iphone", "galaxy", "redmi", "mi", "samsung", "oneplus", "poco", "vivo", "oppo", "realme", "smartphone", "mobile", "phone", "android"],
+      "rangeInr": [2000, 100000]
+    },
+    "laptops": {
+      "keywords": ["laptop", "macbook", "notebook", "thinkpad", "lenovo", "dell", "hp", "asus", "acer", "surface", "chromebook"],
+      "rangeInr": [5000, 200000]
+    },
+    "tvs": {
+      "keywords": ["tv", "led tv", "smart tv", "android tv", "lcd", "oled", "television", "bravia", "mi led"],
+      "rangeInr": [3000, 150000]
+    },
+    "vehicles": {
+      "keywords": ["bike", "bicycle", "scooter", "activa", "car", "wagonr", "swift", "baleno", "creta", "harley", "cycle", "two wheeler", "four wheeler", "auto"],
+      "rangeInr": [5000, 2500000]
+    },
+    "furniture": {
+      "keywords": ["sofa", "bed", "table", "chair", "wardrobe", "almirah", "desk", "dining", "recliner", "furniture", "cupboard"],
+      "rangeInr": [500, 100000]
+    }
+  }
+}

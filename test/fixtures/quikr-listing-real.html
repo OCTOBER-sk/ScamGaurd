@@ -1,0 +1,35 @@
+<!--
+  FIXTURE: quikr-listing-real.html (SYNTHETIC PLACEHOLDER)
+  ------------------------------------------------------------------
+  STATUS: SYNTHETIC — Quikr item URLs require client-side rendering to
+  discover; homepage/category pages fetch fine (HTTP 200) from the build VPS
+  but expose no stable item links without JS. Modeled on Quikr's structure;
+  per PLAN-BACKEND.md §2.1 Quikr may NOT expose an items-listed count —
+  extractor must return null, never throw.
+
+  TO REPLACE WITH A REAL CAPTURE: same procedure as olx-listing-real.html —
+  real Quikr listing in DevTools → Copy outerHTML → save → redact via
+  node scripts/redact-fixture.js.
+  ------------------------------------------------------------------
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Samsung Galaxy M14 4GB 128GB - Quikr</title>
+  <meta property="og:title" content="Samsung Galaxy M14 4GB 128GB">
+  <meta property="og:description" content="Samsung Galaxy M14 4GB/128GB, 9 months old, bill and box available.">
+</head>
+<body>
+  <div class="ad-card">
+    <h1 class="ad-title">Samsung Galaxy M14 4GB 128GB</h1>
+    <div class="ad-price">₹ 8,999</div>
+    <div class="seller-info">
+      <span>Quikr User</span>
+      <span>Coimbatore</span>
+    </div>
+    <div class="ad-desc">Samsung Galaxy M14 4GB/128GB, 9 months old, bill and box available.</div>
+    <img class="ad-img" src="https://teja8.kuikr.com/example/photo.jpg" alt="phone">
+  </div>
+</body>
+</html>
