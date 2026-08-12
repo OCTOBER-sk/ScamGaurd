@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=360">
+  <title>ScamGuard</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <!-- §1.4 header — always visible, contains [Check a message] entry point (§2.10) -->
+  <header class="sg-header" role="banner">
+    <div class="sg-header-left">
+      <svg class="sg-header-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <circle cx="8" cy="8" r="3" fill="currentColor"/>
+      </svg>
+      <span class="sg-header-name">ScamGuard</span>
+    </div>
+    <div class="sg-header-actions">
+      <button id="btn-check-message" class="sg-header-btn" type="button" aria-label="Check a message or payment step">
+        Check a message
+      </button>
+    </div>
+  </header>
+
+  <!-- §6: aria-live region wrapping the state-machine container -->
+  <main id="state-container" class="sg-state-container" aria-live="polite" role="main">
+
+    <!-- §2.2 State: Idle (first paint, before any GET_LISTING response) -->
+    <section id="state-idle" class="sg-state sg-state-idle" role="region" aria-label="Loading">
+      <div class="sg-seal-placeholder" aria-hidden="true">
+        <svg class="sg-seal-svg" width="72" height="72" viewBox="0 0 72 72" fill="none">
+          <circle cx="36" cy="36" r="32" stroke="var(--sg-line)" stroke-width="2" stroke-dasharray="4 3" fill="none"/>
+        </svg>
+      </div>
+      <p class="sg-idle-text">Checking this page&hellip;</p>
+    </section>
+
+    <!-- §2.3 State: Analyzing (heuristics done, LLM call in flight) -->
+    <section id="state-analyzing" class="sg-state sg-state-analyzing" role="region" aria-label="Analyzing" hidden>
+      <div class="sg-seal" id="analyzing-seal" aria-hidden="true"></div>
+      <div class="sg-heuristic-block" id="analyzing-heuristics"></div>
+      <div class="sg-analyzing-row" id="analyzing-llm">
+        <span class="sg-analyzing-icon" aria-hidden="true">&#x1F916;</span>
+        <span class="sg-analyzing-text" id="analyzing-llm-text">Analyzing&hellip;</span>
+        <span class="sg-pulse" aria-hidden="true"><span></span><span></span><span></span></span>
+      </div>
+    </section>
+
+    <!-- §2.4 State: Report (fused RiskReport received) -->
+    <section id="state-report" class="sg-state sg-state-report" role="region" aria-label="Report" hidden>
+      <div class="sg-seal" id="report-seal"></div>
+      <div class="sg-heuristic-block" id="report-heuristics"></div>
+      <div class="sg-report-body">
+        <div class="sg-red-flags" id="report-red-flags"></div>
+        <div class="sg-summary" id="report-summary"></div>
+        <details class="sg-checklist" id="report-checklist">
+          <summary class="sg-checklist-summary"></summary>
+          <ul class="sg-checklist-list" id="report-checklist-list"></ul>
+        </details>
+        <div class="sg-report-resources" id="report-resources" hidden></div>
+        <div class="sg-vision-notes" id="report-vision" hidden></div>
+        <div class="sg-actions" id="report-actions">
+          <button class="sg-action-btn" id="btn-copy-report" type="button">Copy report</button>
+          <button class="sg-action-btn" id="btn-export-card" type="button">Export card</button>
+          <button class="sg-action-btn sg-action-btn-muted" id="btn-raw-data" type="button" aria-expanded="false">View raw data &#x25B4;</button>
+        </div>
+        <pre class="sg-raw-data" id="report-raw-data" hidden><code id="report-raw-data-code"></code></pre>
+      </div>
+    </section>
+
+    <!-- §2.5 State: NoAnalysis (LLM returned notAListing: true) -->
+    <section id="state-no-analysis" class="sg-state sg-state-no-listing" role="region" aria-label="Not a listing page" hidden>
+      <svg class="sg-empty-icon" width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <circle cx="24" cy="22" r="14" stroke="var(--sg-muted)" stroke-width="2" fill="none"/>
+        <line x1="34" y1="32" x2="42" y2="40" stroke="var(--sg-muted)" stroke-width="2" stroke-linecap="round"/>
+        <line x1="18" y1="22" x2="30" y2="22" stroke="var(--sg-muted)" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <h2 class="sg-empty-title">Not a listing page</h2>
+      <p class="sg-empty-message">This doesn't look like a listing page. ScamGuard works on individual OLX or Quikr listing pages &mdash; try opening a specific item.</p>
+    </section>
+
+    <!-- §2.6 State: NoListing (extraction confidence too low, pre-fetch) -->
+    <section id="state-no-listing" class="sg-state sg-state-no-listing" role="region" aria-label="Could not read page" hidden>
+      <svg class="sg-empty-icon" width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <circle cx="24" cy="22" r="14" stroke="var(--sg-muted)" stroke-width="2" fill="none"/>
+        <line x1="34" y1="32" x2="42" y2="40" stroke="var(--sg-muted)" stroke-width="2" stroke-linecap="round"/>
+        <line x1="18" y1="22" x2="30" y2="22" stroke="var(--sg-muted)" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <h2 class="sg-empty-title">Couldn&rsquo;t read this page</h2>
+      <p class="sg-empty-message">Couldn&rsquo;t read this page reliably. If you&rsquo;re on an OLX or Quikr listing, try refreshing &mdash; otherwise this page may not be a listing ScamGuard recognizes yet.</p>
+    </section>
+
+    <!-- §2.7 State: Error (any error except the two above) -->
+    <section id="state-error" class="sg-state sg-state-error" role="region" aria-label="Error" hidden>
+      <div class="sg-heuristic-block" id="error-heuristics"></div>
+      <div class="sg-error-card">
+        <p class="sg-error-message" id="error-message"></p>
+        <div class="sg-error-actions" id="error-actions"></div>
+      </div>
+    </section>
+
+    <!-- §2.8 State: NoKey (first run / key cleared) -->
+    <section id="state-no-key" class="sg-state sg-state-no-key" role="region" aria-label="Setup required" hidden>
+      <div class="sg-seal-placeholder sg-seal-placeholder--neutral" aria-hidden="true">
+        <svg class="sg-seal-svg" width="72" height="72" viewBox="0 0 72 72" fill="none">
+          <circle cx="36" cy="36" r="32" stroke="var(--sg-muted)" stroke-width="2" fill="none"/>
+          <circle cx="36" cy="36" r="8" stroke="var(--sg-muted)" stroke-width="1.5" fill="none"/>
+        </svg>
+      </div>
+      <h2 class="sg-no-key-title">Connect a free AI provider to get started</h2>
+      <p class="sg-no-key-message">ScamGuard uses your own API key &mdash; free tiers from Groq or Cerebras work great and cost nothing.</p>
+      <button class="sg-primary-btn" id="btn-choose-provider" type="button">Choose a provider &rarr;</button>
+    </section>
+
+    <!-- §2.10: Message & Payment Check entry screen (separate view, NOT a 9th state) -->
+    <section id="view-message-check" class="sg-state sg-view-message-check" role="region" aria-label="Message check" hidden>
+      <div class="sg-view-header">
+        <button class="sg-back-btn" id="btn-mc-back" type="button" aria-label="Back">&larr; Back</button>
+        <span class="sg-view-title">Message check</span>
+      </div>
+      <div id="mc-input-screen" class="sg-mc-input">
+        <p class="sg-mc-instruction">Paste a message or describe what happened:</p>
+        <div class="sg-mc-modes">
+          <button class="sg-mc-mode-btn" id="btn-mc-paste" type="button">
+            <span class="sg-mc-mode-icon" aria-hidden="true">&#x1F4CB;</span>
+            <span class="sg-mc-mode-label">Paste the message</span>
+          </button>
+          <button class="sg-mc-mode-btn" id="btn-mc-guided" type="button">
+            <span class="sg-mc-mode-icon" aria-hidden="true">&#x2753;</span>
+            <span class="sg-mc-mode-label">Answer 3 quick questions instead</span>
+          </button>
+        </div>
+        <!-- Paste mode -->
+        <div id="mc-paste-form" class="sg-mc-form" hidden>
+          <label for="mc-paste-text" class="sg-sr-only">Paste what they sent you</label>
+          <textarea id="mc-paste-text" class="sg-textarea" rows="5" placeholder="Paste what they sent you &mdash; chat, WhatsApp, or describe what they're asking you to do."></textarea>
+          <button class="sg-primary-btn" id="btn-mc-paste-submit" type="button">Check this message</button>
+        </div>
+        <!-- Guided mode -->
+        <div id="mc-guided-form" class="sg-mc-form" hidden>
+          <fieldset class="sg-mc-fieldset">
+            <legend class="sg-mc-legend">Are you buying or selling?</legend>
+            <div class="sg-mc-radio-group">
+              <label class="sg-mc-radio-label">
+                <input type="radio" name="mc-role" value="buying" class="sg-mc-radio">
+                <span>Buying</span>
+              </label>
+              <label class="sg-mc-radio-label">
+                <input type="radio" name="mc-role" value="selling" class="sg-mc-radio">
+                <span>Selling</span>
+              </label>
+            </div>
+          </fieldset>
+          <fieldset class="sg-mc-fieldset">
+            <legend class="sg-mc-legend">Did they ask you to scan a QR code or approve a payment request?</legend>
+            <div class="sg-mc-radio-group">
+              <label class="sg-mc-radio-label">
+                <input type="radio" name="mc-scan" value="yes" class="sg-mc-radio">
+                <span>Yes</span>
+              </label>
+              <label class="sg-mc-radio-label">
+                <input type="radio" name="mc-scan" value="no" class="sg-mc-radio">
+                <span>No</span>
+              </label>
+              <label class="sg-mc-radio-label">
+                <input type="radio" name="mc-scan" value="not-sure" class="sg-mc-radio">
+                <span>Not sure</span>
+              </label>
+            </div>
+          </fieldset>
+          <div class="sg-mc-field">
+            <label for="mc-reason" class="sg-mc-label">What did they say the code or request was for?</label>
+            <input type="text" id="mc-reason" class="sg-input" placeholder="Optional &mdash; describe what they claimed">
+          </div>
+          <button class="sg-primary-btn" id="btn-mc-guided-submit" type="button">Check this message</button>
+        </div>
+      </div>
+      <!-- §2.10 result view -->
+      <div id="mc-result-screen" class="sg-mc-result" hidden>
+        <div class="sg-mc-verdict" id="mc-verdict"></div>
+        <div class="sg-mc-core-fact" id="mc-core-fact"></div>
+        <div class="sg-mc-patterns" id="mc-patterns"></div>
+        <div class="sg-mc-ai-review" id="mc-ai-review" hidden>
+          <span class="sg-mc-ai-icon" aria-hidden="true">&#x1F916;</span>
+          <span class="sg-mc-ai-text">AI review unavailable right now &mdash; showing pattern-match result only.</span>
+        </div>
+        <div class="sg-mc-actions">
+          <button class="sg-action-btn" id="btn-mc-copy" type="button">Copy this to show someone</button>
+          <a class="sg-action-btn sg-action-link" href="tel:1930">Call 1930</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- §1.4 §2.10: Contextual nudge row — shown on ALL verdict states incl. Safe -->
+    <div class="sg-payment-nudge" id="payment-nudge" hidden>
+      <span class="sg-nudge-icon" aria-hidden="true">&#x1F4AC;</span>
+      <button class="sg-nudge-btn" id="btn-payment-nudge" type="button">About to pay or get paid? Check the message &rarr;</button>
+    </div>
+
+    <!-- §1.4 history footer (last 5) -->
+    <footer class="sg-footer" id="history-footer">
+      <div class="sg-footer-header">
+        <span class="sg-footer-title">History</span>
+        <button class="sg-footer-link" id="btn-see-all" type="button" aria-label="See all history">See all &rarr;</button>
+      </div>
+      <ul class="sg-history-list" id="history-list" role="list"></ul>
+    </footer>
+  </main>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

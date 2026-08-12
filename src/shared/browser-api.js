@@ -1,16 +1,20 @@
 /**
- * browser-api.js — minimal browser-API shims for the storage layer
- * (PLAN-BACKEND.md §7.1, §8 storage/ file plan).
+ * browser-api.js — browser-API shims for Chrome ↔ Firefox normalization
+ * (PLAN-BACKEND.md §7.1, §8 storage/ file plan, PLAN-FRONTEND.md §8.3).
  *
- * Scope is deliberately tiny: this file exists ONLY to give the storage
- * modules (settings/history/session) a promisified, injectable seam onto a
- * `chrome.storage` area, so production wiring is a one-liner and tests can
- * pass any Promise-shaped backend. It knows nothing about fetch, DOM, or
- * messages — the full browser shim is the frontend phase's job (per the
- * phase-4 spec: "otherwise skip; frontend phase 6 owns the full shim").
+ * Exports two layers:
+ *   1. Storage shims (§7.1): chromeStorageAreaBackend, chromeLocalStorageBackend,
+ *      createMemoryStorageBackend — unchanged from phase 4.
+ *   2. Runtime/messaging/action shim (§8.3): chromeRuntime, chromeTabs,
+ *      chromeAction — promise-normalized wrappers that work with both
+ *      Chrome's callback-based chrome.* and Firefox's promise-based browser.*.
+ *
+ * No component file ever calls chrome.* directly — always through this shim
+ * — so a second manifest.firefox.json is the only Firefox-specific artifact
+ * needed for v1 (§8.3).
  *
  * No API key ever touches this module — it only moves opaque JSON blobs
- * between the caller and a storage area.
+ * between the caller and a storage area, or relays messages.
  */
 
 /**
@@ -137,3 +141,127 @@ export function createMemoryStorageBackend(initial = {}) {
     },
   };
 }
+
+// ─── Runtime / messaging / action shims (§8.3) ─────────────────────────────
+//
+// Firefox's `browser.*` namespace is Promise-native; Chrome's `chrome.*` is
+// callback-based for some APIs. These shims normalize both to a consistent
+// Promise-based interface. Every extension-context file (popup, options,
+// content script) should import from here rather than calling chrome.*
+// directly, so the Firefox port is a manifest change, not a code rewrite.
+
+/**
+ * Normalize a callback-style chrome API method into a Promise-returning one.
+ * If the chrome namespace is absent (e.g. plain Node tests), returns a
+ * function that rejects with a clear error.
+ *
+ * @param {(cb: (...args: unknown[]) => void) => void} chromeMethod
+ * @returns {(...args: unknown[]) => Promise<unknown>}
+ */
+function promisifyChrome(chromeMethod) {
+  return (...args) =>
+    new Promise((resolve, reject) => {
+      chromeMethod(...args, (...results) => {
+        const lastError = globalThis.chrome?.runtime?.lastError;
+        if (lastError) {
+          reject(new Error(String(lastError.message ?? "chrome API error")));
+        } else {
+          resolve(results.length <= 1 ? results[0] : results);
+        }
+      });
+    });
+}
+
+/**
+ * Whether the browser.* (Firefox) namespace is available. Used to pick the
+ * right backend at init time.
+ *
+ * @type {boolean}
+ */
+const IS_FIREFOX = typeof globalThis.browser !== "undefined" && typeof globalThis.browser?.runtime?.sendMessage === "function";
+
+/**
+ * Runtime messaging shim — wraps chrome.runtime.sendMessage /
+ * browser.runtime.sendMessage into a uniform Promise interface.
+ *
+ * @type {{
+ *   sendMessage: (message: unknown) => Promise<unknown>,
+ *   onMessage: { addListener: (cb: (message: unknown, sender: unknown, sendResponse: (response: unknown) => void) => boolean | void) => void },
+ * }}
+ */
+export const chromeRuntime = (() => {
+  if (IS_FIREFOX) {
+    return {
+      sendMessage: (msg) => globalThis.browser.runtime.sendMessage(msg),
+      onMessage: globalThis.browser.runtime.onMessage,
+    };
+  }
+  if (typeof globalThis.chrome?.runtime !== "undefined") {
+    return {
+      sendMessage: promisifyChrome((msg, cb) => globalThis.chrome.runtime.sendMessage(msg, cb)),
+      onMessage: globalThis.chrome.runtime.onMessage,
+    };
+  }
+  // Not in a browser context (Node tests) — provide no-op stubs.
+  return {
+    sendMessage: async () => { throw new Error("chrome.runtime is not available"); },
+    onMessage: { addListener() {} },
+  };
+})();
+
+/**
+ * Tabs query shim — wraps chrome.tabs.query / browser.tabs.query.
+ *
+ * @type {{
+ *   query: (queryInfo: { active?: boolean; currentWindow?: boolean }) => Promise<Array<{ id?: number; url?: string }>>,
+ *   sendMessage: (tabId: number, message: unknown) => Promise<unknown>,
+ * }}
+ */
+export const chromeTabs = (() => {
+  if (IS_FIREFOX) {
+    return {
+      query: (info) => globalThis.browser.tabs.query(info),
+      sendMessage: (tabId, msg) => globalThis.browser.tabs.sendMessage(tabId, msg),
+    };
+  }
+  if (typeof globalThis.chrome?.tabs !== "undefined") {
+    return {
+      query: promisifyChrome((info, cb) => globalThis.chrome.tabs.query(info, cb)),
+      sendMessage: promisifyChrome((tabId, msg, cb) => globalThis.chrome.tabs.sendMessage(tabId, msg, cb)),
+    };
+  }
+  return {
+    query: async () => [],
+    sendMessage: async () => { throw new Error("chrome.tabs is not available"); },
+  };
+})();
+
+/**
+ * Action (toolbar icon) shim — wraps chrome.action / browser.browserAction.
+ *
+ * @type {{
+ *   setBadgeText: (details: { text: string; tabId?: number }) => Promise<void>,
+ *   setBadgeBackgroundColor: (details: { color: string; tabId?: number }) => Promise<void>,
+ * }}
+ */
+export const chromeAction = (() => {
+  if (IS_FIREFOX) {
+    const api = globalThis.browser?.browserAction ?? globalThis.browser?.action;
+    if (api) {
+      return {
+        setBadgeText: (d) => api.setBadgeText(d),
+        setBadgeBackgroundColor: (d) => api.setBadgeBackgroundColor(d),
+      };
+    }
+  }
+  if (typeof globalThis.chrome?.action !== "undefined") {
+    return {
+      setBadgeText: promisifyChrome((d, cb) => globalThis.chrome.action.setBadgeText(d, cb)),
+      setBadgeBackgroundColor: promisifyChrome((d, cb) => globalThis.chrome.action.setBadgeBackgroundColor(d, cb)),
+    };
+  }
+  return {
+    setBadgeText: async () => {},
+    setBadgeBackgroundColor: async () => {},
+  };
+})();
