@@ -31,6 +31,16 @@
  *                                                  → { ok, message } (§3.6)
  *   GET_STATE        { type }                    → { ok, session, stale,
  *                                                  message? }
+ *   CHECK_MESSAGE    { type, input }             → { ok, report } (§2.5/§4.7
+ *                                                  Message & Payment Check:
+ *                                                  deterministic pattern pass
+ *                                                  first, optional LLM nuance
+ *                                                  pass — additive polish only)
+ *   GET_HISTORY      { type }                    → { ok, history } (capped 50,
+ *                                                  §8)
+ *   GET_SETTINGS     { type }                    → { ok, settings }
+ *   SAVE_SETTINGS    { type, settings }          → { ok }
+ *   CLEAR_HISTORY    { type }                    → { ok }
  *
  * AnalyzeResult is discriminated on `result.kind`:
  *   "report"      full §2.3 RiskReport (fused OR heuristic-only fallback)
@@ -51,10 +61,16 @@
 import { get as registryGet } from "../llm/providers/registry.js";
 import { callProvider } from "../llm/providers/client.js";
 import { runTestConnection } from "../llm/providers/test-connection.js";
+import { tolerantParse } from "../llm/parse.js";
 import { run as heuristicsRun } from "../heuristics/signals.js";
 import { buildSystemPrompt, buildUserPrompt } from "../llm/prompt.js";
 import { buildImageParts } from "../llm/vision.js";
 import { fuse } from "../scoring/fuse.js";
+import { match as paymentCheckMatch } from "../payment-check/match.js";
+import {
+  NUANCE_SYSTEM_PROMPT,
+  buildNuanceUserPrompt,
+} from "../payment-check/prompt.js";
 import { REPORTING_RESOURCES } from "../shared/constants.js";
 import { getErrorMessage, renderMessage } from "../shared/error-messages.js";
 import { createSettingsStore } from "../storage/settings.js";
@@ -678,6 +694,134 @@ async function runGetState(deps) {
   return { ok: true, session, stale, message };
 }
 
+// ─── Message & Payment Check (§2.5 / §4.7) ─────────────────────────────────
+
+/**
+ * §4.7 optional LLM nuance pass for Message & Payment Check.
+ *
+ * Runs a SINGLE provider request using the dedicated payment-check prompt
+ * (payment-check/prompt.js) over the user's configured provider. Deliberately
+ * NOT routed through callProvider: that pipeline validates against the §4.5
+ * LISTING verdict schema, which the nuance response shape
+ * (`{ verdict, summary, reasoning }`) does not match — and a repair retry on
+ * a non-critical additive-polish call would waste free-tier tokens. So this
+ * mirrors §3.6's test-connection wire shape instead: buildRequest → one fetch
+ * with a timeout → parseResponse → tolerantParse → extract only the two
+ * fields the nuance prompt can refine (`verdict`, `summary`). The local
+ * pattern match stays authoritative — matchedPatterns is never LLM-edited.
+ *
+ * Returns `null` (never throws) when: no provider configured, no key, no
+ * model, HTTP failure, timeout, network error, or an unparseable/empty
+ * response — the caller keeps the deterministic pattern result (§4.7, §6
+ * row "Message & Payment Check: LLM pass fails/times out").
+ *
+ * @param {import("../payment-check/match.js").PaymentCheckInput | null | undefined} input
+ * @param {import("../payment-check/match.js").PaymentCheckReport} report
+ * @param {import("./service-worker.js").AppDeps} deps
+ * @returns {Promise<{ verdict?: "LikelyScam" | "Caution" | "NoRedFlagsFound"; summary?: string } | null>}
+ */
+async function runNuancePass(input, report, deps) {
+  const settings = await deps.settingsStore.get();
+  const adapter = deps.registry(settings.providerId);
+  if (!adapter) return null;
+  const apiKey = settings.apiKey;
+  if (typeof apiKey !== "string" || apiKey.length === 0) return null;
+  const model = settings.modelOverride ?? adapter.defaultModel;
+  if (typeof model !== "string" || model.length === 0) return null;
+
+  const request = adapter.buildRequest({
+    listing: null,
+    heuristics: null,
+    systemPrompt: NUANCE_SYSTEM_PROMPT,
+    userPrompt: buildNuanceUserPrompt(input, report),
+    model,
+    apiKey,
+  });
+
+  const timeoutMs = adapter.timeoutMs ?? 20000;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  let response;
+  try {
+    response = await deps.fetchImpl(request.url, {
+      method: "POST",
+      headers: request.headers,
+      body: typeof request.body === "string" ? request.body : JSON.stringify(request.body),
+      signal: controller.signal,
+    });
+  } catch {
+    return null; // timeout/network — additive polish, never blocks (§4.7)
+  } finally {
+    clearTimeout(timer);
+  }
+
+  if (typeof response?.status !== "number" || response.status < 200 || response.status >= 300) {
+    return null;
+  }
+
+  let rawBody = "";
+  try {
+    rawBody = await response.text();
+  } catch {
+    return null;
+  }
+
+  let text = null;
+  try {
+    const parsed = adapter.parseResponse(JSON.parse(rawBody));
+    text = typeof parsed?.text === "string" ? parsed.text : null;
+  } catch {
+    text = null;
+  }
+
+  const llm = tolerantParse(text);
+  if (!llm) return null;
+
+  const adjustments = {};
+  const verdict = llm.verdict;
+  if (verdict === "LikelyScam" || verdict === "Caution" || verdict === "NoRedFlagsFound") {
+    adjustments.verdict = verdict;
+  }
+  const summary = llm.summary;
+  if (typeof summary === "string" && summary.trim().length > 0) {
+    adjustments.summary = summary.trim();
+  }
+  return Object.keys(adjustments).length > 0 ? adjustments : null;
+}
+
+/**
+ * CHECK_MESSAGE (§2.5, §4.7): run the Message & Payment Check flow.
+ *
+ * Deterministic pattern pass FIRST — paymentCheckMatch() is pure sync and
+ * zero network, the same "instant result before any network call" ordering as
+ * heuristics.run() in the main flow (§1.2). The optional LLM nuance pass then
+ * runs asynchronously; any adjustments it returns are merged back through
+ * match()'s own validated adjustment rules (an invalid verdict, a throwing
+ * seam, or an absent/offline provider leaves the deterministic result and
+ * `coreFact` untouched — §4.7: additive polish only, never a dependency).
+ *
+ * @param {import("../payment-check/match.js").PaymentCheckInput} input
+ * @param {import("./service-worker.js").AppDeps} deps
+ * @returns {Promise<{ ok: true; report: import("../payment-check/match.js").PaymentCheckReport }>}
+ */
+async function runMessageCheck(input, deps) {
+  // §4.7: pattern pass first — instant, zero network.
+  const report = paymentCheckMatch(input);
+
+  let adjustments = null;
+  try {
+    adjustments = await deps.runNuancePassFn(input, report, deps);
+  } catch {
+    adjustments = null; // §4.7: the LLM pass is additive polish, never a dependency.
+  }
+
+  if (adjustments && typeof adjustments === "object") {
+    return { ok: true, report: paymentCheckMatch(input, { nuance: () => adjustments }) };
+  }
+  return { ok: true, report };
+}
+
 // ─── app factory ─────────────────────────────────────────────────────────────
 
 /**
@@ -695,6 +839,7 @@ async function runGetState(deps) {
  * @property {typeof buildUserPrompt} buildUserPromptFn
  * @property {typeof buildImageParts} buildImagePartsFn
  * @property {typeof fuse} fuseFn
+ * @property {typeof runNuancePass} runNuancePassFn
  * @property {typeof fetch} [fetchImpl]
  * @property {(ms: number) => Promise<void>} [sleep]
  * @property {() => number} [now]
@@ -733,6 +878,7 @@ export function createServiceWorkerApp(deps = {}) {
     buildUserPromptFn: deps.buildUserPromptFn ?? buildUserPrompt,
     buildImagePartsFn: deps.buildImagePartsFn ?? buildImageParts,
     fuseFn: deps.fuseFn ?? fuse,
+    runNuancePassFn: deps.runNuancePassFn ?? runNuancePass,
     fetchImpl: deps.fetchImpl ?? globalThis.fetch,
     sleep: deps.sleep ?? ((ms) => new Promise((resolve) => setTimeout(resolve, ms))),
     now: deps.now ?? Date.now,
@@ -778,6 +924,16 @@ export function createServiceWorkerApp(deps = {}) {
           );
         case "GET_STATE":
           return await runGetState(appDeps);
+        case "CHECK_MESSAGE": {
+          const input = message?.input;
+          if (!input || typeof input !== "object" || Array.isArray(input)) {
+            return { ok: false, error: "CHECK_MESSAGE requires an input object." };
+          }
+          return await runMessageCheck(
+            /** @type {import("../payment-check/match.js").PaymentCheckInput} */ (input),
+            appDeps,
+          );
+        }
         case "GET_SETTINGS": {
           const settings = await appDeps.settingsStore.get();
           return { ok: true, settings };
@@ -789,6 +945,10 @@ export function createServiceWorkerApp(deps = {}) {
           }
           await appDeps.settingsStore.set(newSettings);
           return { ok: true };
+        }
+        case "GET_HISTORY": {
+          const history = await appDeps.historyStore.list();
+          return { ok: true, history };
         }
         case "CLEAR_HISTORY":
           await appDeps.historyStore.clear();

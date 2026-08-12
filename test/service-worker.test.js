@@ -28,6 +28,7 @@ import { createMemoryStorageBackend } from "../src/shared/browser-api.js";
 import { createSettingsStore } from "../src/storage/settings.js";
 import { createHistoryStore } from "../src/storage/history.js";
 import { createSessionStore, SESSION_KEY } from "../src/storage/session.js";
+import { CORE_FACT } from "../src/shared/constants.js";
 import {
   ERROR_MESSAGES,
   getErrorMessage,
@@ -106,6 +107,7 @@ function makeApp(overrides = {}) {
     fetchImpl: overrides.fetchImpl ?? createFetchMock([]),
     sleep: overrides.sleep ?? (async () => {}),
     sendToTab: overrides.sendToTab,
+    runNuancePassFn: overrides.runNuancePassFn,
     // Read Date.now at CALL time, not construction time — otherwise a fake
     // timer mock installed after makeApp() wouldn't be seen by the SW.
     now: overrides.now ?? (() => Date.now()),
@@ -534,6 +536,170 @@ test("GET_STATE flags a stale analyzing session with the §6 interrupted message
   assert.equal(state.session.status, "analyzing");
   assert.equal(state.stale, true, "older than timeoutMs + 5s grace");
   assert.equal(state.message, ERROR_MESSAGES.interrupted.message);
+});
+
+// ─── CHECK_MESSAGE (§2.5 / §4.7 Message & Payment Check) ────────────────────
+
+/** @param {object} [overrides] @returns {import("../src/payment-check/match.js").PaymentCheckInput} */
+function makePaymentInput(overrides = {}) {
+  return {
+    mode: "pastedText",
+    rawText: "buyer said just scan this QR to get the payment",
+    guidedAnswers: null,
+    listingContext: null,
+    ...overrides,
+  };
+}
+
+test("CHECK_MESSAGE scan-to-receive: LikelyScam + coreFact with ZERO provider calls when no key is configured", async () => {
+  const fetchImpl = createFetchMock([]);
+  const backend = createMemoryStorageBackend();
+  const app = createServiceWorkerApp({
+    settingsStore: createSettingsStore(backend),
+    historyStore: createHistoryStore(backend),
+    sessionStore: createSessionStore(backend),
+    fetchImpl,
+    sleep: async () => {},
+    now: () => Date.now(),
+  });
+  await createSettingsStore(backend).set(makeSettings({ apiKey: "" }));
+
+  const response = await app.handleMessage({ type: "CHECK_MESSAGE", input: makePaymentInput() });
+
+  assert.equal(response.ok, true);
+  assert.equal(response.report.verdict, "LikelyScam", "pattern pass alone produces LikelyScam (§4.7)");
+  assert.ok(
+    response.report.matchedPatterns.some((p) => p.id === "SCAN_TO_RECEIVE"),
+    `ids: ${response.report.matchedPatterns.map((p) => p.id)}`,
+  );
+  assert.equal(response.report.coreFact, CORE_FACT, "coreFact always populated, even with no provider (§4.7)");
+  assert.ok(response.report.summary.length > 0, "deterministic summary present");
+  assert.equal(typeof response.report.reportId, "string");
+  assert.match(response.report.createdAt, /^\d{4}-\d{2}-\d{2}T/);
+  assert.equal(fetchImpl.calls.length, 0, "no key → the LLM nuance pass is skipped entirely: zero network");
+});
+
+test("CHECK_MESSAGE returns the pattern result + coreFact even when the mocked LLM nuance pass rejects", async () => {
+  const { app, settings } = makeApp({
+    runNuancePassFn: async () => {
+      throw new Error("provider offline");
+    },
+  });
+  await settings.set(makeSettings()); // key configured — the nuance pass runs and fails
+
+  const response = await app.handleMessage({
+    type: "CHECK_MESSAGE",
+    input: makePaymentInput({ rawText: "scan this qr to get the payment" }),
+  });
+
+  assert.equal(response.ok, true);
+  assert.equal(response.report.verdict, "LikelyScam", "throwing nuance pass must never block the pattern result");
+  assert.ok(response.report.matchedPatterns.some((p) => p.id === "SCAN_TO_RECEIVE"));
+  assert.equal(response.report.coreFact, CORE_FACT, "coreFact survives an LLM failure (§4.7 / §6)");
+  assert.ok(response.report.summary.length > 0);
+});
+
+test("CHECK_MESSAGE applies LLM-nuance adjustments when the pass succeeds (warning-to-others softened)", async () => {
+  const { app, settings } = makeApp({
+    runNuancePassFn: async (input, report) => {
+      assert.equal(report.verdict, "LikelyScam", "seam receives the deterministic pattern result");
+      assert.equal(report.coreFact, CORE_FACT);
+      return {
+        verdict: "NoRedFlagsFound",
+        summary: "This text warns other people about this scam — it is not an instruction the user should act on.",
+      };
+    },
+  });
+  await settings.set(makeSettings());
+
+  const response = await app.handleMessage({
+    type: "CHECK_MESSAGE",
+    input: makePaymentInput({ rawText: "scan this qr to get the payment" }),
+  });
+
+  assert.equal(response.ok, true);
+  assert.equal(response.report.verdict, "NoRedFlagsFound", "nuance pass softens the verdict (§4.7)");
+  assert.match(response.report.summary, /warns other people/);
+  assert.equal(response.report.coreFact, CORE_FACT, "coreFact always populated");
+  assert.ok(
+    response.report.matchedPatterns.some((p) => p.id === "SCAN_TO_RECEIVE"),
+    "patterns still reported after softening",
+  );
+});
+
+test("CHECK_MESSAGE runs the real LLM nuance pass over the configured provider (exactly one fetch, no repair retry)", async () => {
+  // A standard OpenAI-compatible nuance response (groq preset).
+  const nuanceBody = {
+    choices: [
+      {
+        message: {
+          content: JSON.stringify({
+            verdict: "Caution",
+            summary: "Context unclear — confirm who you are dealing with before acting.",
+            reasoning: "ambiguous framing",
+          }),
+        },
+      },
+    ],
+  };
+  const fetchImpl = createFetchMock([{ status: 200, body: nuanceBody }]);
+  const { app, settings } = makeApp({ fetchImpl });
+  await settings.set(makeSettings()); // groq + key configured
+
+  const response = await app.handleMessage({
+    type: "CHECK_MESSAGE",
+    input: makePaymentInput({
+      rawText: "approve the payment request for the refund",
+    }),
+  });
+
+  assert.equal(response.ok, true);
+  assert.equal(fetchImpl.calls.length, 1, "additive pass is a single request — no repair retry (§4.7)");
+  assert.equal(response.report.verdict, "Caution", "nuance verdict applied");
+  assert.match(response.report.summary, /Context unclear/);
+  assert.equal(response.report.coreFact, CORE_FACT);
+  assert.ok(
+    response.report.matchedPatterns.some((p) => p.id === "COLLECT_REQUEST_FRAMED_AS_REFUND"),
+    "local pattern match stays authoritative",
+  );
+});
+
+test("CHECK_MESSAGE without an input object → ok:false", async () => {
+  const { app } = makeApp();
+  const response = await app.handleMessage({ type: "CHECK_MESSAGE" });
+  assert.equal(response.ok, false);
+  assert.match(response.error, /input/);
+});
+
+// ─── GET_HISTORY (§2.3 / §8) ─────────────────────────────────────────────────
+
+test("GET_HISTORY returns saved RiskReports after an ANALYZE flow", async () => {
+  const { app, settings } = makeApp({
+    fetchImpl: createFetchMock([{ status: 200, body: groqBody(makeVerdict()) }]),
+  });
+  await settings.set(makeSettings());
+  await app.handleMessage({ type: "ANALYZE", listing: makeListing() });
+
+  const response = await app.handleMessage({ type: "GET_HISTORY" });
+  assert.equal(response.ok, true);
+  assert.ok(Array.isArray(response.history));
+  assert.equal(response.history.length, 1);
+  assert.equal(typeof response.history[0].reportId, "string");
+  assert.equal(response.history[0].listingTitle, "HP Pavilion 15");
+  // The fixture's heuristic score (price anomaly on 20000 vs ~102500 midpoint)
+  // fuses to the "Review" band — assert it's a valid §5.3 verdict, not a guess.
+  assert.ok(
+    ["Safe", "Review", "Suspicious", "High-Risk"].includes(response.history[0].verdict),
+    `verdict: ${response.history[0].verdict}`,
+  );
+  assert.equal(typeof response.history[0].score, "number", "score is numeric");
+});
+
+test("GET_HISTORY returns an empty list before any analysis", async () => {
+  const { app } = makeApp();
+  const response = await app.handleMessage({ type: "GET_HISTORY" });
+  assert.equal(response.ok, true);
+  assert.deepEqual(response.history, []);
 });
 
 // ─── TEST_CONNECTION (§3.6) ──────────────────────────────────────────────────
