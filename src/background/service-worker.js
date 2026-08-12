@@ -63,9 +63,68 @@ import { createSessionStore } from "../storage/session.js";
 import {
   chromeLocalStorageBackend,
   chromeStorageAreaBackend,
+  chromeAction,
 } from "../shared/browser-api.js";
 
 // ─── constants ───────────────────────────────────────────────────────────────
+
+/**
+ * §5 badge colors — maps verdict to the toolbar badge background color.
+ * Uses the §1.2 verdict palette tokens. Only set AFTER a user-triggered
+ * check, never proactively.
+ *
+ * @type {Record<string, string>}
+ */
+const VERDICT_BADGE_COLORS = {
+  Safe: "#3F7D5C",
+  Review: "#B5892C",
+  Suspicious: "#C1602B",
+  "High-Risk": "#A3312A",
+};
+
+/**
+ * §5: Set the toolbar badge for a tab after a completed report. Uses the
+ * verdict palette dot — never set proactively (only after user-triggered
+ * check per project doc §4.3).
+ *
+ * @param {number | undefined} tabId
+ * @param {string} verdict  One of the §5.3 verdict values.
+ * @returns {Promise<void>}
+ */
+async function setBadgeForVerdict(tabId, verdict) {
+  if (typeof tabId !== "number") return;
+  const color = VERDICT_BADGE_COLORS[verdict] || "#9C7A3C";
+  try {
+    await chromeAction.setBadgeText({ text: "\u25CF", tabId });
+    await chromeAction.setBadgeBackgroundColor({ color, tabId });
+  } catch {
+    // Badge API may fail in test contexts — silently ignore.
+  }
+}
+
+/**
+ * §5: Clear the toolbar badge for a tab (called on navigation to a new URL).
+ *
+ * @param {number | undefined} tabId
+ * @returns {Promise<void>}
+ */
+async function clearBadge(tabId) {
+  if (typeof tabId !== "number") return;
+  try {
+    await chromeAction.setBadgeText({ text: "", tabId });
+  } catch {
+    // silent
+  }
+}
+
+/**
+ * §5: tabId remembered from the most recent GET_LISTING call, so the
+ * ANALYZE flow can set the badge after completing a report. Lost on
+ * service-worker restart (acceptable — the analysis is also interrupted).
+ *
+ * @type {number | undefined}
+ */
+let lastAnalyzedTabId = undefined;
 
 /**
  * Base safe-buying checklist included in EVERY RiskReport (§2.3 checklist).
@@ -338,9 +397,10 @@ function resolveErrorMessage(adapter, providerError) {
  *
  * @param {import("../shared/types.js").Listing} listing
  * @param {import("./service-worker.js").AppDeps} deps
+ * @param {{ tabId?: number }} [extra]  §5: tabId for badge after report.
  * @returns {Promise<{ ok: true; type: "RESULT"; result: object }>}
  */
-async function runAnalysis(listing, deps) {
+async function runAnalysis(listing, deps, extra = {}) {
   const {
     settingsStore,
     historyStore,
@@ -473,6 +533,8 @@ async function runAnalysis(listing, deps) {
     });
     await historyStore.add(report);
     await sessionStore.complete(report);
+    // §5: set toolbar badge with verdict color after report.
+    await setBadgeForVerdict(extra.tabId, report.verdict);
     return { ok: true, type: "RESULT", result: { kind: "report", report } };
   }
 
@@ -496,6 +558,8 @@ async function runAnalysis(listing, deps) {
     });
     await historyStore.add(report);
     await sessionStore.complete(report);
+    // §5: set toolbar badge with verdict color after report.
+    await setBadgeForVerdict(extra.tabId, report.verdict);
     return { ok: true, type: "RESULT", result: { kind: "report", report } };
   }
 
@@ -689,8 +753,13 @@ export function createServiceWorkerApp(deps = {}) {
     try {
       const type = message && typeof message === "object" ? message.type : null;
       switch (type) {
-        case "GET_LISTING":
-          return await runGetListing(/** @type {object} */ (message), context, appDeps);
+        case "GET_LISTING": {
+          const result = await runGetListing(/** @type {object} */ (message), context, appDeps);
+          // §5: remember the tabId for badge setting after ANALYZE completes.
+          const tabId = message?.tabId ?? context?.sender?.tab?.id;
+          if (typeof tabId === "number") lastAnalyzedTabId = tabId;
+          return result;
+        }
         case "ANALYZE": {
           const listing = /** @type {{ listing?: unknown }} */ (message).listing;
           if (!listing || typeof listing !== "object" || Array.isArray(listing)) {
@@ -699,6 +768,7 @@ export function createServiceWorkerApp(deps = {}) {
           return await runAnalysis(
             /** @type {import("../shared/types.js").Listing} */ (listing),
             appDeps,
+            { tabId: lastAnalyzedTabId },
           );
         }
         case "TEST_CONNECTION":
@@ -708,6 +778,21 @@ export function createServiceWorkerApp(deps = {}) {
           );
         case "GET_STATE":
           return await runGetState(appDeps);
+        case "GET_SETTINGS": {
+          const settings = await appDeps.settingsStore.get();
+          return { ok: true, settings };
+        }
+        case "SAVE_SETTINGS": {
+          const newSettings = message?.settings;
+          if (!newSettings || typeof newSettings !== "object") {
+            return { ok: false, error: "SAVE_SETTINGS requires a settings object." };
+          }
+          await appDeps.settingsStore.set(newSettings);
+          return { ok: true };
+        }
+        case "CLEAR_HISTORY":
+          await appDeps.historyStore.clear();
+          return { ok: true };
         default:
           return { ok: false, error: "Unknown message type." };
       }
@@ -771,6 +856,25 @@ export function bindToChrome() {
         sendResponse({ ok: false, error: err instanceof Error ? err.message : String(err) }),
       );
     return true; // keep the channel open for the async response
+  });
+
+  // §4 Onboarding: open options page on first install with welcome banner.
+  globalThis.chrome.runtime.onInstalled.addListener((details) => {
+    if (details.reason === "install") {
+      globalThis.chrome.runtime.openOptionsPage();
+      // The options page checks the URL param for onboarding=1.
+      // openOptionsPage doesn't support query params directly, so we
+      // use chrome.tabs.update after a short delay to set the URL.
+      setTimeout(() => {
+        globalThis.chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          const tab = tabs?.[0];
+          if (tab?.id) {
+            const optionsUrl = globalThis.chrome.runtime.getURL("options.html?onboarding=1");
+            globalThis.chrome.tabs.update(tab.id, { url: optionsUrl });
+          }
+        });
+      }, 200);
+    }
   });
 
   return app;

@@ -20,6 +20,12 @@
  * This module is a pure function of a `Document` (injectable for jsdom tests);
  * the MV3 content-script entry point that calls `extractListing(document)`
  * ships in a later phase (see PLAN-FRONTEND.md §2/§10).
+ *
+ * §5 (PLAN-FRONTEND.md): the content script's ONLY presentation concern is
+ * responding to GET_LISTING messages from the service worker. Badge behavior
+ * (chrome.action.setBadgeText) is handled by the service worker after
+ * analysis completes — the content script never touches the badge or injects
+ * any UI into the page DOM.
  */
 
 /** Matches an element whose ENTIRE text is a rupee price ("₹ 6,500"). */
@@ -411,4 +417,37 @@ export function extractListing(doc) {
   } catch {
     return baseline;
   }
+}
+
+// ─── §5 Content-script entry point ────────────────────────────────────────
+//
+// Listen for GET_LISTING messages from the service worker and respond with
+// the extracted listing data. This is the ONLY runtime behavior in the
+// content script — no badge manipulation, no page-DOM injection.
+// §5: badge behavior is entirely handled by the service worker after
+// analysis completes (PLAN-FRONTEND.md §5).
+
+if (
+  typeof globalThis !== "undefined" &&
+  typeof globalThis.chrome !== "undefined" &&
+  typeof globalThis.chrome.runtime !== "undefined" &&
+  typeof globalThis.chrome.runtime.onMessage?.addListener === "function"
+) {
+  globalThis.chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+    const type = message && typeof message === "object" ? message.type : null;
+    if (type === "GET_LISTING") {
+      try {
+        const listing = extractListing(document);
+        sendResponse({ ok: true, listing });
+      } catch (err) {
+        sendResponse({
+          ok: false,
+          error: err instanceof Error ? err.message : "Extraction failed",
+        });
+      }
+      return true; // keep the channel open for async response
+    }
+    // Not our message — ignore.
+    return false;
+  });
 }

@@ -1,0 +1,510 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   options.css — ScamGuard options page stylesheet
+   PLAN-FRONTEND.md §3 (options page), §1.2 (palette), §1.3 (typography),
+   §6 (accessibility)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── §1.2 Design tokens (same as popup.css) ──────────────────────────── */
+:root {
+  --sg-ink: #1C1B1A;
+  --sg-paper: #FAF8F4;
+  --sg-paper-raised: #FFFFFF;
+  --sg-brass: #9C7A3C;
+  --sg-safe: #3F7D5C;
+  --sg-review: #B5892C;
+  --sg-suspicious: #C1602B;
+  --sg-high-risk: #A3312A;
+  --sg-line: #E4DFD5;
+  --sg-muted: #6B665D;
+
+  --sg-font-display: "Fraunces", "Georgia", "Cambria", "Times New Roman", serif;
+  --sg-font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --sg-font-mono: "JetBrains Mono", "SF Mono", "Cascadia Code", "Fira Code", ui-monospace, monospace;
+
+  --sg-radius: 8px;
+  --sg-radius-sm: 4px;
+  --sg-space-xs: 4px;
+  --sg-space-sm: 8px;
+  --sg-space-md: 12px;
+  --sg-space-lg: 16px;
+  --sg-space-xl: 24px;
+}
+
+/* ─── Reset & base ──────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+body {
+  font-family: var(--sg-font-body);
+  color: var(--sg-ink);
+  background: var(--sg-paper);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ─── §6 Focus-visible ──────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--sg-brass);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--sg-brass);
+  outline-offset: 2px;
+}
+
+/* ─── Options page layout ───────────────────────────────────────────────── */
+.sg-options {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--sg-space-xl) var(--sg-space-lg);
+}
+
+.sg-options-title {
+  font-family: var(--sg-font-display);
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--sg-ink);
+  margin-bottom: var(--sg-space-xl);
+}
+
+/* ─── Sections ──────────────────────────────────────────────────────────── */
+.sg-section {
+  margin-bottom: var(--sg-space-xl);
+  padding-bottom: var(--sg-space-xl);
+  border-bottom: 1px solid var(--sg-line);
+}
+
+.sg-section:last-child {
+  border-bottom: none;
+}
+
+.sg-section-title {
+  font-family: var(--sg-font-body);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--sg-ink);
+  margin-bottom: var(--sg-space-md);
+}
+
+/* ─── §3.2 Card-grid provider picker ────────────────────────────────────── */
+.sg-provider-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--sg-space-sm);
+  margin-bottom: var(--sg-space-lg);
+}
+
+.sg-provider-card {
+  background: var(--sg-paper-raised);
+  border: 2px solid var(--sg-line);
+  border-radius: var(--sg-radius);
+  padding: var(--sg-space-md);
+  cursor: pointer;
+  transition: border-color 120ms ease-out, background-color 120ms ease-out;
+  text-align: left;
+}
+
+.sg-provider-card:hover {
+  border-color: var(--sg-brass);
+  background: rgba(156, 122, 60, 0.04);
+}
+
+.sg-provider-card[aria-checked="true"] {
+  border-color: var(--sg-brass);
+  background: rgba(156, 122, 60, 0.08);
+}
+
+.sg-provider-card-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--sg-ink);
+  margin-bottom: 2px;
+}
+
+.sg-provider-card-note {
+  font-size: 11px;
+  color: var(--sg-muted);
+  line-height: 1.4;
+}
+
+.sg-provider-card-paid {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--sg-suspicious);
+  margin-top: 2px;
+}
+
+/* ─── Form fields ───────────────────────────────────────────────────────── */
+.sg-field {
+  margin-bottom: var(--sg-space-md);
+}
+
+.sg-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--sg-ink);
+  margin-bottom: var(--sg-space-xs);
+}
+
+.sg-input {
+  width: 100%;
+  font-family: var(--sg-font-body);
+  font-size: 13px;
+  color: var(--sg-ink);
+  background: var(--sg-paper-raised);
+  border: 1px solid var(--sg-line);
+  border-radius: var(--sg-radius);
+  padding: var(--sg-space-sm) var(--sg-space-md);
+  line-height: 1.5;
+}
+
+.sg-input::placeholder {
+  color: var(--sg-muted);
+}
+
+.sg-input--key {
+  font-family: var(--sg-font-mono);
+  letter-spacing: 0.05em;
+}
+
+.sg-key-row {
+  display: flex;
+  gap: var(--sg-space-sm);
+}
+
+.sg-key-row .sg-input {
+  flex: 1;
+}
+
+.sg-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  background: var(--sg-paper-raised);
+  border: 1px solid var(--sg-line);
+  border-radius: var(--sg-radius);
+  cursor: pointer;
+  color: var(--sg-muted);
+  transition: color 120ms ease-out, border-color 120ms ease-out;
+}
+
+.sg-icon-btn:hover {
+  color: var(--sg-ink);
+  border-color: var(--sg-brass);
+}
+
+.sg-field-hint {
+  font-size: 12px;
+  color: var(--sg-muted);
+  margin-top: var(--sg-space-xs);
+}
+
+/* ─── Primary button ────────────────────────────────────────────────────── */
+.sg-primary-btn {
+  font-family: var(--sg-font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sg-paper-raised);
+  background: var(--sg-brass);
+  border: none;
+  border-radius: var(--sg-radius);
+  padding: var(--sg-space-sm) var(--sg-space-lg);
+  cursor: pointer;
+  transition: opacity 120ms ease-out;
+}
+
+.sg-primary-btn:hover {
+  opacity: 0.9;
+}
+
+/* ─── Danger button ─────────────────────────────────────────────────────── */
+.sg-danger-btn {
+  font-family: var(--sg-font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--sg-high-risk);
+  background: none;
+  border: 1px solid var(--sg-line);
+  border-radius: var(--sg-radius);
+  padding: var(--sg-space-sm) var(--sg-space-lg);
+  cursor: pointer;
+  transition: border-color 120ms ease-out;
+}
+
+.sg-danger-btn:hover {
+  border-color: var(--sg-high-risk);
+}
+
+/* ─── Test connection result ────────────────────────────────────────────── */
+.sg-test-result {
+  margin-top: var(--sg-space-sm);
+  padding: var(--sg-space-sm) var(--sg-space-md);
+  border-radius: var(--sg-radius);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.sg-test-result[hidden] { display: none; }
+
+.sg-test-result--success {
+  background: rgba(63, 125, 92, 0.08);
+  color: var(--sg-safe);
+  border-left: 3px solid var(--sg-safe);
+}
+
+.sg-test-result--failure {
+  background: rgba(181, 137, 44, 0.08);
+  color: var(--sg-review);
+  border-left: 3px solid var(--sg-review);
+}
+
+/* ─── Trust statement (§3.1 item 1) ─────────────────────────────────────── */
+.sg-trust-statement {
+  font-size: 12px;
+  color: var(--sg-muted);
+  line-height: 1.5;
+  padding: var(--sg-space-sm) 0;
+  border-top: 1px solid var(--sg-line);
+  margin-top: var(--sg-space-sm);
+}
+
+/* ─── Inline confirm (§3.1 item 1 — no modal, inline only) ──────────────── */
+.sg-inline-confirm {
+  display: flex;
+  align-items: center;
+  gap: var(--sg-space-sm);
+  margin-top: var(--sg-space-sm);
+  padding: var(--sg-space-sm) var(--sg-space-md);
+  background: var(--sg-paper-raised);
+  border: 1px solid var(--sg-line);
+  border-radius: var(--sg-radius);
+  font-size: 12px;
+}
+
+.sg-inline-confirm[hidden] { display: none; }
+
+.sg-confirm-text {
+  flex: 1;
+  color: var(--sg-ink);
+}
+
+.sg-confirm-yes {
+  font-family: var(--sg-font-body);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sg-high-risk);
+  background: none;
+  border: 1px solid var(--sg-high-risk);
+  border-radius: var(--sg-radius-sm);
+  padding: 2px 8px;
+  cursor: pointer;
+}
+
+.sg-confirm-no {
+  font-family: var(--sg-font-body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--sg-muted);
+  background: none;
+  border: 1px solid var(--sg-line);
+  border-radius: var(--sg-radius-sm);
+  padding: 2px 8px;
+  cursor: pointer;
+}
+
+/* ─── Toggle switch (§3.1 item 2 — Vision) ──────────────────────────────── */
+.sg-toggle-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sg-space-md);
+}
+
+.sg-toggle-label {
+  flex: 1;
+  font-size: 13px;
+  color: var(--sg-ink);
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.sg-toggle {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.sg-toggle-track {
+  display: block;
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  background: var(--sg-line);
+  transition: background-color 120ms ease-out;
+}
+
+.sg-toggle[aria-checked="true"] .sg-toggle-track {
+  background: var(--sg-brass);
+}
+
+.sg-toggle-thumb {
+  display: block;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--sg-paper-raised);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  transition: transform 120ms ease-out;
+}
+
+.sg-toggle[aria-checked="true"] .sg-toggle-thumb {
+  transform: translateX(18px);
+}
+
+.sg-toggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sg-vision-disabled-hint {
+  color: var(--sg-review);
+}
+
+.sg-vision-disabled-hint[hidden] { display: none; }
+
+/* ─── History section ───────────────────────────────────────────────────── */
+.sg-history-count {
+  font-size: 13px;
+  color: var(--sg-muted);
+  margin-bottom: var(--sg-space-md);
+}
+
+/* ─── Advanced details (§3.1 item 4) ────────────────────────────────────── */
+.sg-details {
+  border: 1px solid var(--sg-line);
+  border-radius: var(--sg-radius);
+  overflow: hidden;
+}
+
+.sg-details-summary {
+  padding: var(--sg-space-md);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.sg-details-summary::-webkit-details-marker { display: none; }
+.sg-details-summary::marker { display: none; content: ""; }
+
+.sg-details-body {
+  padding: 0 var(--sg-space-md) var(--sg-space-md);
+}
+
+/* ─── Checkbox ──────────────────────────────────────────────────────────── */
+.sg-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sg-space-sm);
+  font-size: 13px;
+  color: var(--sg-ink);
+  cursor: pointer;
+  line-height: 1.5;
+}
+
+.sg-checkbox {
+  accent-color: var(--sg-brass);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+/* ─── About section (§3.1 item 5) ───────────────────────────────────────── */
+.sg-section--about {
+  border-bottom: none;
+}
+
+.sg-about-version {
+  font-size: 13px;
+  color: var(--sg-muted);
+  margin-bottom: var(--sg-space-xs);
+}
+
+.sg-about-license {
+  font-size: 13px;
+  color: var(--sg-muted);
+  margin-bottom: var(--sg-space-xs);
+}
+
+.sg-about-tagline {
+  font-family: var(--sg-font-display);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--sg-brass);
+  margin-bottom: var(--sg-space-sm);
+}
+
+.sg-about-repo {
+  font-size: 13px;
+  color: var(--sg-brass);
+  text-decoration: none;
+}
+
+.sg-about-repo:hover {
+  text-decoration: underline;
+}
+
+/* ─── Onboarding banner (§4) ────────────────────────────────────────────── */
+.sg-onboarding-banner {
+  background: rgba(156, 122, 60, 0.08);
+  border: 1px solid var(--sg-brass);
+  border-radius: var(--sg-radius);
+  padding: var(--sg-space-md) var(--sg-space-lg);
+  margin-bottom: var(--sg-space-xl);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sg-space-md);
+}
+
+.sg-onboarding-banner[hidden] { display: none; }
+
+.sg-onboarding-text {
+  flex: 1;
+  font-size: 13px;
+  color: var(--sg-ink);
+  line-height: 1.5;
+}
+
+.sg-onboarding-dismiss {
+  font-family: var(--sg-font-body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--sg-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
