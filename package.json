@@ -1,0 +1,11 @@
+{
+  "name": "scamguard",
+  "version": "0.1.0",
+  "private": true,
+  "description": "BYOK scam-risk checker for OLX & Quikr listings + Message & Payment Check.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/",
+    "lint": "node scripts/lint-strings.js"
+  }
+}
