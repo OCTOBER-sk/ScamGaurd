@@ -1,0 +1,251 @@
+{
+  "listing": {
+    "platform": "olx",
+    "url": "https://www.olx.in/item/mi-led-32-smart-android-led-tv-iid-1827354630.html",
+    "adId": "1827354630",
+    "title": "Mi LED 32\" Smart Android LED TV",
+    "price": {
+      "amount": 6500,
+      "currency": "INR",
+      "raw": "₹ 6,500"
+    },
+    "description": "Mi 32 inch smart android led tv. Working condition, no issues. Selling because moving out of city. Price negotiable.",
+    "sellerName": "Test Seller",
+    "sellerMemberSince": "Feb 2014",
+    "sellerItemsListed": 9,
+    "sellerVerified": null,
+    "location": "Haidarganj, Lucknow",
+    "postedAt": "Today",
+    "images": [
+      {
+        "url": "https://images.olx.in/example/photo1.jpg",
+        "isThumbnail": false
+      }
+    ],
+    "imageCount": 1,
+    "extractionConfidence": "partial",
+    "extractedAt": "2026-08-12T13:38:09.913Z"
+  },
+  "heuristics": {
+    "priceAnomaly": {
+      "triggered": true,
+      "severity": "high",
+      "ratioVsCategoryTypical": 0.08496732026143791,
+      "note": "Price is about 8% of the typical range for tvs — implausibly low for the stated item."
+    },
+    "sellerAge": {
+      "triggered": false,
+      "memberSinceRaw": "Feb 2014",
+      "itemsListed": 9
+    },
+    "photoSignals": {
+      "count": 1,
+      "triggered": true,
+      "severity": "medium"
+    },
+    "contactChannelLeak": {
+      "triggered": false,
+      "matches": []
+    },
+    "urgencyLanguage": {
+      "triggered": false,
+      "matchedPhrases": []
+    },
+    "advanceFeeLanguage": {
+      "triggered": false,
+      "matchedPhrases": []
+    },
+    "offPlatformPaymentLanguage": {
+      "triggered": false,
+      "matchedPhrases": []
+    },
+    "heuristicScore": 40,
+    "computedAt": "2026-08-12T13:38:09.934Z"
+  },
+  "llmRaw": "\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n    ",
+  "parsedVerdict": {
+    "llmScore": 70,
+    "redFlags": [
+      {
+        "id": "PRICE_ANOMALY",
+        "label": "Implausibly Low Price",
+        "severity": "high",
+        "explanation": "The listed price is significantly below market value for a 32\" smart Android TV, indicating a potential scam."
+      },
+      {
+        "id": "LOW_PHOTO_COUNT",
+        "label": "Insufficient Photos",
+        "severity": "medium",
+        "explanation": "Only one photo is provided, limiting the ability to verify the item's condition and authenticity."
+      }
+    ],
+    "summary": "The listing shows a price that is unusually low for the described TV and provides only a single photo, both of which are common red flags for scams. The seller appears to be an established account, which reduces but does not eliminate risk. No urgency or off‑platform payment language is present. Overall, the risk level is moderate to high.",
+    "checklistAdditions": [
+      "Ask for additional photos from multiple angles, including a close‑up of the serial number; request a live video call to see the TV in operation; verify the serial number with the manufacturer; and arrange to meet in a public place to inspect the TV before payment."
+    ],
+    "visionNotes": []
+  },
+  "validation": {
+    "valid": true,
+    "errors": []
+  },
+  "fusedScore": 57,
+  "verdict": "Suspicious",
+  "fusionSource": "fused",
+  "confidence": "high",
+  "latencyMs": 22078,
+  "pinnedModel": "deepseek/deepseek-chat-v3-0324:free",
+  "model": "openai/gpt-oss-20b:free",
+  "providerCall": {
+    "status": "ok",
+    "llmVerdict": {
+      "llmScore": 70,
+      "redFlags": [
+        {
+          "id": "PRICE_ANOMALY",
+          "label": "Implausibly Low Price",
+          "severity": "high",
+          "explanation": "The listed price is significantly below market value for a 32\" smart Android TV, indicating a potential scam."
+        },
+        {
+          "id": "LOW_PHOTO_COUNT",
+          "label": "Insufficient Photos",
+          "severity": "medium",
+          "explanation": "Only one photo is provided, limiting the ability to verify the item's condition and authenticity."
+        }
+      ],
+      "summary": "The listing shows a price that is unusually low for the described TV and provides only a single photo, both of which are common red flags for scams. The seller appears to be an established account, which reduces but does not eliminate risk. No urgency or off‑platform payment language is present. Overall, the risk level is moderate to high.",
+      "checklistAdditions": [
+        "Ask for additional photos from multiple angles, including a close‑up of the serial number; request a live video call to see the TV in operation; verify the serial number with the manufacturer; and arrange to meet in a public place to inspect the TV before payment."
+      ],
+      "visionNotes": []
+    },
+    "provider": {
+      "id": "openrouter",
+      "model": "openai/gpt-oss-20b:free",
+      "latencyMs": 22078,
+      "usedFallbackRepair": false
+    },
+    "usage": {
+      "inputTokens": 1042,
+      "outputTokens": 462
+    }
+  },
+  "modelAttempts": [
+    {
+      "model": "deepseek/deepseek-chat-v3-0324:free",
+      "format": "json_schema",
+      "status": "error",
+      "detail": "request_failed: OpenRouter returned HTTP 404. (This model is unavailable for free. The paid version is available now - use this slug instead: deepseek/deepseek-chat-v3-0324)"
+    },
+    {
+      "model": "deepseek/deepseek-chat-v3-0324:free",
+      "format": "json_object",
+      "status": "error",
+      "detail": "request_failed: OpenRouter returned HTTP 404. (This model is unavailable for free. The paid version is available now - use this slug instead: deepseek/deepseek-chat-v3-0324)"
+    },
+    {
+      "model": "openai/gpt-oss-20b:free",
+      "format": "json_schema",
+      "status": "error",
+      "detail": "rate_limited: OpenRouter rate-limited this request. Free tiers reset over time — try again shortly, or switch providers in Settings."
+    },
+    {
+      "model": "openai/gpt-oss-20b:free",
+      "format": "json_object",
+      "status": "ok",
+      "detail": "latency=22078ms repair=false"
+    }
+  ],
+  "paymentCheck": {
+    "reportId": "5c7b00eb-db55-4f33-abaa-6c421994e464",
+    "verdict": "LikelyScam",
+    "matchedPatterns": [
+      {
+        "id": "SCAN_TO_RECEIVE",
+        "label": "Told to scan or approve to receive money",
+        "explanation": "Scanning a QR code or approving a payment request can only ever send money, never receive it — there is no legitimate UPI flow where scanning brings money in."
+      }
+    ],
+    "coreFact": "A QR code or payment request can only ever be used to send money, never to receive it. If anyone — no matter how convincing — asks you to scan something or enter your PIN/OTP to 'receive' a payment, that is always false, with no exceptions.",
+    "summary": "This matches patterns used in marketplace payment fraud. Do not scan anything, do not approve any payment request, and do not share any PIN, OTP, or CVV — no matter what the other person says.",
+    "createdAt": "2026-08-12T13:38:39.122Z"
+  },
+  "report": {
+    "reportId": "bdef3701-be7b-4414-b9cb-c4f35a5a837a",
+    "listingUrl": "https://www.olx.in/item/mi-led-32-smart-android-led-tv-iid-1827354630.html",
+    "listingTitle": "Mi LED 32\" Smart Android LED TV",
+    "score": 57,
+    "verdict": "Suspicious",
+    "confidence": "high",
+    "source": "fused",
+    "redFlags": [
+      {
+        "id": "PRICE_ANOMALY",
+        "label": "Implausibly Low Price",
+        "severity": "high",
+        "explanation": "The listed price is significantly below market value for a 32\" smart Android TV, indicating a potential scam."
+      },
+      {
+        "id": "LOW_PHOTO_COUNT",
+        "label": "Insufficient Photos",
+        "severity": "medium",
+        "explanation": "Only one photo is provided, limiting the ability to verify the item's condition and authenticity."
+      }
+    ],
+    "summary": "The listing shows a price that is unusually low for the described TV and provides only a single photo, both of which are common red flags for scams. The seller appears to be an established account, which reduces but does not eliminate risk. No urgency or off‑platform payment language is present. Overall, the risk level is moderate to high.",
+    "checklist": [
+      "Ask for additional photos from multiple angles, including a close‑up of the serial number; request a live video call to see the TV in operation; verify the serial number with the manufacturer; and arrange to meet in a public place to inspect the TV before payment."
+    ],
+    "reportingResources": [
+      {
+        "label": "National Cyber Crime Reporting Portal",
+        "value": "cybercrime.gov.in"
+      },
+      {
+        "label": "Cyber Crime Helpline (toll-free)",
+        "value": "1930"
+      }
+    ],
+    "visionAnalysis": {
+      "performed": false,
+      "skippedReason": "Text-only E2E harness — no listing photos sent.",
+      "notes": []
+    },
+    "provider": {
+      "id": "openrouter",
+      "model": "openai/gpt-oss-20b:free",
+      "latencyMs": 22078,
+      "usedFallbackRepair": false
+    },
+    "rawListing": {
+      "platform": "olx",
+      "url": "https://www.olx.in/item/mi-led-32-smart-android-led-tv-iid-1827354630.html",
+      "adId": "1827354630",
+      "title": "Mi LED 32\" Smart Android LED TV",
+      "price": {
+        "amount": 6500,
+        "currency": "INR",
+        "raw": "₹ 6,500"
+      },
+      "description": "Mi 32 inch smart android led tv. Working condition, no issues. Selling because moving out of city. Price negotiable.",
+      "sellerName": "Test Seller",
+      "sellerMemberSince": "Feb 2014",
+      "sellerItemsListed": 9,
+      "sellerVerified": null,
+      "location": "Haidarganj, Lucknow",
+      "postedAt": "Today",
+      "images": [
+        {
+          "url": "https://images.olx.in/example/photo1.jpg",
+          "isThumbnail": false
+        }
+      ],
+      "imageCount": 1,
+      "extractionConfidence": "partial",
+      "extractedAt": "2026-08-12T13:38:09.913Z"
+    },
+    "createdAt": "2026-08-12T13:38:39.119Z"
+  },
+  "ranAt": "2026-08-12T13:38:39.123Z"
+}

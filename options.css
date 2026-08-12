@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    options.css — ScamGuard options page stylesheet
-   PLAN-FRONTEND.md §3 (options page), §1.2 (palette), §1.3 (typography),
-   §6 (accessibility)
+   Notion-style warm minimalism applied to §1.2 palette.
+   Full-page scrollable surface (§3.1).
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ─── §1.2 Design tokens (same as popup.css) ──────────────────────────── */
@@ -22,12 +22,64 @@
   --sg-font-mono: "JetBrains Mono", "SF Mono", "Cascadia Code", "Fira Code", ui-monospace, monospace;
 
   --sg-radius: 8px;
-  --sg-radius-sm: 4px;
+  --sg-radius-lg: 12px;
+  --sg-radius-sm: 6px;
+  --sg-radius-xs: 4px;
   --sg-space-xs: 4px;
   --sg-space-sm: 8px;
   --sg-space-md: 12px;
   --sg-space-lg: 16px;
   --sg-space-xl: 24px;
+
+  /* Whisper border for Notion-style minimalism */
+  --sg-border: 1px solid rgba(0, 0, 0, 0.1);
+  /* Multi-layer soft shadows (each opacity ≤ 0.05) */
+  --sg-shadow-sm: rgba(0, 0, 0, 0.01) 0px 0.2px 1px,
+                  rgba(0, 0, 0, 0.02) 0px 1px 3px;
+  --sg-shadow-md: rgba(0, 0, 0, 0.02) 0px 1px 3px,
+                  rgba(0, 0, 0, 0.027) 0px 2px 8px,
+                  rgba(0, 0, 0, 0.04) 0px 4px 18px;
+}
+
+/* ─── @font-face (actual filenames in fonts/) ───────────────────────────── */
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("fonts/Fraunces-600.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("fonts/Fraunces-700.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/Inter-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("fonts/Inter-500.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("fonts/Inter-600.woff2") format("woff2");
 }
 
 /* ─── Reset & base ──────────────────────────────────────────────────────── */
@@ -39,7 +91,7 @@
 
 html {
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 body {
@@ -47,6 +99,7 @@ body {
   color: var(--sg-ink);
   background: var(--sg-paper);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
 }
 
@@ -75,16 +128,17 @@ summary:focus-visible {
 .sg-options-title {
   font-family: var(--sg-font-display);
   font-weight: 700;
-  font-size: 22px;
+  font-size: 28px;
   color: var(--sg-ink);
   margin-bottom: var(--sg-space-xl);
+  letter-spacing: -0.5px;
 }
 
 /* ─── Sections ──────────────────────────────────────────────────────────── */
 .sg-section {
   margin-bottom: var(--sg-space-xl);
   padding-bottom: var(--sg-space-xl);
-  border-bottom: 1px solid var(--sg-line);
+  border-bottom: var(--sg-border);
 }
 
 .sg-section:last-child {
@@ -113,8 +167,9 @@ summary:focus-visible {
   border-radius: var(--sg-radius);
   padding: var(--sg-space-md);
   cursor: pointer;
-  transition: border-color 120ms ease-out, background-color 120ms ease-out;
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
   text-align: left;
+  box-shadow: var(--sg-shadow-sm);
 }
 
 .sg-provider-card:hover {
@@ -125,6 +180,7 @@ summary:focus-visible {
 .sg-provider-card[aria-checked="true"] {
   border-color: var(--sg-brass);
   background: rgba(156, 122, 60, 0.08);
+  box-shadow: var(--sg-shadow-md);
 }
 
 .sg-provider-card-name {
@@ -166,10 +222,15 @@ summary:focus-visible {
   font-size: 13px;
   color: var(--sg-ink);
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-line);
+  border: var(--sg-border);
   border-radius: var(--sg-radius);
   padding: var(--sg-space-sm) var(--sg-space-md);
-  line-height: 1.5;
+  line-height: 1.55;
+  transition: border-color 150ms ease;
+}
+
+.sg-input:focus {
+  border-color: var(--sg-brass);
 }
 
 .sg-input::placeholder {
@@ -198,16 +259,20 @@ summary:focus-visible {
   height: 36px;
   flex-shrink: 0;
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-line);
+  border: var(--sg-border);
   border-radius: var(--sg-radius);
   cursor: pointer;
   color: var(--sg-muted);
-  transition: color 120ms ease-out, border-color 120ms ease-out;
+  transition: color 150ms ease, border-color 150ms ease;
 }
 
 .sg-icon-btn:hover {
   color: var(--sg-ink);
   border-color: var(--sg-brass);
+}
+
+.sg-icon-btn:active {
+  background: rgba(156, 122, 60, 0.08);
 }
 
 .sg-field-hint {
@@ -224,14 +289,18 @@ summary:focus-visible {
   color: var(--sg-paper-raised);
   background: var(--sg-brass);
   border: none;
-  border-radius: var(--sg-radius);
+  border-radius: var(--sg-radius-sm);
   padding: var(--sg-space-sm) var(--sg-space-lg);
   cursor: pointer;
-  transition: opacity 120ms ease-out;
+  transition: background-color 150ms ease, transform 150ms ease;
 }
 
 .sg-primary-btn:hover {
-  opacity: 0.9;
+  background: #8B6C33;
+}
+
+.sg-primary-btn:active {
+  transform: scale(0.98);
 }
 
 /* ─── Danger button ─────────────────────────────────────────────────────── */
@@ -241,15 +310,20 @@ summary:focus-visible {
   font-weight: 500;
   color: var(--sg-high-risk);
   background: none;
-  border: 1px solid var(--sg-line);
+  border: var(--sg-border);
   border-radius: var(--sg-radius);
   padding: var(--sg-space-sm) var(--sg-space-lg);
   cursor: pointer;
-  transition: border-color 120ms ease-out;
+  transition: border-color 150ms ease, background-color 150ms ease;
 }
 
 .sg-danger-btn:hover {
   border-color: var(--sg-high-risk);
+  background: rgba(163, 49, 42, 0.04);
+}
+
+.sg-danger-btn:active {
+  background: rgba(163, 49, 42, 0.08);
 }
 
 /* ─── Test connection result ────────────────────────────────────────────── */
@@ -258,7 +332,7 @@ summary:focus-visible {
   padding: var(--sg-space-sm) var(--sg-space-md);
   border-radius: var(--sg-radius);
   font-size: 13px;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 .sg-test-result[hidden] { display: none; }
@@ -279,9 +353,9 @@ summary:focus-visible {
 .sg-trust-statement {
   font-size: 12px;
   color: var(--sg-muted);
-  line-height: 1.5;
+  line-height: 1.55;
   padding: var(--sg-space-sm) 0;
-  border-top: 1px solid var(--sg-line);
+  border-top: var(--sg-border);
   margin-top: var(--sg-space-sm);
 }
 
@@ -293,9 +367,10 @@ summary:focus-visible {
   margin-top: var(--sg-space-sm);
   padding: var(--sg-space-sm) var(--sg-space-md);
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-line);
+  border: var(--sg-border);
   border-radius: var(--sg-radius);
   font-size: 12px;
+  box-shadow: var(--sg-shadow-sm);
 }
 
 .sg-inline-confirm[hidden] { display: none; }
@@ -312,9 +387,14 @@ summary:focus-visible {
   color: var(--sg-high-risk);
   background: none;
   border: 1px solid var(--sg-high-risk);
-  border-radius: var(--sg-radius-sm);
+  border-radius: var(--sg-radius-xs);
   padding: 2px 8px;
   cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.sg-confirm-yes:hover {
+  background: rgba(163, 49, 42, 0.08);
 }
 
 .sg-confirm-no {
@@ -323,10 +403,15 @@ summary:focus-visible {
   font-weight: 500;
   color: var(--sg-muted);
   background: none;
-  border: 1px solid var(--sg-line);
-  border-radius: var(--sg-radius-sm);
+  border: var(--sg-border);
+  border-radius: var(--sg-radius-xs);
   padding: 2px 8px;
   cursor: pointer;
+  transition: border-color 150ms ease;
+}
+
+.sg-confirm-no:hover {
+  border-color: var(--sg-brass);
 }
 
 /* ─── Toggle switch (§3.1 item 2 — Vision) ──────────────────────────────── */
@@ -340,7 +425,7 @@ summary:focus-visible {
   flex: 1;
   font-size: 13px;
   color: var(--sg-ink);
-  line-height: 1.5;
+  line-height: 1.55;
   cursor: pointer;
 }
 
@@ -361,7 +446,7 @@ summary:focus-visible {
   height: 22px;
   border-radius: 11px;
   background: var(--sg-line);
-  transition: background-color 120ms ease-out;
+  transition: background-color 150ms ease;
 }
 
 .sg-toggle[aria-checked="true"] .sg-toggle-track {
@@ -377,8 +462,8 @@ summary:focus-visible {
   height: 18px;
   border-radius: 50%;
   background: var(--sg-paper-raised);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-  transition: transform 120ms ease-out;
+  box-shadow: var(--sg-shadow-sm);
+  transition: transform 150ms ease;
 }
 
 .sg-toggle[aria-checked="true"] .sg-toggle-thumb {
@@ -405,9 +490,10 @@ summary:focus-visible {
 
 /* ─── Advanced details (§3.1 item 4) ────────────────────────────────────── */
 .sg-details {
-  border: 1px solid var(--sg-line);
+  border: var(--sg-border);
   border-radius: var(--sg-radius);
   overflow: hidden;
+  box-shadow: var(--sg-shadow-sm);
 }
 
 .sg-details-summary {
@@ -432,7 +518,7 @@ summary:focus-visible {
   font-size: 13px;
   color: var(--sg-ink);
   cursor: pointer;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 .sg-checkbox {
@@ -470,10 +556,12 @@ summary:focus-visible {
   font-size: 13px;
   color: var(--sg-brass);
   text-decoration: none;
+  transition: color 150ms ease;
 }
 
 .sg-about-repo:hover {
   text-decoration: underline;
+  color: var(--sg-ink);
 }
 
 /* ─── Onboarding banner (§4) ────────────────────────────────────────────── */
@@ -486,6 +574,7 @@ summary:focus-visible {
   display: flex;
   align-items: flex-start;
   gap: var(--sg-space-md);
+  box-shadow: var(--sg-shadow-sm);
 }
 
 .sg-onboarding-banner[hidden] { display: none; }
@@ -494,7 +583,7 @@ summary:focus-visible {
   flex: 1;
   font-size: 13px;
   color: var(--sg-ink);
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 .sg-onboarding-dismiss {
@@ -507,4 +596,9 @@ summary:focus-visible {
   cursor: pointer;
   padding: 0;
   flex-shrink: 0;
+  transition: color 150ms ease;
+}
+
+.sg-onboarding-dismiss:hover {
+  color: var(--sg-ink);
 }

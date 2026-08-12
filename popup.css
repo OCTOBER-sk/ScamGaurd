@@ -1,10 +1,10 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    popup.css — ScamGuard popup stylesheet
-   PLAN-FRONTEND.md §1.2 (palette), §1.3 (typography), §1.4 (layout),
-   §1.5 (motion), §6 (accessibility)
+   Notion-style warm minimalism applied to §1.2 palette.
+   Monitor surface — glanceable hierarchy, density, no hero layouts.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ─── §1.2 Design tokens (EXACT hex from plan) ─────────────────────────── */
+/* ─── §1.2 Design tokens (EXACT hex from plan — tests depend on these) ── */
 :root {
   --sg-ink: #1C1B1A;
   --sg-paper: #FAF8F4;
@@ -22,25 +22,40 @@
   --sg-font-mono: "JetBrains Mono", "SF Mono", "Cascadia Code", "Fira Code", ui-monospace, monospace;
 
   --sg-radius: 8px;
-  --sg-radius-sm: 4px;
+  --sg-radius-lg: 12px;
+  --sg-radius-sm: 6px;
+  --sg-radius-xs: 4px;
   --sg-space-xs: 4px;
   --sg-space-sm: 8px;
   --sg-space-md: 12px;
   --sg-space-lg: 16px;
   --sg-space-xl: 24px;
+
+  /* Whisper border for Notion-style minimalism */
+  --sg-border: 1px solid rgba(0, 0, 0, 0.1);
+  /* Multi-layer soft shadows (each opacity ≤ 0.05) */
+  --sg-shadow-sm: rgba(0, 0, 0, 0.01) 0px 0.2px 1px,
+                  rgba(0, 0, 0, 0.02) 0px 1px 3px;
+  --sg-shadow-md: rgba(0, 0, 0, 0.02) 0px 1px 3px,
+                  rgba(0, 0, 0, 0.027) 0px 2px 8px,
+                  rgba(0, 0, 0, 0.04) 0px 4px 18px;
 }
 
-/* ─── §1.3 Typography — @font-face (self-hosted paths, Phase 8 assets) ──── */
-/* Fonts are referenced by local file paths. The actual .woff2 files are
-   generated in Phase 8 (store-listing assets). During development, the
-   fallback stacks in --sg-font-display / --sg-font-body / --sg-font-mono
-   render cleanly. */
+/* ─── §1.3 Typography — @font-face (actual filenames in fonts/) ────────── */
 @font-face {
   font-family: "Fraunces";
   font-style: normal;
-  font-weight: 600 700;
+  font-weight: 600;
   font-display: swap;
-  src: url("fonts/Fraunces-600-700.woff2") format("woff2");
+  src: url("fonts/Fraunces-600.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("fonts/Fraunces-700.woff2") format("woff2");
 }
 
 @font-face {
@@ -76,7 +91,7 @@
 
 html {
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 body {
@@ -87,6 +102,7 @@ body {
   max-height: 600px;
   overflow-y: auto;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ─── Screen-reader only (§6) ──────────────────────────────────────────── */
@@ -125,11 +141,12 @@ summary:focus-visible {
   justify-content: space-between;
   height: 40px;
   padding: 0 var(--sg-space-md);
-  border-bottom: 1px solid var(--sg-line);
+  border-bottom: var(--sg-border);
   background: var(--sg-paper-raised);
   position: sticky;
   top: 0;
   z-index: 10;
+  box-shadow: var(--sg-shadow-sm);
 }
 
 .sg-header-left {
@@ -162,16 +179,21 @@ summary:focus-visible {
   font-weight: 500;
   color: var(--sg-brass);
   background: none;
-  border: 1px solid var(--sg-line);
+  border: var(--sg-border);
   border-radius: var(--sg-radius-sm);
   padding: 3px 8px;
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color 120ms ease-out;
+  transition: background-color 150ms ease, border-color 150ms ease;
 }
 
 .sg-header-btn:hover {
   background: rgba(156, 122, 60, 0.08);
+  border-color: var(--sg-brass);
+}
+
+.sg-header-btn:active {
+  background: rgba(156, 122, 60, 0.12);
 }
 
 /* ─── §1.4 State container ─────────────────────────────────────────────── */
@@ -191,7 +213,7 @@ summary:focus-visible {
   display: none !important;
 }
 
-/* ─── §1.1 Verdict seal (three scales) ─────────────────────────────────── */
+/* ─── §1.1 Verdict seal — concentric ring with craft ───────────────────── */
 .sg-seal {
   width: 72px;
   height: 72px;
@@ -201,8 +223,13 @@ summary:focus-visible {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 3px solid currentColor;
   position: relative;
+  /* Concentric ring: outer double-stroke */
+  border: 3px solid currentColor;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.08),
+              0 2px 8px rgba(0, 0, 0, 0.06);
+  /* Faint brass tint fill on the paper circle */
+  background: rgba(156, 122, 60, 0.04);
   /* §1.5 stamp-down animation (first render only) */
   animation: sg-stamp 120ms ease-out both;
 }
@@ -245,6 +272,7 @@ summary:focus-visible {
   font-size: 20px;
   line-height: 1;
   margin-top: 2px;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Seal placeholder (idle, no-key) */
@@ -264,9 +292,10 @@ summary:focus-visible {
 .sg-heuristic-block {
   width: 100%;
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-line);
+  border: var(--sg-border);
   border-radius: var(--sg-radius);
   padding: var(--sg-space-md);
+  box-shadow: var(--sg-shadow-sm);
 }
 
 .sg-heuristic-block:empty {
@@ -279,7 +308,7 @@ summary:focus-visible {
   font-weight: 600;
   color: var(--sg-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   margin-bottom: var(--sg-space-sm);
 }
 
@@ -319,7 +348,7 @@ summary:focus-visible {
   width: 100%;
   padding: var(--sg-space-md);
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-line);
+  border: var(--sg-border);
   border-radius: var(--sg-radius);
   font-size: 13px;
   color: var(--sg-muted);
@@ -381,9 +410,10 @@ summary:focus-visible {
 
 .sg-red-flag {
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-line);
+  border: var(--sg-border);
   border-radius: var(--sg-radius);
   overflow: hidden;
+  box-shadow: var(--sg-shadow-sm);
 }
 
 .sg-red-flag + .sg-red-flag {
@@ -403,10 +433,11 @@ summary:focus-visible {
   font-size: 13px;
   color: var(--sg-ink);
   text-align: left;
+  transition: background-color 150ms ease;
 }
 
 .sg-red-flag-header:hover {
-  background: rgba(0,0,0,0.02);
+  background: rgba(0, 0, 0, 0.02);
 }
 
 /* §1.6 addendum — severity scale (distinct from verdict scale) */
@@ -440,7 +471,7 @@ summary:focus-visible {
 .sg-red-flag-chevron {
   font-size: 10px;
   color: var(--sg-muted);
-  transition: transform 120ms ease-out;
+  transition: transform 150ms ease;
 }
 
 .sg-red-flag[open] .sg-red-flag-chevron {
@@ -453,7 +484,7 @@ summary:focus-visible {
   font-size: 12px;
   color: var(--sg-muted);
   line-height: 1.45;
-  border-top: 1px solid var(--sg-line);
+  border-top: var(--sg-border);
 }
 
 /* Summary */
@@ -513,9 +544,10 @@ summary:focus-visible {
 .sg-report-resources {
   width: 100%;
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-line);
+  border: var(--sg-border);
   border-radius: var(--sg-radius);
   padding: var(--sg-space-md);
+  box-shadow: var(--sg-shadow-sm);
 }
 
 .sg-report-resources[hidden] { display: none; }
@@ -525,7 +557,7 @@ summary:focus-visible {
   font-weight: 600;
   color: var(--sg-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   margin-bottom: var(--sg-space-sm);
 }
 
@@ -540,19 +572,22 @@ summary:focus-visible {
 .sg-resource-link {
   color: var(--sg-brass);
   text-decoration: none;
+  transition: color 150ms ease;
 }
 
 .sg-resource-link:hover {
   text-decoration: underline;
+  color: var(--sg-ink);
 }
 
 /* Vision notes */
 .sg-vision-notes {
   width: 100%;
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-line);
+  border: var(--sg-border);
   border-radius: var(--sg-radius);
   padding: var(--sg-space-md);
+  box-shadow: var(--sg-shadow-sm);
 }
 
 .sg-vision-notes[hidden] { display: none; }
@@ -562,7 +597,7 @@ summary:focus-visible {
   font-weight: 600;
   color: var(--sg-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   margin-bottom: var(--sg-space-sm);
 }
 
@@ -587,16 +622,21 @@ summary:focus-visible {
   font-weight: 500;
   color: var(--sg-brass);
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-line);
+  border: var(--sg-border);
   border-radius: var(--sg-radius-sm);
   padding: var(--sg-space-sm) var(--sg-space-md);
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color 120ms ease-out;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
 }
 
 .sg-action-btn:hover {
   background: rgba(156, 122, 60, 0.08);
+  border-color: var(--sg-brass);
+}
+
+.sg-action-btn:active {
+  background: rgba(156, 122, 60, 0.12);
 }
 
 .sg-action-btn--copied {
@@ -612,7 +652,7 @@ summary:focus-visible {
 .sg-raw-data {
   width: 100%;
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-line);
+  border: var(--sg-border);
   border-radius: var(--sg-radius);
   padding: var(--sg-space-md);
   font-family: var(--sg-font-mono);
@@ -634,6 +674,7 @@ summary:focus-visible {
 
 .sg-empty-icon {
   margin-bottom: var(--sg-space-sm);
+  opacity: 0.7;
 }
 
 .sg-empty-title {
@@ -647,7 +688,7 @@ summary:focus-visible {
 .sg-empty-message {
   font-size: 13px;
   color: var(--sg-muted);
-  line-height: 1.5;
+  line-height: 1.55;
   max-width: 280px;
 }
 
@@ -659,16 +700,17 @@ summary:focus-visible {
 .sg-error-card {
   width: 100%;
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-line);
+  border: var(--sg-border);
   border-left: 3px solid var(--sg-suspicious);
   border-radius: var(--sg-radius);
   padding: var(--sg-space-md);
+  box-shadow: var(--sg-shadow-sm);
 }
 
 .sg-error-message {
   font-size: 13px;
   color: var(--sg-ink);
-  line-height: 1.5;
+  line-height: 1.55;
   margin-bottom: var(--sg-space-sm);
 }
 
@@ -695,7 +737,7 @@ summary:focus-visible {
 .sg-no-key-message {
   font-size: 13px;
   color: var(--sg-muted);
-  line-height: 1.5;
+  line-height: 1.55;
   margin-bottom: var(--sg-space-lg);
 }
 
@@ -707,14 +749,19 @@ summary:focus-visible {
   color: var(--sg-paper-raised);
   background: var(--sg-brass);
   border: none;
-  border-radius: var(--sg-radius);
+  border-radius: var(--sg-radius-sm);
   padding: var(--sg-space-sm) var(--sg-space-lg);
   cursor: pointer;
-  transition: opacity 120ms ease-out;
+  transition: background-color 150ms ease, opacity 150ms ease, transform 150ms ease;
 }
 
 .sg-primary-btn:hover {
-  opacity: 0.9;
+  background: #8B6C33;
+  opacity: 1;
+}
+
+.sg-primary-btn:active {
+  transform: scale(0.98);
 }
 
 /* ─── §2.10 Message & Payment Check view ────────────────────────────────── */
@@ -738,6 +785,11 @@ summary:focus-visible {
   border: none;
   cursor: pointer;
   padding: var(--sg-space-xs) 0;
+  transition: color 150ms ease;
+}
+
+.sg-back-btn:hover {
+  color: var(--sg-ink);
 }
 
 .sg-view-title {
@@ -768,18 +820,23 @@ summary:focus-visible {
   width: 100%;
   padding: var(--sg-space-md);
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-line);
+  border: var(--sg-border);
   border-radius: var(--sg-radius);
   cursor: pointer;
   font-family: var(--sg-font-body);
   font-size: 13px;
   color: var(--sg-ink);
   text-align: left;
-  transition: border-color 120ms ease-out;
+  transition: border-color 150ms ease, background-color 150ms ease;
 }
 
 .sg-mc-mode-btn:hover {
   border-color: var(--sg-brass);
+  background: rgba(156, 122, 60, 0.04);
+}
+
+.sg-mc-mode-btn:active {
+  background: rgba(156, 122, 60, 0.08);
 }
 
 .sg-mc-mode-icon {
@@ -805,12 +862,17 @@ summary:focus-visible {
   font-size: 13px;
   color: var(--sg-ink);
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-line);
+  border: var(--sg-border);
   border-radius: var(--sg-radius);
   padding: var(--sg-space-sm);
   resize: vertical;
   min-height: 80px;
-  line-height: 1.5;
+  line-height: 1.55;
+  transition: border-color 150ms ease;
+}
+
+.sg-textarea:focus {
+  border-color: var(--sg-brass);
 }
 
 .sg-textarea::placeholder {
@@ -865,10 +927,15 @@ summary:focus-visible {
   font-size: 13px;
   color: var(--sg-ink);
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-line);
+  border: var(--sg-border);
   border-radius: var(--sg-radius);
   padding: var(--sg-space-sm);
-  line-height: 1.5;
+  line-height: 1.55;
+  transition: border-color 150ms ease;
+}
+
+.sg-input:focus {
+  border-color: var(--sg-brass);
 }
 
 .sg-input::placeholder {
@@ -903,16 +970,17 @@ summary:focus-visible {
 .sg-mc-verdict--caution { color: var(--sg-review); }
 .sg-mc-verdict--safe { color: var(--sg-safe); }
 
-/* §2.10 coreFact card — 2px brass left border, ALWAYS renders */
+/* §2.10 coreFact card — 2px brass left border, ALWAYS renders (PLAN-mandated) */
 .sg-mc-core-fact {
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-line);
+  border: var(--sg-border);
   border-left: 2px solid var(--sg-brass);
   border-radius: var(--sg-radius);
   padding: var(--sg-space-md);
   font-size: 13px;
   line-height: 1.55;
   color: var(--sg-ink);
+  box-shadow: var(--sg-shadow-sm);
 }
 
 .sg-mc-patterns {
@@ -951,7 +1019,7 @@ summary:focus-visible {
 .sg-payment-nudge {
   width: 100%;
   padding: var(--sg-space-sm) var(--sg-space-md);
-  border-top: 1px solid var(--sg-line);
+  border-top: var(--sg-border);
   display: flex;
   align-items: center;
   gap: var(--sg-space-sm);
@@ -975,12 +1043,17 @@ summary:focus-visible {
   padding: 0;
   text-align: left;
   flex: 1;
+  transition: color 150ms ease;
+}
+
+.sg-nudge-btn:hover {
+  color: var(--sg-ink);
 }
 
 /* ─── §1.4 History footer ──────────────────────────────────────────────── */
 .sg-footer {
   width: 100%;
-  border-top: 1px solid var(--sg-line);
+  border-top: var(--sg-border);
   padding-top: var(--sg-space-md);
   margin-top: var(--sg-space-md);
 }
@@ -997,7 +1070,7 @@ summary:focus-visible {
   font-weight: 600;
   color: var(--sg-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 
 .sg-footer-link {
@@ -1009,6 +1082,11 @@ summary:focus-visible {
   border: none;
   cursor: pointer;
   padding: 0;
+  transition: color 150ms ease;
+}
+
+.sg-footer-link:hover {
+  color: var(--sg-ink);
 }
 
 .sg-history-list {
@@ -1023,15 +1101,15 @@ summary:focus-visible {
   align-items: center;
   gap: var(--sg-space-sm);
   padding: var(--sg-space-xs) var(--sg-space-sm);
-  border-radius: var(--sg-radius-sm);
+  border-radius: var(--sg-radius-xs);
   cursor: pointer;
   font-size: 12px;
   color: var(--sg-ink);
-  transition: background-color 120ms ease-out;
+  transition: background-color 150ms ease;
 }
 
 .sg-history-item:hover {
-  background: rgba(0,0,0,0.03);
+  background: rgba(0, 0, 0, 0.03);
 }
 
 .sg-history-dot {
@@ -1054,10 +1132,17 @@ summary:focus-visible {
   font-size: 12px;
   color: var(--sg-muted);
   flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 .sg-history-empty {
   font-size: 12px;
   color: var(--sg-muted);
   padding: var(--sg-space-xs) 0;
+}
+
+/* ─── Idle state text ───────────────────────────────────────────────────── */
+.sg-idle-text {
+  font-size: 13px;
+  color: var(--sg-muted);
 }
