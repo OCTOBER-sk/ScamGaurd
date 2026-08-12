@@ -204,17 +204,17 @@ test("verdict→seal CSS class mapping matches §1.2 palette tokens", async () =
   };
 
   const expectedTokens = {
-    safe: "#3F7D5C",
-    review: "#B5892C",
-    suspicious: "#C1602B",
-    "high-risk": "#A3312A",
+    safe: "#4CAF7E",
+    review: "#D4A24A",
+    suspicious: "#E07B3F",
+    "high-risk": "#D1544A",
   };
 
   for (const [verdict, className] of Object.entries(verdictToClass)) {
     assert.ok(expectedTokens[className], `Class "${className}" should map to a §1.2 token`);
     assert.equal(
       expectedTokens[className],
-      { Safe: "#3F7D5C", Review: "#B5892C", Suspicious: "#C1602B", "High-Risk": "#A3312A" }[verdict],
+      { Safe: "#4CAF7E", Review: "#D4A24A", Suspicious: "#E07B3F", "High-Risk": "#D1544A" }[verdict],
       `Token for ${verdict} matches §1.2`
     );
   }
@@ -721,21 +721,23 @@ test("§1.2 CSS contains all exact palette tokens", () => {
   const css = readFileSync(new URL("../popup.css", import.meta.url), "utf8");
 
   const tokens = {
-    "--sg-ink": "#1C1B1A",
-    "--sg-paper": "#FAF8F4",
-    "--sg-paper-raised": "#FFFFFF",
-    "--sg-brass": "#9C7A3C",
-    "--sg-safe": "#3F7D5C",
-    "--sg-review": "#B5892C",
-    "--sg-suspicious": "#C1602B",
-    "--sg-high-risk": "#A3312A",
-    "--sg-line": "#E4DFD5",
-    "--sg-muted": "#6B665D",
+    "--sg-ink": "#F2EFE9",
+    "--sg-paper": "#161412",
+    "--sg-paper-raised": "#1E1B18",
+    "--sg-brass": "#C89B54",
+    "--sg-safe": "#4CAF7E",
+    "--sg-review": "#D4A24A",
+    "--sg-suspicious": "#E07B3F",
+    "--sg-high-risk": "#D1544A",
+    "--sg-line": "rgba(255, 255, 255, 0.08)",
+    "--sg-muted": "#A8A29A",
   };
 
-  for (const [name, hex] of Object.entries(tokens)) {
-    const pattern = new RegExp(`${name}\\s*:\\s*${hex.replace("#", "#")}`, "i");
-    assert.match(css, pattern, `CSS contains ${name}: ${hex}`);
+  for (const [name, val] of Object.entries(tokens)) {
+    // Escape regex special characters in the value for safe regex construction.
+    const escaped = val.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const pattern = new RegExp(`${name}\\s*:\\s*${escaped}`, "i");
+    assert.match(css, pattern, `CSS contains ${name}: ${val}`);
   }
 });
 

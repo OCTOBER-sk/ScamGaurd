@@ -1,26 +1,31 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    options.css — ScamGuard options page stylesheet
-   Notion-style warm minimalism applied to §1.2 palette.
+   Premium dark redesign — warm-charcoal surfaces, brass accent, real depth.
    Full-page scrollable surface (§3.1).
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ─── §1.2 Design tokens (same as popup.css) ──────────────────────────── */
+/* ─── §1.2 Design tokens (dark warm-charcoal palette — same as popup.css) ── */
 :root {
-  --sg-ink: #1C1B1A;
-  --sg-paper: #FAF8F4;
-  --sg-paper-raised: #FFFFFF;
-  --sg-brass: #9C7A3C;
-  --sg-safe: #3F7D5C;
-  --sg-review: #B5892C;
-  --sg-suspicious: #C1602B;
-  --sg-high-risk: #A3312A;
-  --sg-line: #E4DFD5;
-  --sg-muted: #6B665D;
+  /* Surface & text */
+  --sg-ink: #F2EFE9;
+  --sg-paper: #161412;
+  --sg-paper-raised: #1E1B18;
+  --sg-brass: #C89B54;
+  /* Verdict scale — bright on dark, contrast >= 4.5:1 */
+  --sg-safe: #4CAF7E;
+  --sg-review: #D4A24A;
+  --sg-suspicious: #E07B3F;
+  --sg-high-risk: #D1544A;
+  /* Borders & muted */
+  --sg-line: rgba(255, 255, 255, 0.08);
+  --sg-muted: #A8A29A;
 
+  /* Typography stacks */
   --sg-font-display: "Fraunces", "Georgia", "Cambria", "Times New Roman", serif;
   --sg-font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --sg-font-mono: "JetBrains Mono", "SF Mono", "Cascadia Code", "Fira Code", ui-monospace, monospace;
 
+  /* Spacing & radii */
   --sg-radius: 8px;
   --sg-radius-lg: 12px;
   --sg-radius-sm: 6px;
@@ -31,14 +36,16 @@
   --sg-space-lg: 16px;
   --sg-space-xl: 24px;
 
-  /* Whisper border for Notion-style minimalism */
-  --sg-border: 1px solid rgba(0, 0, 0, 0.1);
-  /* Multi-layer soft shadows (each opacity ≤ 0.05) */
-  --sg-shadow-sm: rgba(0, 0, 0, 0.01) 0px 0.2px 1px,
-                  rgba(0, 0, 0, 0.02) 0px 1px 3px;
-  --sg-shadow-md: rgba(0, 0, 0, 0.02) 0px 1px 3px,
-                  rgba(0, 0, 0, 0.027) 0px 2px 8px,
-                  rgba(0, 0, 0, 0.04) 0px 4px 18px;
+  /* Dark-surface border & shadows */
+  --sg-border: 1px solid rgba(255, 255, 255, 0.08);
+  /* Layered soft shadows — dark-appropriate */
+  --sg-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3),
+                  0 1px 2px rgba(0, 0, 0, 0.2);
+  --sg-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4),
+                  0 2px 4px rgba(0, 0, 0, 0.25);
+  /* Card shadow (per spec: layered on dark) */
+  --sg-shadow-card: rgba(0, 0, 0, 0.4) 0px 8px 24px,
+                    rgba(0, 0, 0, 0.25) 0px 2px 8px;
 }
 
 /* ─── @font-face (actual filenames in fonts/) ───────────────────────────── */
@@ -138,7 +145,7 @@ summary:focus-visible {
 .sg-section {
   margin-bottom: var(--sg-space-xl);
   padding-bottom: var(--sg-space-xl);
-  border-bottom: var(--sg-border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .sg-section:last-child {
@@ -163,23 +170,24 @@ summary:focus-visible {
 
 .sg-provider-card {
   background: var(--sg-paper-raised);
-  border: 2px solid var(--sg-line);
-  border-radius: var(--sg-radius);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--sg-radius-lg);
   padding: var(--sg-space-md);
   cursor: pointer;
-  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
   text-align: left;
-  box-shadow: var(--sg-shadow-sm);
+  box-shadow: var(--sg-shadow-card);
 }
 
 .sg-provider-card:hover {
-  border-color: var(--sg-brass);
-  background: rgba(156, 122, 60, 0.04);
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.03);
+  transform: translateY(-1px);
 }
 
 .sg-provider-card[aria-checked="true"] {
   border-color: var(--sg-brass);
-  background: rgba(156, 122, 60, 0.08);
+  background: rgba(200, 155, 84, 0.08);
   box-shadow: var(--sg-shadow-md);
 }
 
@@ -222,8 +230,8 @@ summary:focus-visible {
   font-size: 13px;
   color: var(--sg-ink);
   background: var(--sg-paper-raised);
-  border: var(--sg-border);
-  border-radius: var(--sg-radius);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--sg-radius-lg);
   padding: var(--sg-space-sm) var(--sg-space-md);
   line-height: 1.55;
   transition: border-color 150ms ease;
@@ -259,8 +267,8 @@ summary:focus-visible {
   height: 36px;
   flex-shrink: 0;
   background: var(--sg-paper-raised);
-  border: var(--sg-border);
-  border-radius: var(--sg-radius);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--sg-radius-lg);
   cursor: pointer;
   color: var(--sg-muted);
   transition: color 150ms ease, border-color 150ms ease;
@@ -268,11 +276,11 @@ summary:focus-visible {
 
 .sg-icon-btn:hover {
   color: var(--sg-ink);
-  border-color: var(--sg-brass);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .sg-icon-btn:active {
-  background: rgba(156, 122, 60, 0.08);
+  background: rgba(200, 155, 84, 0.08);
 }
 
 .sg-field-hint {
@@ -281,22 +289,23 @@ summary:focus-visible {
   margin-top: var(--sg-space-xs);
 }
 
-/* ─── Primary button ────────────────────────────────────────────────────── */
+/* ─── Primary button — brass filled, dark text ──────────────────────────── */
 .sg-primary-btn {
   font-family: var(--sg-font-body);
   font-size: 13px;
   font-weight: 600;
-  color: var(--sg-paper-raised);
+  color: #1A1713;
   background: var(--sg-brass);
   border: none;
-  border-radius: var(--sg-radius-sm);
+  border-radius: var(--sg-radius);
   padding: var(--sg-space-sm) var(--sg-space-lg);
   cursor: pointer;
-  transition: background-color 150ms ease, transform 150ms ease;
+  transition: background-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
 }
 
 .sg-primary-btn:hover {
-  background: #8B6C33;
+  background: #D4A860;
+  box-shadow: 0 0 12px rgba(200, 155, 84, 0.25);
 }
 
 .sg-primary-btn:active {
@@ -309,9 +318,9 @@ summary:focus-visible {
   font-size: 13px;
   font-weight: 500;
   color: var(--sg-high-risk);
-  background: none;
-  border: var(--sg-border);
-  border-radius: var(--sg-radius);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--sg-radius-lg);
   padding: var(--sg-space-sm) var(--sg-space-lg);
   cursor: pointer;
   transition: border-color 150ms ease, background-color 150ms ease;
@@ -319,18 +328,18 @@ summary:focus-visible {
 
 .sg-danger-btn:hover {
   border-color: var(--sg-high-risk);
-  background: rgba(163, 49, 42, 0.04);
+  background: rgba(209, 84, 74, 0.08);
 }
 
 .sg-danger-btn:active {
-  background: rgba(163, 49, 42, 0.08);
+  background: rgba(209, 84, 74, 0.12);
 }
 
 /* ─── Test connection result ────────────────────────────────────────────── */
 .sg-test-result {
   margin-top: var(--sg-space-sm);
   padding: var(--sg-space-sm) var(--sg-space-md);
-  border-radius: var(--sg-radius);
+  border-radius: var(--sg-radius-lg);
   font-size: 13px;
   line-height: 1.55;
 }
@@ -338,13 +347,13 @@ summary:focus-visible {
 .sg-test-result[hidden] { display: none; }
 
 .sg-test-result--success {
-  background: rgba(63, 125, 92, 0.08);
+  background: rgba(76, 175, 126, 0.08);
   color: var(--sg-safe);
   border-left: 3px solid var(--sg-safe);
 }
 
 .sg-test-result--failure {
-  background: rgba(181, 137, 44, 0.08);
+  background: rgba(212, 162, 74, 0.08);
   color: var(--sg-review);
   border-left: 3px solid var(--sg-review);
 }
@@ -355,7 +364,7 @@ summary:focus-visible {
   color: var(--sg-muted);
   line-height: 1.55;
   padding: var(--sg-space-sm) 0;
-  border-top: var(--sg-border);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   margin-top: var(--sg-space-sm);
 }
 
@@ -367,8 +376,8 @@ summary:focus-visible {
   margin-top: var(--sg-space-sm);
   padding: var(--sg-space-sm) var(--sg-space-md);
   background: var(--sg-paper-raised);
-  border: var(--sg-border);
-  border-radius: var(--sg-radius);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--sg-radius-lg);
   font-size: 12px;
   box-shadow: var(--sg-shadow-sm);
 }
@@ -385,7 +394,7 @@ summary:focus-visible {
   font-size: 12px;
   font-weight: 600;
   color: var(--sg-high-risk);
-  background: none;
+  background: transparent;
   border: 1px solid var(--sg-high-risk);
   border-radius: var(--sg-radius-xs);
   padding: 2px 8px;
@@ -394,7 +403,7 @@ summary:focus-visible {
 }
 
 .sg-confirm-yes:hover {
-  background: rgba(163, 49, 42, 0.08);
+  background: rgba(209, 84, 74, 0.08);
 }
 
 .sg-confirm-no {
@@ -402,8 +411,8 @@ summary:focus-visible {
   font-size: 12px;
   font-weight: 500;
   color: var(--sg-muted);
-  background: none;
-  border: var(--sg-border);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--sg-radius-xs);
   padding: 2px 8px;
   cursor: pointer;
@@ -445,7 +454,7 @@ summary:focus-visible {
   width: 40px;
   height: 22px;
   border-radius: 11px;
-  background: var(--sg-line);
+  background: rgba(255, 255, 255, 0.12);
   transition: background-color 150ms ease;
 }
 
@@ -490,8 +499,8 @@ summary:focus-visible {
 
 /* ─── Advanced details (§3.1 item 4) ────────────────────────────────────── */
 .sg-details {
-  border: var(--sg-border);
-  border-radius: var(--sg-radius);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--sg-radius-lg);
   overflow: hidden;
   box-shadow: var(--sg-shadow-sm);
 }
@@ -566,9 +575,9 @@ summary:focus-visible {
 
 /* ─── Onboarding banner (§4) ────────────────────────────────────────────── */
 .sg-onboarding-banner {
-  background: rgba(156, 122, 60, 0.08);
+  background: rgba(200, 155, 84, 0.08);
   border: 1px solid var(--sg-brass);
-  border-radius: var(--sg-radius);
+  border-radius: var(--sg-radius-lg);
   padding: var(--sg-space-md) var(--sg-space-lg);
   margin-bottom: var(--sg-space-xl);
   display: flex;
@@ -601,4 +610,22 @@ summary:focus-visible {
 
 .sg-onboarding-dismiss:hover {
   color: var(--sg-ink);
+}
+
+/* ─── Reduced motion ────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .sg-provider-card,
+  .sg-danger-btn,
+  .sg-primary-btn,
+  .sg-icon-btn,
+  .sg-confirm-yes,
+  .sg-confirm-no,
+  .sg-toggle-thumb,
+  .sg-about-repo,
+  .sg-onboarding-dismiss {
+    transition: none;
+  }
+  .sg-provider-card:hover {
+    transform: none;
+  }
 }
