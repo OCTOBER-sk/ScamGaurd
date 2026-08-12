@@ -10,7 +10,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
-import { extractListing, parsePrice, detectPlatform } from "../content/extractor.js";
+import { extractListing, parsePrice, detectPlatform } from "../content/extractor.mjs";
 
 /** @param {string} name @returns {string} */
 function loadFixture(name) {

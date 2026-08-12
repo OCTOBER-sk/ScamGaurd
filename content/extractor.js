@@ -17,9 +17,14 @@
  * returns a low-confidence baseline for pathological pages so the content
  * script can never crash a host page.
  *
- * This module is a pure function of a `Document` (injectable for jsdom tests);
- * the MV3 content-script entry point that calls `extractListing(document)`
- * ships in a later phase (see PLAN-FRONTEND.md §2/§10).
+ * LOADING MODEL (IMPORTANT): this file is the REAL MV3 content-script entry
+ * registered in manifest.json (`content_scripts[0].js`). Chrome content
+ * scripts load as CLASSIC scripts and can NOT contain ES-module syntax
+ * (`import`/`export` at the top level is a parse error there), so this file
+ * deliberately has no module statements. The public API
+ * (`parsePrice`, `detectPlatform`, `extractListing`) is attached to
+ * `globalThis.ScamGuardExtractor` for the browser, and Node's ESM tests
+ * consume it through the thin adapter `content/extractor.mjs`.
  *
  * §5 (PLAN-FRONTEND.md): the content script's ONLY presentation concern is
  * responding to GET_LISTING messages from the service worker. Badge behavior
@@ -45,7 +50,7 @@ const JUNK_IMG_RE = /(?:icon|logo|sprite|avatar|placeholder|pixel|tracker|spacer
  * @param {unknown} raw
  * @returns {{ amount: number | null, currency: "INR" | "unknown", raw: string | null }}
  */
-export function parsePrice(raw) {
+function parsePrice(raw) {
   if (typeof raw !== "string" || raw.trim().length === 0) {
     return { amount: null, currency: "unknown", raw: null };
   }
@@ -70,7 +75,7 @@ export function parsePrice(raw) {
  * @param {Document} doc
  * @returns {"olx" | "quikr" | "unknown"}
  */
-export function detectPlatform(doc) {
+function detectPlatform(doc) {
   const host = (doc?.location?.hostname || "").toLowerCase();
   if (/(^|\.)olx\.(in|com)$/.test(host)) return "olx";
   if (/(^|\.)quikr\.com$/.test(host)) return "quikr";
@@ -358,7 +363,7 @@ function computeConfidence(titleValue, descriptionValue, price, { titleUsedFallb
  * @param {Document} doc
  * @returns {import("../shared/types.js").Listing}
  */
-export function extractListing(doc) {
+function extractListing(doc) {
   const url = (doc?.location?.href) || "";
   const extractedAt = new Date().toISOString();
   const platform = detectPlatform(doc);
@@ -450,4 +455,21 @@ if (
     // Not our message — ignore.
     return false;
   });
+}
+
+// ─── Public API (classic-script friendly) ─────────────────────────────────
+//
+// This file is loaded by Chrome as a CLASSIC content script, so it cannot use
+// ES-module `export` syntax. The named API is exposed on the global object:
+//   - in the browser content-script world it is inert (only the onMessage
+//     listener above matters at runtime);
+//   - in Node, `content/extractor.mjs` imports this file for its side effects
+//     and re-exports the three functions below as a proper ES module, which
+//     is what the unit tests import.
+if (typeof globalThis !== "undefined") {
+  globalThis.ScamGuardExtractor = {
+    parsePrice,
+    detectPlatform,
+    extractListing,
+  };
 }

@@ -577,7 +577,7 @@ test("§5 content/extractor.js has no badge manipulation (no setBadgeText calls)
 });
 
 test("§5 content/extractor.js exports extractListing function", async () => {
-  const { extractListing } = await import("../content/extractor.js");
+  const { extractListing } = await import("../content/extractor.mjs");
   assert.equal(typeof extractListing, "function", "extractListing is exported as a function");
 });
 

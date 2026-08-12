@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Options (Provider &amp; API key) — ScamGuard E2E harness</title>
+  <link rel="stylesheet" href="../../options.css">
+  <style>
+  /* Harness chrome only — the options page itself keeps real options.css.
+     NOTE: paths are ../../ (not ../) because this page lives two levels below
+     the repo root (scripts/e2e/), same as popup-harness.html. */
+  html, body {
+    margin: 0 !important;
+    min-height: 100vh !important;
+    background: #161412 !important;
+    color: #F2EFE9;
+  }
+  body {
+    padding-top: 56px !important;  /* clears the fixed caption bar */
+    padding-bottom: 40px;
+  }
+  #caption-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    text-align: center;
+    font: 600 12px/1.4 ui-monospace, "SF Mono", "Cascadia Code", monospace;
+    letter-spacing: 0.04em;
+    color: #C89B54;
+    background: #1E1B18;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 9px 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  }
+  #options-frame {
+    max-width: 680px;
+    margin: 0 auto;
+    background: #1E1B18;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    padding: 2px 20px 8px;
+  }
+  #harness-note {
+    position: fixed;
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
+    text-align: center;
+    font: 12px/1.4 ui-monospace, monospace;
+    color: #C89B54;
+    background: rgba(30, 27, 24, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    padding: 4px 8px;
+  }
+  </style>
+</head>
+<body>
+  <!--
+    E2E HARNESS — Options (Provider & API key)
+    Links REAL options.css for current design + loads the REAL options.js as
+    a module (its ./src/... imports resolve relative to options.js, so the
+    real provider registry renders the §3.2 card grid). The chrome.* stub is
+    declared BEFORE the module so the real options controller's init() loads
+    GET_SETTINGS and renders the key field, test-connection row, vision
+    toggle, and history section.
+  -->
+  <div id="caption-bar">ScamGuard E2E harness - Options (Provider &amp; API key)</div>
+
+  <div id="options-frame">
+    <!-- REAL options.html body structure (verbatim) -->
+    <main class="sg-options">
+      <!-- §4 Onboarding banner (one-time, dismissible) -->
+      <div class="sg-onboarding-banner" id="onboarding-banner" hidden>
+        <p class="sg-onboarding-text">
+          Welcome to ScamGuard &mdash; pick a free AI provider below to get started (takes about a minute).
+        </p>
+        <button type="button" class="sg-onboarding-dismiss" aria-label="Dismiss welcome message">&times;</button>
+      </div>
+
+      <h1 class="sg-options-title">ScamGuard Settings</h1>
+
+      <!-- §3.1 item 1: Provider & API key -->
+      <section class="sg-section" id="section-provider" aria-labelledby="heading-provider">
+        <h2 class="sg-section-title" id="heading-provider">Provider &amp; API key</h2>
+
+        <!-- §3.2 card-grid provider picker -->
+        <div class="sg-provider-grid" id="provider-grid" role="radiogroup" aria-label="Select provider">
+          <!-- Populated by options.js -->
+        </div>
+
+        <!-- API key field -->
+        <div class="sg-field">
+          <label for="api-key" class="sg-label">API key</label>
+          <div class="sg-key-row">
+            <input type="password" id="api-key" class="sg-input sg-input--key" placeholder="Enter your API key" autocomplete="off" spellcheck="false">
+            <button type="button" class="sg-icon-btn" id="btn-toggle-key" aria-label="Show API key">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path class="sg-eye-open" d="M8 3C4.5 3 1.7 5.4 1 8c.7 2.6 3.5 5 7 5s6.3-2.4 7-5c-.7-2.6-3.5-5-7-5zm0 8a3 3 0 110-6 3 3 0 010 6z" fill="currentColor"/>
+                <circle class="sg-eye-open" cx="8" cy="8" r="1.5" fill="currentColor"/>
+                <line class="sg-eye-closed" x1="2" y1="2" x2="14" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="display:none"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Model override -->
+        <div class="sg-field">
+          <label for="model-override" class="sg-label">Model override</label>
+          <input type="text" id="model-override" class="sg-input" placeholder="Leave blank for default">
+          <p class="sg-field-hint">Leave blank to use ScamGuard's default</p>
+        </div>
+
+        <!-- §3.1 item 1: Test connection -->
+        <div class="sg-field">
+          <button type="button" class="sg-primary-btn" id="btn-test-connection">Test connection</button>
+          <div class="sg-test-result" id="test-result" hidden>
+            <span class="sg-test-result-text" id="test-result-text"></span>
+          </div>
+        </div>
+
+        <!-- §3.1 item 1: Trust statement (unconditional, always visible) -->
+        <p class="sg-trust-statement" id="trust-statement"></p>
+
+        <!-- §3.1 item 1: Clear key -->
+        <div class="sg-field" id="clear-key-section" hidden>
+          <button type="button" class="sg-danger-btn" id="btn-clear-key">Clear key</button>
+          <div class="sg-inline-confirm" id="clear-key-confirm" hidden>
+            <span class="sg-confirm-text" id="clear-key-confirm-text"></span>
+            <button type="button" class="sg-confirm-yes" id="btn-clear-key-yes">Yes, clear</button>
+            <button type="button" class="sg-confirm-no" id="btn-clear-key-no">Cancel</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- §3.1 item 2: Vision analysis -->
+      <section class="sg-section" id="section-vision" aria-labelledby="heading-vision">
+        <h2 class="sg-section-title" id="heading-vision">Vision analysis</h2>
+        <div class="sg-toggle-row">
+          <label class="sg-toggle-label" for="vision-toggle">
+            <span>Analyze listing photos for AI-generation and stock-photo tells (uses more of your free-tier quota per check).</span>
+          </label>
+          <button type="button" class="sg-toggle" id="vision-toggle" role="switch" aria-checked="false" aria-label="Toggle vision analysis">
+            <span class="sg-toggle-track"><span class="sg-toggle-thumb"></span></span>
+          </button>
+        </div>
+        <p class="sg-field-hint sg-vision-disabled-hint" id="vision-disabled-hint" hidden>
+          Selected provider does not support vision
+        </p>
+      </section>
+
+      <!-- §3.1 item 3: History -->
+      <section class="sg-section" id="section-history" aria-labelledby="heading-history">
+        <h2 class="sg-section-title" id="heading-history">History</h2>
+        <p class="sg-history-count" id="history-count"></p>
+        <div class="sg-field">
+          <button type="button" class="sg-danger-btn" id="btn-clear-history">Clear history</button>
+          <div class="sg-inline-confirm" id="clear-history-confirm" hidden>
+            <span class="sg-confirm-text">Clear all saved reports?</span>
+            <button type="button" class="sg-confirm-yes" id="btn-clear-history-yes">Yes, clear</button>
+            <button type="button" class="sg-confirm-no" id="btn-clear-history-no">Cancel</button>
+          </div>
+        </div>
+        <p class="sg-field-hint" id="history-retention"></p>
+      </section>
+
+      <!-- §3.1 item 4: Advanced (collapsed by default) -->
+      <section class="sg-section" id="section-advanced" aria-labelledby="heading-advanced">
+        <details class="sg-details">
+          <summary class="sg-section-title sg-details-summary" id="heading-advanced">Advanced</summary>
+          <div class="sg-details-body">
+            <!-- Custom endpoint (only for providerId === "custom") -->
+            <div class="sg-field" id="custom-endpoint-section" hidden>
+              <label for="custom-endpoint" class="sg-label">Custom endpoint URL</label>
+              <input type="url" id="custom-endpoint" class="sg-input" placeholder="https://your-api.example.com/v1/chat/completions">
+            </div>
+
+            <!-- §3.1 item 4: openrouter/free experimental -->
+            <div class="sg-field">
+              <label class="sg-checkbox-label">
+                <input type="checkbox" id="openrouter-free" class="sg-checkbox">
+                <span>Experimental &mdash; routing is unpredictable on this option</span>
+              </label>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <!-- §3.1 item 5: About -->
+      <section class="sg-section sg-section--about" id="section-about" aria-labelledby="heading-about">
+        <h2 class="sg-section-title" id="heading-about">About</h2>
+        <p class="sg-about-version" id="about-version"></p>
+        <p class="sg-about-license">MIT License</p>
+        <p class="sg-about-tagline">Your key, your data, your verdict.</p>
+        <a class="sg-about-repo" id="about-repo" href="https://github.com/scamguard/scamguard" target="_blank" rel="noopener">View source on GitHub</a>
+      </section>
+    </main>
+  </div>
+  <div id="harness-note">ScamGuard E2E harness — Options (Provider &amp; API key). Links real options.css + options.js.</div>
+
+  <!--
+    chrome.* stub — classic script, runs synchronously BEFORE the deferred
+    options.js module so browser-api.js binds to it at module-eval time.
+  -->
+  <script>
+  (function () {
+    var PROVIDER_SETTINGS = {
+      providerId: "groq",
+      apiKey: "",
+      modelOverride: null,
+      customEndpoint: null,
+      visionEnabled: false,
+      lastTestedAt: null,
+      lastTestResult: null
+    };
+
+    window.chrome = window.chrome || {};
+
+    var respond = function (cb, resp) {
+      if (typeof cb === "function") cb(resp);
+    };
+
+    var runtime = {
+      onMessage: { addListener: function () {} },
+      onInstalled: { addListener: function () {} },
+      sendMessage: function (message, cb) {
+        var type = message && message.type;
+        switch (type) {
+          case "GET_SETTINGS":
+            respond(cb, { ok: true, settings: PROVIDER_SETTINGS });
+            break;
+          case "SAVE_SETTINGS":
+            respond(cb, { ok: true });
+            break;
+          case "TEST_CONNECTION":
+            respond(cb, {
+              ok: true,
+              message: "Connected \u2014 llama-3.3-70b-versatile responded in 812ms"
+            });
+            break;
+          case "GET_HISTORY":
+            respond(cb, { ok: true, history: [] });
+            break;
+          case "CLEAR_HISTORY":
+            respond(cb, { ok: true });
+            break;
+          default:
+            respond(cb, { ok: true });
+        }
+      }
+    };
+    chrome.runtime = runtime;
+
+    chrome.storage = {
+      local: {
+        get: function (keys, cb) { if (typeof keys === "function") { cb = keys; } cb && cb({}); },
+        set: function (items, cb) { cb && cb(); },
+        remove: function (keys, cb) { cb && cb(); }
+      },
+      session: {
+        get: function (keys, cb) { if (typeof keys === "function") { cb = keys; } cb && cb({}); },
+        set: function (items, cb) { cb && cb(); },
+        remove: function (keys, cb) { cb && cb(); }
+      }
+    };
+
+    chrome.tabs = {
+      query: function (info, cb) { respond(cb, []); },
+      sendMessage: function (tabId, msg, cb) { respond(cb, { ok: false }); }
+    };
+
+    chrome.action = {
+      setBadgeText: function (details, cb) { respond(cb, undefined); },
+      setBadgeBackgroundColor: function (details, cb) { respond(cb, undefined); },
+      onClicked: { addListener: function () {} }
+    };
+  })();
+  </script>
+
+  <!-- REAL options controller — module imports resolve relative to options.js -->
+  <script type="module" src="../../options.js"></script>
+</body>
+</html>

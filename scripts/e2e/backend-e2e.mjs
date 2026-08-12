@@ -32,7 +32,7 @@ import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
 
-import { extractListing } from "../../content/extractor.js";
+import { extractListing } from "../../content/extractor.mjs";
 import { run as runHeuristics } from "../../src/heuristics/signals.js";
 import { buildSystemPrompt, buildUserPrompt } from "../../src/llm/prompt.js";
 import { get as getProvider } from "../../src/llm/providers/registry.js";
