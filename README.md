@@ -1,33 +1,31 @@
 # ScamGaurd
 
-Chrome MV3 extension that flags scams on OLX.in & Quikr — on the listing page and in the chat/payment flow. Bring your own key (BYOK): no account, no telemetry; the only data that leaves your machine is the listing/message text you send to the LLM provider you chose.
+Chrome extension that checks OLX.in & Quikr listings — and the payment instructions that follow in chat — for scam patterns, before you pay.
 
-## What it does
+## What it is
 
-- **Listing analysis** — instant heuristic pre-check (deterministic 0–100) plus optional LLM verdict streamed from your key → verdict seal in the popup.
-- **Message & Payment Check** — catches the fraud class that runs off-page: 6 offline patterns for UPI collect-request / QR "scan-to-receive" tricks, with a `coreFact` verdict always shown.
-- **Popup** — 8 states (first-run, NoKey, analyzing, verdict, error, …), dual light/dark theme via `prefers-color-scheme`.
-- **Options** — 10-provider BYOK grid (Groq, OpenRouter, OpenAI, Anthropic, Mistral, DeepSeek, Cerebras, Gemini, local Ollama, …), model override, vision toggle.
-- **Privacy** — keys only in `chrome.storage.local` (never `sync`), scoped host matches (`olx.in/item/*`, `quikr.com/*`), zero runtime dependencies, no proactive scanning.
+- **Listing check** — opens on any OLX item or Quikr listing: an instant heuristic risk score, plus an optional LLM verdict from your own key, shown as a verdict seal in the popup.
+- **Message & Payment Check** — catches the fraud that happens off the listing page: UPI collect-request and QR "scan-to-receive" tricks, with a plain-language verdict you can read before acting on any payment instruction.
+- Built for Indian marketplace buyers and sellers, in Chrome (Manifest V3).
 
-## Status
+## What it uses
 
-- ✅ 254/254 unit+integration tests, lint clean, CI green — verified
-- ✅ Real-browser E2E pass: popup states, options grid, message-check click-through, NoKey first-run, 401 failure state
-- ⏳ Live listing-page extraction pending — OLX/Quikr blocked from the dev network; fixture capture script at `scripts/redact-fixture.js`
-- ⏳ Chrome Web Store submission pending (privacy tab + store assets)
+- **Chrome MV3** — service worker, scoped content script (olx.in listings, quikr.com), no `all_urls`.
+- **Deterministic heuristics** — instant, offline risk scoring.
+- **Optional LLM verdict** — bring your own key: Groq, OpenRouter, OpenAI, Anthropic, Mistral, DeepSeek, Cerebras, Gemini, or local Ollama.
+- **Zero runtime dependencies.**
 
-## Install (dev)
+## What it saves
 
-1. Load the repo folder: `chrome://extensions` → Developer mode → **Load unpacked**.
-2. Open options → add a provider key (Groq or OpenRouter work out of the box).
-3. Visit an OLX item / Quikr listing, or open the popup → **Message & Payment Check**.
+- **Stored locally:** your provider key and settings — in `chrome.storage.local`, never synced to any account.
+- **Sent out:** only the listing or message text you are actively checking — and only to the LLM provider you chose, only if you enable the LLM verdict. Heuristic-only mode sends nothing.
+- **Never:** accounts, telemetry, browsing history, or any record of the checks you run.
 
-## Docs
+## Install
 
-- [`PLAN-BACKEND.md`](PLAN-BACKEND.md) — extractor, heuristics, LLM fusion, scoring, security
-- [`PLAN-FRONTEND.md`](PLAN-FRONTEND.md) — UI/UX, design system, popup states, manifest
-- [`VERIFICATION.md`](VERIFICATION.md) — per-layer proof matrix
+1. `chrome://extensions` → enable **Developer mode** → **Load unpacked** → select this folder.
+2. Open the extension's options page and add a provider key.
+3. Open any OLX item or Quikr listing, or run **Message & Payment Check** before paying.
 
 ## License
 

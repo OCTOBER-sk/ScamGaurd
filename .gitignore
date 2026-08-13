@@ -1,4 +1,5 @@
 node_modules/
+.hermes/
 .DS_Store
 *.log
 .env
