@@ -1,5 +1,14 @@
 node_modules/
 .hermes/
+# internal working docs (kept locally, not public)
+PROJECT.md
+STATUS.md
+DECISIONS.md
+VERIFICATION.md
+PLAN-BACKEND.md
+PLAN-FRONTEND.md
+FRONTEND-AUDIT-*.md
+SCAMGUARD-AUDIT-REPORT.pdf
 .DS_Store
 *.log
 .env
