@@ -221,7 +221,7 @@ html, body {
             </div>
           </div>
           <!-- §2.10 result view -->
-          <div id="mc-result-screen" class="sg-mc-result" hidden>
+          <div id="mc-result-screen" class="sg-mc-result" aria-live="polite" hidden>
             <div class="sg-mc-verdict" id="mc-verdict"></div>
             <div class="sg-mc-core-fact" id="mc-core-fact"></div>
             <div class="sg-mc-patterns" id="mc-patterns"></div>
@@ -256,9 +256,9 @@ html, body {
 
   <script>
   (function () {
-  var REPORT = {"reportId":"bdef3701-be7b-4414-b9cb-c4f35a5a837a","listingUrl":"https://www.olx.in/item/mi-led-32-smart-android-led-tv-iid-1827354630.html","listingTitle":"Mi LED 32\" Smart Android LED TV","score":57,"verdict":"Suspicious","confidence":"high","source":"fused","redFlags":[{"id":"PRICE_ANOMALY","label":"Implausibly Low Price","severity":"high","explanation":"The listed price is significantly below market value for a 32\" smart Android TV, indicating a potential scam."},{"id":"LOW_PHOTO_COUNT","label":"Insufficient Photos","severity":"medium","explanation":"Only one photo is provided, limiting the ability to verify the item's condition and authenticity."}],"summary":"The listing shows a price that is unusually low for the described TV and provides only a single photo, both of which are common red flags for scams. The seller appears to be an established account, which reduces but does not eliminate risk. No urgency or off‑platform payment language is present. Overall, the risk level is moderate to high.","checklist":["Ask for additional photos from multiple angles, including a close‑up of the serial number; request a live video call to see the TV in operation; verify the serial number with the manufacturer; and arrange to meet in a public place to inspect the TV before payment."],"reportingResources":[{"label":"National Cyber Crime Reporting Portal","value":"cybercrime.gov.in"},{"label":"Cyber Crime Helpline (toll-free)","value":"1930"}],"visionAnalysis":{"performed":false,"skippedReason":"Text-only E2E harness — no listing photos sent.","notes":[]},"provider":{"id":"openrouter","model":"openai/gpt-oss-20b:free","latencyMs":22078,"usedFallbackRepair":false},"rawListing":{"platform":"olx","url":"https://www.olx.in/item/mi-led-32-smart-android-led-tv-iid-1827354630.html","adId":"1827354630","title":"Mi LED 32\" Smart Android LED TV","price":{"amount":6500,"currency":"INR","raw":"₹ 6,500"},"description":"Mi 32 inch smart android led tv. Working condition, no issues. Selling because moving out of city. Price negotiable.","sellerName":"Test Seller","sellerMemberSince":"Feb 2014","sellerItemsListed":9,"sellerVerified":null,"location":"Haidarganj, Lucknow","postedAt":"Today","images":[{"url":"https://images.olx.in/example/photo1.jpg","isThumbnail":false}],"imageCount":1,"extractionConfidence":"partial","extractedAt":"2026-08-12T13:38:09.913Z"},"createdAt":"2026-08-12T13:38:39.119Z"};
-  var PAYMENT = {"reportId":"5c7b00eb-db55-4f33-abaa-6c421994e464","verdict":"LikelyScam","matchedPatterns":[{"id":"SCAN_TO_RECEIVE","label":"Told to scan or approve to receive money","explanation":"Scanning a QR code or approving a payment request can only ever send money, never receive it — there is no legitimate UPI flow where scanning brings money in."}],"coreFact":"A QR code or payment request can only ever be used to send money, never to receive it. If anyone — no matter how convincing — asks you to scan something or enter your PIN/OTP to 'receive' a payment, that is always false, with no exceptions.","summary":"This matches patterns used in marketplace payment fraud. Do not scan anything, do not approve any payment request, and do not share any PIN, OTP, or CVV — no matter what the other person says.","createdAt":"2026-08-12T13:38:39.122Z"};
-  var HISTORY = [{"reportId":"bdef3701-be7b-4414-b9cb-c4f35a5a837a","listingTitle":"Mi LED 32\" Smart Android LED TV","score":57,"verdict":"Suspicious","createdAt":"2026-08-12T13:38:39.119Z"}];
+  var REPORT = {"reportId":"74042001-7dd8-44f6-8410-acb3965963bd","listingUrl":"https://www.olx.in/item/mi-led-32-smart-android-led-tv-iid-1827354630.html","listingTitle":"Mi LED 32\" Smart Android LED TV","score":54,"verdict":"Suspicious","confidence":"high","source":"fused","redFlags":[{"id":"PRICE_ANOMALY","label":"Implausibly Low Price","severity":"high","explanation":"₹6,500 for a 32\" Mi LED TV is far below typical market rates, suggesting possible misrepresentation or a fake listing."},{"id":"LOW_PHOTO_COUNT","label":"Limited Visual Evidence","severity":"medium","explanation":"Only one photo is provided, making it difficult to verify the TV’s condition or authenticity."}],"summary":"The listing advertises a 32\" Mi LED TV for ₹6,500, a price markedly lower than comparable models, which raises suspicion. Only a single photo is available, limiting visual confirmation of the item’s condition. The seller has an established account but no urgency or off‑platform payment requests. Overall, the listing presents moderate risk; proceed with caution.","checklist":["Request additional photos of the TV’s back, side, and any visible serial number or warranty card.","Verify the model and serial number against official Mi specifications before agreeing to a transaction.","Confirm the TV is physically present and functional in person before making any payment."],"reportingResources":[{"label":"National Cyber Crime Reporting Portal","value":"cybercrime.gov.in"},{"label":"Cyber Crime Helpline (toll-free)","value":"1930"}],"visionAnalysis":{"performed":false,"skippedReason":"Text-only E2E harness — no listing photos sent.","notes":["Only one photo is provided; no evidence of AI generation or stock imagery is apparent, but the limited images reduce confidence in the item’s stated condition."]},"provider":{"id":"openrouter","model":"openai/gpt-oss-20b:free","latencyMs":68816,"usedFallbackRepair":false},"rawListing":{"platform":"olx","url":"https://www.olx.in/item/mi-led-32-smart-android-led-tv-iid-1827354630.html","adId":"1827354630","title":"Mi LED 32\" Smart Android LED TV","price":{"amount":6500,"currency":"INR","raw":"₹ 6,500"},"description":"Mi 32 inch smart android led tv. Working condition, no issues. Selling because moving out of city. Price negotiable.","sellerName":"Test Seller","sellerMemberSince":"Feb 2014","sellerItemsListed":9,"sellerVerified":null,"location":"Haidarganj, Lucknow","postedAt":"Today","images":[{"url":"https://images.olx.in/example/photo1.jpg","isThumbnail":false}],"imageCount":1,"extractionConfidence":"partial","extractedAt":"2026-08-12T14:49:28.299Z"},"createdAt":"2026-08-12T14:50:41.795Z"};
+  var PAYMENT = {"reportId":"2bda5d7d-818c-4d1d-970a-3f452af69028","verdict":"LikelyScam","matchedPatterns":[{"id":"SCAN_TO_RECEIVE","label":"Told to scan or approve to receive money","explanation":"Scanning a QR code or approving a payment request can only ever send money, never receive it — there is no legitimate UPI flow where scanning brings money in."}],"coreFact":"A QR code or payment request can only ever be used to send money, never to receive it. If anyone — no matter how convincing — asks you to scan something or enter your PIN/OTP to 'receive' a payment, that is always false, with no exceptions.","summary":"This matches patterns used in marketplace payment fraud. Do not scan anything, do not approve any payment request, and do not share any PIN, OTP, or CVV — no matter what the other person says.","createdAt":"2026-08-12T14:50:41.798Z"};
+  var HISTORY = [{"reportId":"74042001-7dd8-44f6-8410-acb3965963bd","listingTitle":"Mi LED 32\" Smart Android LED TV","score":54,"verdict":"Suspicious","createdAt":"2026-08-12T14:50:41.795Z"}];
 
   window.chrome = window.chrome || {};
 
@@ -348,8 +348,8 @@ const en = {
   "stillWorking": "Still working \u2014 {{provider}} can be slow on free tiers",
   "redFlagsTitle": "Red flags ({{count}})",
   "summaryTitle": "Summary",
-  "checklistTitle": "Safe-buying checklist ({{count}} items)",
-  "checklistExpand": "\u25B8 Safe-buying checklist ({{count}} items) \u25BE",
+  "checklistTitle": "Safe-buying checklist ({{count}})",
+  "checklistExpand": "\u25B8 Safe-buying checklist ({{count}}) \u25BE",
   "reportResourcesTitle": "Report this",
   "visionNotesTitle": "Vision analysis",
   "actionsCopy": "Copy report",
@@ -453,7 +453,28 @@ const en = {
   "flagContactLeak": "Contact details shared in the listing",
   "flagUrgency": "Urgency-pressure language",
   "flagAdvanceFee": "Advance / booking-fee language",
-  "flagOffPlatform": "Off-platform payment demanded"
+  "flagOffPlatform": "Off-platform payment demanded",
+  "heuristicPriceBelow": "Price {{pct}}% below typical",
+  "heuristicPriceWithin": "Price within typical range",
+  "heuristicNewSeller": "New seller ({{count}} {{countPlural}})",
+  "heuristicEstablishedSeller": "Established seller ({{count}} {{countPlural}})",
+  "heuristicLowPhotos": "Low photo count ({{count}} photos)",
+  "heuristicAdequatePhotos": "Adequate photos ({{count}})",
+  "heuristicContactLeak": "Contact details in listing",
+  "heuristicNoContactLeak": "No contact leaks",
+  "heuristicUrgency": "Urgency language detected",
+  "heuristicNoUrgency": "No urgency language",
+  "heuristicOffPlatformPayment": "Off-platform payment language",
+  "heuristicNoOffPlatformPayment": "No off-platform payment language",
+  "heuristicAdvanceFee": "Advance fee language detected",
+  "heuristicNoAdvanceFee": "No advance fee language",
+  "showKey": "Show API key",
+  "hideKey": "Hide API key",
+  "testing": "Testing\u2026",
+  "testConnectionFailed": "Could not reach the service worker.",
+  "providerPaidNote": "No free tier \u2014 requires paid account",
+  "messageCheckError": "Could not check this message.",
+  "reportTagline": "Checked with ScamGuard \u2014 your key, your data, your verdict."
 }
 ;
 
@@ -796,6 +817,19 @@ const chromeAction = (() => {
  *     text labels always paired with color signals.
  */
 
+// ─── Helpers ──────────────────────────────────────────────────────────────
+
+/**
+ * Simple plural helper: returns "item" if count === 1, "items" otherwise.
+ * Used with t() for count-based heuristic labels.
+ *
+ * @param {number} count
+ * @returns {string}
+ */
+function pluralize(count) {
+  return count === 1 ? "item" : "items";
+}
+
 // ─── §2 Popup state machine ──────────────────────────────────────────────
 
 /**
@@ -992,8 +1026,8 @@ function renderSeal(container, verdict, score) {
 
   container.className = `sg-seal sg-seal--${verdictClass}`;
   container.innerHTML = `
-    <span class="sg-seal-verdict">${escapeHtml(t(verdictKey))}</span>
     ${score != null ? `<span class="sg-seal-score">${Math.round(score)}</span>` : ""}
+    <span class="sg-seal-verdict">${escapeHtml(t(verdictKey))}</span>
   `;
 }
 
@@ -1016,17 +1050,19 @@ function renderHeuristics(container, heuristics) {
   if (pa) {
     rows.push({
       triggered: pa.triggered,
-      label: "Price " + (pa.triggered ? `${Math.round((pa.ratioVsCategoryTypical ?? 0) * 100)}% below typical` : "within typical range"),
+      label: pa.triggered
+        ? t("heuristicPriceBelow", { pct: Math.round((pa.ratioVsCategoryTypical ?? 0) * 100) })
+        : t("heuristicPriceWithin"),
     });
   }
 
   const sa = heuristics.sellerAge;
   if (sa) {
+    const count = sa.itemsListed ?? 0;
+    const labelKey = sa.triggered ? "heuristicNewSeller" : "heuristicEstablishedSeller";
     rows.push({
       triggered: sa.triggered,
-      label: sa.triggered
-        ? `New seller (${sa.itemsListed ?? 0} items)`
-        : `Established seller (${sa.itemsListed ?? "?"} items)`,
+      label: t(labelKey, { count, countPlural: pluralize(count) }),
     });
   }
 
@@ -1035,8 +1071,8 @@ function renderHeuristics(container, heuristics) {
     rows.push({
       triggered: ph.triggered,
       label: ph.triggered
-        ? `Low photo count (${ph.count} photos)`
-        : `Adequate photos (${ph.count})`,
+        ? t("heuristicLowPhotos", { count: ph.count })
+        : t("heuristicAdequatePhotos", { count: ph.count }),
     });
   }
 
@@ -1044,7 +1080,7 @@ function renderHeuristics(container, heuristics) {
   if (cl) {
     rows.push({
       triggered: cl.triggered,
-      label: cl.triggered ? "Contact details in listing" : "No contact leaks",
+      label: cl.triggered ? t("heuristicContactLeak") : t("heuristicNoContactLeak"),
     });
   }
 
@@ -1052,7 +1088,7 @@ function renderHeuristics(container, heuristics) {
   if (ul) {
     rows.push({
       triggered: ul.triggered,
-      label: ul.triggered ? "Urgency language detected" : "No urgency language",
+      label: ul.triggered ? t("heuristicUrgency") : t("heuristicNoUrgency"),
     });
   }
 
@@ -1060,7 +1096,7 @@ function renderHeuristics(container, heuristics) {
   if (of) {
     rows.push({
       triggered: of.triggered,
-      label: of.triggered ? "Off-platform payment language" : "No off-platform payment language",
+      label: of.triggered ? t("heuristicOffPlatformPayment") : t("heuristicNoOffPlatformPayment"),
     });
   }
 
@@ -1068,7 +1104,7 @@ function renderHeuristics(container, heuristics) {
   if (af) {
     rows.push({
       triggered: af.triggered,
-      label: af.triggered ? "Advance fee language detected" : "No advance fee language",
+      label: af.triggered ? t("heuristicAdvanceFee") : t("heuristicNoAdvanceFee"),
     });
   }
 
@@ -1320,10 +1356,6 @@ function makeActionBtn(label, onClick) {
 }
 
 function openOptionsPage() {
-  if (chromeRuntime?.sendMessage) {
-    chromeRuntime.sendMessage({ type: "OPEN_OPTIONS" }).catch(() => {});
-  }
-  // Fallback for extension context.
   if (typeof chrome !== "undefined" && chrome.runtime?.openOptionsPage) {
     chrome.runtime.openOptionsPage();
   }
@@ -1339,7 +1371,7 @@ function openOptionsPage() {
  */
 function buildReportText(report) {
   const lines = [];
-  lines.push(`ScamGuard Report`);
+  lines.push(t("appName") + " Report");
   lines.push(`Verdict: ${report.verdict} (${report.score}/100)`);
   lines.push("");
   if (report.listingTitle) lines.push(`Listing: ${report.listingTitle}`);
@@ -1370,7 +1402,7 @@ function buildReportText(report) {
     }
     lines.push("");
   }
-  lines.push("Checked with ScamGuard — your key, your data, your verdict.");
+  lines.push(t("reportTagline"));
   return lines.join("\n");
 }
 
@@ -1525,11 +1557,11 @@ async function runMessageCheck(input) {
     if (response && response.ok && response.report) {
       renderMessageCheckResult(response.report);
     } else {
-      $.mcVerdict.innerHTML = `<span>Could not check this message.</span>`;
+      $.mcVerdict.innerHTML = `<span>${escapeHtml(t("messageCheckError"))}</span>`;
       $.mcCoreFact.textContent = "";
     }
   } catch {
-    $.mcVerdict.innerHTML = `<span>Could not check this message.</span>`;
+    $.mcVerdict.innerHTML = `<span>${escapeHtml(t("messageCheckError"))}</span>`;
     $.mcCoreFact.textContent = "";
   }
 }
@@ -1571,6 +1603,26 @@ function renderHistory(historyList) {
 let currentReport = null;
 
 /**
+ * Fetch the current settings to get the provider label, then update the
+ * analyzing LLM text to show "Analyzing with {provider}…".
+ */
+async function populateAnalyzingProvider() {
+  try {
+    const response = await chromeRuntime.sendMessage({ type: "GET_SETTINGS" });
+    if (response?.ok && response.settings?.providerId) {
+      const providerId = response.settings.providerId;
+      const labelKey = `provider${providerId.charAt(0).toUpperCase() + providerId.slice(1)}`;
+      const label = t(labelKey);
+      if ($.analyzingLlmText) {
+        $.analyzingLlmText.textContent = t("analyzingWith", { provider: label });
+      }
+    }
+  } catch {
+    // Silent — default "Analyzing…" text stays.
+  }
+}
+
+/**
  * Start the full analysis flow: GET_LISTING → ANALYZE → render.
  * Called when the popup opens on a listing page and there's no prior result.
  */
@@ -1609,6 +1661,7 @@ async function startAnalysis() {
     // Show Analyzing state immediately with the heuristic pre-check.
     showState(PopupState.Analyzing);
     renderHeuristics($.analyzingHeuristics, null); // heuristics come from the SW in the ANALYZE response
+    populateAnalyzingProvider();
 
     // Start the LLM analysis.
     const analysisResponse = await chromeRuntime.sendMessage({
@@ -1765,7 +1818,7 @@ async function init() {
         // Still analyzing — show the analyzing state with heuristics.
         showState(PopupState.Analyzing);
         renderHeuristics($.analyzingHeuristics, session.heuristics);
-        // The analyzing LLM text stays as the default "Analyzing…"
+        populateAnalyzingProvider();
       } else {
         // No session — start fresh analysis if on a listing page.
         startAnalysis();

@@ -4,12 +4,13 @@
    Monitor surface — glanceable hierarchy, density, no hero layouts.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ─── §1.2 Design tokens (dark warm-charcoal palette) ─────────────────── */
+/* ─── §1.2 Design tokens (dark warm-charcoal palette, rebuilt) ──────────── */
 :root {
   /* Surface & text */
   --sg-ink: #F2EFE9;
   --sg-paper: #161412;
-  --sg-paper-raised: #1E1B18;
+  --sg-paper-raised: #221D19;
+  --sg-paper-sunken: #100E0D;
   --sg-brass: #C89B54;
   /* Verdict scale — bright on dark, contrast >= 4.5:1 */
   --sg-safe: #4CAF7E;
@@ -17,8 +18,9 @@
   --sg-suspicious: #E07B3F;
   --sg-high-risk: #D1544A;
   /* Borders & muted */
-  --sg-line: rgba(255, 255, 255, 0.08);
-  --sg-muted: #A8A29A;
+  --sg-border: rgba(255, 255, 255, 0.10);
+  --sg-border-strong: #6E675E;
+  --sg-muted: #B9B3A9;
 
   /* Typography stacks */
   --sg-font-display: "Fraunces", "Georgia", "Cambria", "Times New Roman", serif;
@@ -26,9 +28,9 @@
   --sg-font-mono: "JetBrains Mono", "SF Mono", "Cascadia Code", "Fira Code", ui-monospace, monospace;
 
   /* Spacing & radii */
-  --sg-radius: 8px;
+  --sg-radius: 10px;
   --sg-radius-lg: 12px;
-  --sg-radius-sm: 6px;
+  --sg-radius-sm: 8px;
   --sg-radius-xs: 4px;
   --sg-space-xs: 4px;
   --sg-space-sm: 8px;
@@ -37,7 +39,7 @@
   --sg-space-xl: 24px;
 
   /* Dark-surface border & shadows */
-  --sg-border: 1px solid rgba(255, 255, 255, 0.08);
+  --sg-border-decorative: 1px solid rgba(255, 255, 255, 0.10);
   /* Layered soft shadows — dark-appropriate */
   --sg-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3),
                   0 1px 2px rgba(0, 0, 0, 0.2);
@@ -110,6 +112,7 @@ body {
   overflow-y: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  letter-spacing: 0.01em;
 }
 
 /* ─── Screen-reader only (§6) ──────────────────────────────────────────── */
@@ -148,7 +151,7 @@ summary:focus-visible {
   justify-content: space-between;
   height: 40px;
   padding: 0 var(--sg-space-md);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--sg-border);
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -188,9 +191,10 @@ summary:focus-visible {
   font-weight: 500;
   color: var(--sg-brass);
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--sg-border-strong);
   border-radius: var(--sg-radius-sm);
-  padding: 3px 8px;
+  padding: 5px 10px;
+  min-height: 28px;
   cursor: pointer;
   white-space: nowrap;
   transition: background-color 150ms ease, border-color 150ms ease;
@@ -223,12 +227,24 @@ summary:focus-visible {
 }
 
 /* ─── §1.1 Verdict seal — glowing stamp with concentric rings ──────────── */
+/* Container: column layout — circle (score) on top, verdict word below */
 .sg-seal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: 6px;
+  animation: sg-stamp 120ms ease-out both;
+  z-index: 0;
+}
+
+/* The 72px circle: score number inside, concentric rings, brass glow */
+.sg-seal-score {
   width: 72px;
   height: 72px;
   border-radius: 50%;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
@@ -241,13 +257,16 @@ summary:focus-visible {
   box-shadow: 0 0 24px color-mix(in srgb, var(--sg-brass) 35%, transparent),
               0 0 24px rgba(200, 155, 84, 0.35),
               0 2px 8px rgba(0, 0, 0, 0.3);
-  /* §1.5 stamp-down animation (first render only) */
-  animation: sg-stamp 120ms ease-out both;
-  z-index: 0;
+  font-family: var(--sg-font-display);
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  z-index: 2;
 }
 
 /* Outer concentric ring — gradient stroke brass → light brass */
-.sg-seal::before {
+.sg-seal-score::before {
   content: '';
   position: absolute;
   inset: -4px;
@@ -257,7 +276,7 @@ summary:focus-visible {
 }
 
 /* Inner concentric ring — subtle brass tint */
-.sg-seal::after {
+.sg-seal-score::after {
   content: '';
   position: absolute;
   inset: 2px;
@@ -266,6 +285,25 @@ summary:focus-visible {
   z-index: 1;
   pointer-events: none;
 }
+
+/* Verdict word: straight horizontal text BELOW the seal ring */
+.sg-seal-verdict {
+  font-family: var(--sg-font-display);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+  max-width: 100%;
+  z-index: 2;
+}
+
+/* Verdict word colors — applied on the container, inherited by verdict text */
+.sg-seal--safe { color: var(--sg-safe); }
+.sg-seal--review { color: var(--sg-review); }
+.sg-seal--suspicious { color: var(--sg-suspicious); }
+.sg-seal--high-risk { color: var(--sg-high-risk); }
 
 /* §1.5 respect prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
@@ -285,34 +323,6 @@ summary:focus-visible {
   }
 }
 
-/* Verdict-specific text colors inside the seal */
-.sg-seal--safe { color: var(--sg-safe); }
-.sg-seal--review { color: var(--sg-review); }
-.sg-seal--suspicious { color: var(--sg-suspicious); }
-.sg-seal--high-risk { color: var(--sg-high-risk); }
-
-.sg-seal-verdict {
-  font-family: var(--sg-font-display);
-  font-weight: 700;
-  font-size: 11px;
-  line-height: 1;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  position: relative;
-  z-index: 2;
-}
-
-.sg-seal-score {
-  font-family: var(--sg-font-display);
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 1;
-  margin-top: 2px;
-  font-variant-numeric: tabular-nums;
-  position: relative;
-  z-index: 2;
-}
-
 /* Seal placeholder (idle, no-key) */
 .sg-seal-placeholder {
   width: 72px;
@@ -330,16 +340,10 @@ summary:focus-visible {
 .sg-heuristic-block {
   width: 100%;
   background: var(--sg-paper-raised);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--sg-border);
   border-radius: var(--sg-radius-lg);
   padding: var(--sg-space-md);
   box-shadow: var(--sg-shadow-card);
-  transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
-}
-
-.sg-heuristic-block:hover {
-  transform: translateY(-1px);
-  border-color: rgba(255, 255, 255, 0.14);
 }
 
 .sg-heuristic-block:empty {
@@ -393,7 +397,7 @@ summary:focus-visible {
   width: 100%;
   padding: var(--sg-space-md);
   background: var(--sg-paper-raised);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--sg-border);
   border-radius: var(--sg-radius-lg);
   font-size: 13px;
   color: var(--sg-muted);
@@ -455,16 +459,10 @@ summary:focus-visible {
 
 .sg-red-flag {
   background: var(--sg-paper-raised);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--sg-border);
   border-radius: var(--sg-radius-lg);
   overflow: hidden;
   box-shadow: var(--sg-shadow-card);
-  transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
-}
-
-.sg-red-flag:hover {
-  transform: translateY(-1px);
-  border-color: rgba(255, 255, 255, 0.14);
 }
 
 .sg-red-flag + .sg-red-flag {
@@ -535,7 +533,7 @@ summary:focus-visible {
   font-size: 12px;
   color: var(--sg-muted);
   line-height: 1.45;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--sg-border);
 }
 
 /* Summary */
@@ -595,16 +593,10 @@ summary:focus-visible {
 .sg-report-resources {
   width: 100%;
   background: var(--sg-paper-raised);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--sg-border);
   border-radius: var(--sg-radius-lg);
   padding: var(--sg-space-md);
   box-shadow: var(--sg-shadow-card);
-  transition: transform 150ms ease, border-color 150ms ease;
-}
-
-.sg-report-resources:hover {
-  transform: translateY(-1px);
-  border-color: rgba(255, 255, 255, 0.14);
 }
 
 .sg-report-resources[hidden] { display: none; }
@@ -642,16 +634,10 @@ summary:focus-visible {
 .sg-vision-notes {
   width: 100%;
   background: var(--sg-paper-raised);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--sg-border);
   border-radius: var(--sg-radius-lg);
   padding: var(--sg-space-md);
   box-shadow: var(--sg-shadow-card);
-  transition: transform 150ms ease, border-color 150ms ease;
-}
-
-.sg-vision-notes:hover {
-  transform: translateY(-1px);
-  border-color: rgba(255, 255, 255, 0.14);
 }
 
 .sg-vision-notes[hidden] { display: none; }
@@ -688,9 +674,10 @@ summary:focus-visible {
   font-weight: 500;
   color: var(--sg-brass);
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--sg-border-strong);
   border-radius: var(--sg-radius-sm);
   padding: var(--sg-space-sm) var(--sg-space-md);
+  min-height: 28px;
   cursor: pointer;
   white-space: nowrap;
   transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
@@ -717,8 +704,8 @@ summary:focus-visible {
 /* Raw data accordion */
 .sg-raw-data {
   width: 100%;
-  background: var(--sg-paper-raised);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--sg-paper-sunken);
+  border: 1px solid var(--sg-border);
   border-radius: var(--sg-radius-lg);
   padding: var(--sg-space-md);
   font-family: var(--sg-font-mono);
@@ -766,7 +753,7 @@ summary:focus-visible {
 .sg-error-card {
   width: 100%;
   background: var(--sg-paper-raised);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--sg-border);
   border-left: 3px solid var(--sg-suspicious);
   border-radius: var(--sg-radius-lg);
   padding: var(--sg-space-md);
@@ -812,23 +799,24 @@ summary:focus-visible {
   font-family: var(--sg-font-body);
   font-size: 13px;
   font-weight: 600;
-  color: #1A1713;
+  color: #1C1A17;
   background: var(--sg-brass);
   border: none;
   border-radius: var(--sg-radius);
   padding: var(--sg-space-sm) var(--sg-space-lg);
+  min-height: 32px;
   cursor: pointer;
-  transition: background-color 150ms ease, opacity 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: background-color 150ms ease, box-shadow 150ms ease;
 }
 
 .sg-primary-btn:hover {
   background: #D4A860;
-  box-shadow: 0 0 12px rgba(200, 155, 84, 0.25);
-  opacity: 1;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 0 12px rgba(200, 155, 84, 0.25);
 }
 
 .sg-primary-btn:active {
-  transform: scale(0.98);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 /* ─── §2.10 Message & Payment Check view ────────────────────────────────── */
@@ -887,20 +875,19 @@ summary:focus-visible {
   width: 100%;
   padding: var(--sg-space-md);
   background: var(--sg-paper-raised);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--sg-border);
   border-radius: var(--sg-radius-lg);
   cursor: pointer;
   font-family: var(--sg-font-body);
   font-size: 13px;
   color: var(--sg-ink);
   text-align: left;
-  transition: border-color 150ms ease, background-color 150ms ease, transform 150ms ease;
+  transition: border-color 150ms ease, background-color 150ms ease;
 }
 
 .sg-mc-mode-btn:hover {
-  border-color: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.25);
   background: rgba(255, 255, 255, 0.03);
-  transform: translateY(-1px);
 }
 
 .sg-mc-mode-btn:active {
@@ -930,17 +917,19 @@ summary:focus-visible {
   font-size: 13px;
   color: var(--sg-ink);
   background: var(--sg-paper-raised);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--sg-radius-lg);
+  border: 1px solid var(--sg-border-strong);
+  border-radius: var(--sg-radius);
   padding: var(--sg-space-sm);
   resize: vertical;
   min-height: 80px;
   line-height: 1.55;
-  transition: border-color 150ms ease;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .sg-textarea:focus {
   border-color: var(--sg-brass);
+  box-shadow: 0 0 0 3px rgba(200, 155, 84, 0.22);
+  outline: none;
 }
 
 .sg-textarea::placeholder {
@@ -995,15 +984,17 @@ summary:focus-visible {
   font-size: 13px;
   color: var(--sg-ink);
   background: var(--sg-paper-raised);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--sg-radius-lg);
+  border: 1px solid var(--sg-border-strong);
+  border-radius: var(--sg-radius);
   padding: var(--sg-space-sm);
   line-height: 1.55;
-  transition: border-color 150ms ease;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .sg-input:focus {
   border-color: var(--sg-brass);
+  box-shadow: 0 0 0 3px rgba(200, 155, 84, 0.22);
+  outline: none;
 }
 
 .sg-input::placeholder {
@@ -1041,7 +1032,7 @@ summary:focus-visible {
 /* §2.10 coreFact card — 2px brass left border, ALWAYS renders (PLAN-mandated) */
 .sg-mc-core-fact {
   background: var(--sg-paper-raised);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--sg-border);
   border-left: 2px solid var(--sg-brass);
   border-radius: var(--sg-radius-lg);
   padding: var(--sg-space-md);
@@ -1087,7 +1078,7 @@ summary:focus-visible {
 .sg-payment-nudge {
   width: 100%;
   padding: var(--sg-space-sm) var(--sg-space-md);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--sg-border);
   display: flex;
   align-items: center;
   gap: var(--sg-space-sm);
@@ -1121,7 +1112,7 @@ summary:focus-visible {
 /* ─── §1.4 History footer ──────────────────────────────────────────────── */
 .sg-footer {
   width: 100%;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--sg-border);
   padding-top: var(--sg-space-md);
   margin-top: var(--sg-space-md);
 }
@@ -1171,14 +1162,8 @@ summary:focus-visible {
   gap: var(--sg-space-sm);
   padding: var(--sg-space-xs) var(--sg-space-sm);
   border-radius: var(--sg-radius-xs);
-  cursor: pointer;
   font-size: 12px;
   color: var(--sg-ink);
-  transition: background-color 150ms ease;
-}
-
-.sg-history-item:hover {
-  background: rgba(255, 255, 255, 0.04);
 }
 
 .sg-history-dot {
@@ -1218,18 +1203,7 @@ summary:focus-visible {
 
 /* ─── Reduced motion: disable hover lifts globally ──────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .sg-heuristic-block,
-  .sg-red-flag,
-  .sg-report-resources,
-  .sg-vision-notes,
   .sg-mc-mode-btn {
     transition: none;
-  }
-  .sg-heuristic-block:hover,
-  .sg-red-flag:hover,
-  .sg-report-resources:hover,
-  .sg-vision-notes:hover,
-  .sg-mc-mode-btn:hover {
-    transform: none;
   }
 }

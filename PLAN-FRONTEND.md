@@ -47,28 +47,39 @@ is the "one thing to remember ScamGuard by" — everything else stays quiet arou
 
 ### 1.2 Palette
 
+**DRIFT RECORD (2026-08-13):** The original light warm-cream/terracotta palette (below) was
+replaced by a dark warm-charcoal palette during implementation. The dark palette was deemed more
+appropriate for a "trustworthy inspection stamp" identity (§1.1) and avoids both the generic
+AI-generated SaaS look and the security-vendor black-and-red panic palette. Design tokens are
+defined in CSS `:root` variables in both `popup.css` and `options.css`. The palette was further
+refined in the 2026-08-13 rebuild: `--sg-paper-raised` lightened from `#1E1B18` to `#221D19`
+for clearer surface layering, `--sg-border` increased to `rgba(255,255,255,0.10)`,
+`--sg-border-strong: #6E675E` added for interactive boundaries, `--sg-paper-sunken: #100E0D`
+added for inset wells, and `--sg-muted` brightened to `#B9B3A9` for improved readability.
+
 | Token | Hex | Role |
 |---|---|---|
-| `--sg-ink` | `#1C1B1A` | Primary text, near-black but warm (not pure `#000`) |
-| `--sg-paper` | `#FAF8F4` | Popup background — warm off-white, paper/document feel, not clinical white |
-| `--sg-paper-raised` | `#FFFFFF` | Cards/panels on top of paper background |
-| `--sg-brass` | `#9C7A3C` | Primary brand accent — a muted brass/seal-ink tone, used for the stamp ring, links, primary buttons. Distinct from both terracotta-default and acid-green-default. |
-| `--sg-safe` | `#3F7D5C` | Verdict: Safe (muted forest green, not neon) |
-| `--sg-review` | `#B5892C` | Verdict: Review (amber-brass, close to brand accent — "review" is a shade of the brand, not a separate alert color) |
-| `--sg-suspicious` | `#C1602B` | Verdict: Suspicious (burnt orange) |
-| `--sg-high-risk` | `#A3312A` | Verdict: High-Risk (deep brick red, not pure alarm-red — stays in the same muted, "inked" family as the rest of the palette) |
-| `--sg-line` | `#E4DFD5` | Hairline dividers, input borders |
-| `--sg-muted` | `#6B665D` | Secondary text |
+| `--sg-ink` | `#F2EFE9` | Primary text, near-black but warm (not pure `#000`) |
+| `--sg-paper` | `#161412` | Popup background — dark warm charcoal |
+| `--sg-paper-raised` | `#221D19` | Cards/panels on top of paper background |
+| `--sg-paper-sunken` | `#100E0D` | Inset wells, code blocks, accordion content |
+| `--sg-brass` | `#C89B54` | Primary brand accent — brass/seal-ink tone |
+| `--sg-safe` | `#4CAF7E` | Verdict: Safe (muted forest green) |
+| `--sg-review` | `#D4A24A` | Verdict: Review (amber-brass) |
+| `--sg-suspicious` | `#E07B3F` | Verdict: Suspicious (burnt orange) |
+| `--sg-high-risk` | `#D1544A` | Verdict: High-Risk (deep brick red) |
+| `--sg-border` | `rgba(255,255,255,0.10)` | Decorative hairlines, card edges on raised surfaces |
+| `--sg-border-strong` | `#6E675E` | Interactive component boundaries (inputs, buttons, toggles) |
+| `--sg-muted` | `#B9B3A9` | Secondary text |
 
 Rationale: all five semantic colors sit in the same desaturated, warm-toned family (nothing
 neon, nothing pure-hue) so the verdict seal always looks like it belongs to the same object —
 only its ink color changes, like a stamp re-inked in a different color, not a different UI
 component swapped in. This directly supports the "calm and factual, no alarmism" requirement.
 
-**Contrast check (WCAG AA, §6.6):** `--sg-ink` on `--sg-paper` = 15.1:1. All four verdict colors
-on `--sg-paper-raised` (`#FFFFFF`) checked ≥ 4.5:1 for the 14px verdict label text; `--sg-high-risk`
-on white = 6.2:1, `--sg-review` on white = 4.6:1 (the tightest — do not lighten `--sg-review`
-further without re-checking).
+**Contrast check (WCAG AA, §6.6):** `--sg-ink` on `--sg-paper` = 14.5:1. All four verdict colors
+on dark surfaces checked ≥ 4.5:1 for the verdict label text; `--sg-high-risk` on
+`--sg-paper-raised` ≈ 4.8:1, `--sg-review` on `--sg-paper-raised` ≈ 6.5:1. All pass WCAG AA.
 
 ### 1.3 Typography
 

@@ -16,6 +16,14 @@ import { t } from "./src/shared/i18n.js";
 import { chromeRuntime } from "./src/shared/browser-api.js";
 import { list as listProviders, get as getProvider } from "./src/llm/providers/registry.js";
 
+// ─── Helpers ──────────────────────────────────────────────────────────────
+
+function escapeHtml(str) {
+  if (typeof str !== "string") return "";
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
 // ─── §4 Onboarding ───────────────────────────────────────────────────────
 
 /**
@@ -75,6 +83,7 @@ function renderProviderGrid(gridEl, providers) {
     card.className = "sg-provider-card";
     card.setAttribute("role", "radio");
     card.setAttribute("aria-checked", "false");
+    card.setAttribute("tabindex", "-1");
     card.dataset.providerId = provider.id;
 
     // Build card content.
@@ -92,13 +101,53 @@ function renderProviderGrid(gridEl, providers) {
     if (provider.id === "openai" || provider.id === "anthropic") {
       const paidEl = document.createElement("div");
       paidEl.className = "sg-provider-card-paid";
-      paidEl.textContent = "No free tier \u2014 requires paid account";
+      paidEl.textContent = t("providerPaidNote");
       card.appendChild(paidEl);
     }
 
     card.addEventListener("click", () => selectProvider(provider.id));
     gridEl.appendChild(card);
   }
+
+  // §3.2 ARIA radiogroup: arrow-key navigation between cards.
+  gridEl.addEventListener("keydown", (e) => {
+    const cards = Array.from(gridEl.querySelectorAll(".sg-provider-card"));
+    if (cards.length === 0) return;
+
+    const currentIndex = cards.findIndex((c) => c === document.activeElement);
+    let nextIndex = -1;
+
+    switch (e.key) {
+      case "ArrowRight":
+      case "ArrowDown":
+        e.preventDefault();
+        nextIndex = currentIndex < cards.length - 1 ? currentIndex + 1 : 0;
+        break;
+      case "ArrowLeft":
+      case "ArrowUp":
+        e.preventDefault();
+        nextIndex = currentIndex > 0 ? currentIndex - 1 : cards.length - 1;
+        break;
+      case "Home":
+        e.preventDefault();
+        nextIndex = 0;
+        break;
+      case "End":
+        e.preventDefault();
+        nextIndex = cards.length - 1;
+        break;
+      default:
+        return;
+    }
+
+    if (nextIndex >= 0 && nextIndex < cards.length) {
+      // Move tabindex to the next card.
+      for (const card of cards) card.setAttribute("tabindex", "-1");
+      cards[nextIndex].setAttribute("tabindex", "0");
+      cards[nextIndex].focus();
+      selectProvider(cards[nextIndex].dataset.providerId);
+    }
+  });
 }
 
 /**
@@ -125,6 +174,7 @@ function selectProvider(providerId) {
     for (const card of grid.querySelectorAll(".sg-provider-card")) {
       const isSelected = card.dataset.providerId === providerId;
       card.setAttribute("aria-checked", String(isSelected));
+      card.setAttribute("tabindex", isSelected ? "0" : "-1");
     }
   }
 
@@ -163,7 +213,8 @@ function updateTrustStatement(providerId) {
   if (!el) return;
   const adapter = getProvider(providerId);
   const label = adapter?.label ?? providerId;
-  el.textContent = t("trustStatement", { provider: label });
+  const shieldSvg = '<svg class="sg-trust-shield" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1L2 3.5v3.5c0 3.25 2.15 6.25 5 7 2.85-.75 5-3.75 5-7V3.5L7 1z" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>';
+  el.innerHTML = shieldSvg + " " + escapeHtml(t("trustStatement", { provider: label }));
 }
 
 // ─── Vision toggle (§3.1 item 2) ────────────────────────────────────────
@@ -232,7 +283,7 @@ function toggleKeyVisibility() {
 
   keyVisible = !keyVisible;
   input.type = keyVisible ? "text" : "password";
-  btn.setAttribute("aria-label", keyVisible ? "Hide API key" : "Show API key");
+  btn.setAttribute("aria-label", keyVisible ? t("hideKey") : t("showKey"));
 
   // Swap eye icon visibility.
   const openEyes = btn.querySelectorAll(".sg-eye-open");
@@ -257,7 +308,7 @@ async function runTestConnection() {
   if (!resultEl || !resultText || !btn) return;
 
   btn.disabled = true;
-  btn.textContent = "Testing\u2026";
+  btn.textContent = t("testing");
   resultEl.hidden = true;
 
   try {
@@ -279,7 +330,7 @@ async function runTestConnection() {
   } catch {
     resultEl.hidden = false;
     resultEl.className = "sg-test-result sg-test-result--failure";
-    resultText.textContent = "Could not reach the service worker.";
+    resultText.textContent = t("testConnectionFailed");
   } finally {
     btn.disabled = false;
     btn.textContent = t("testConnection");

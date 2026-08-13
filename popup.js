@@ -17,6 +17,19 @@
 import { t } from "./src/shared/i18n.js";
 import { chromeRuntime, chromeTabs } from "./src/shared/browser-api.js";
 
+// ─── Helpers ──────────────────────────────────────────────────────────────
+
+/**
+ * Simple plural helper: returns "item" if count === 1, "items" otherwise.
+ * Used with t() for count-based heuristic labels.
+ *
+ * @param {number} count
+ * @returns {string}
+ */
+function pluralize(count) {
+  return count === 1 ? "item" : "items";
+}
+
 // ─── §2 Popup state machine ──────────────────────────────────────────────
 
 /**
@@ -213,8 +226,8 @@ function renderSeal(container, verdict, score) {
 
   container.className = `sg-seal sg-seal--${verdictClass}`;
   container.innerHTML = `
-    <span class="sg-seal-verdict">${escapeHtml(t(verdictKey))}</span>
     ${score != null ? `<span class="sg-seal-score">${Math.round(score)}</span>` : ""}
+    <span class="sg-seal-verdict">${escapeHtml(t(verdictKey))}</span>
   `;
 }
 
@@ -237,17 +250,19 @@ function renderHeuristics(container, heuristics) {
   if (pa) {
     rows.push({
       triggered: pa.triggered,
-      label: "Price " + (pa.triggered ? `${Math.round((pa.ratioVsCategoryTypical ?? 0) * 100)}% below typical` : "within typical range"),
+      label: pa.triggered
+        ? t("heuristicPriceBelow", { pct: Math.round((pa.ratioVsCategoryTypical ?? 0) * 100) })
+        : t("heuristicPriceWithin"),
     });
   }
 
   const sa = heuristics.sellerAge;
   if (sa) {
+    const count = sa.itemsListed ?? 0;
+    const labelKey = sa.triggered ? "heuristicNewSeller" : "heuristicEstablishedSeller";
     rows.push({
       triggered: sa.triggered,
-      label: sa.triggered
-        ? `New seller (${sa.itemsListed ?? 0} items)`
-        : `Established seller (${sa.itemsListed ?? "?"} items)`,
+      label: t(labelKey, { count, countPlural: pluralize(count) }),
     });
   }
 
@@ -256,8 +271,8 @@ function renderHeuristics(container, heuristics) {
     rows.push({
       triggered: ph.triggered,
       label: ph.triggered
-        ? `Low photo count (${ph.count} photos)`
-        : `Adequate photos (${ph.count})`,
+        ? t("heuristicLowPhotos", { count: ph.count })
+        : t("heuristicAdequatePhotos", { count: ph.count }),
     });
   }
 
@@ -265,7 +280,7 @@ function renderHeuristics(container, heuristics) {
   if (cl) {
     rows.push({
       triggered: cl.triggered,
-      label: cl.triggered ? "Contact details in listing" : "No contact leaks",
+      label: cl.triggered ? t("heuristicContactLeak") : t("heuristicNoContactLeak"),
     });
   }
 
@@ -273,7 +288,7 @@ function renderHeuristics(container, heuristics) {
   if (ul) {
     rows.push({
       triggered: ul.triggered,
-      label: ul.triggered ? "Urgency language detected" : "No urgency language",
+      label: ul.triggered ? t("heuristicUrgency") : t("heuristicNoUrgency"),
     });
   }
 
@@ -281,7 +296,7 @@ function renderHeuristics(container, heuristics) {
   if (of) {
     rows.push({
       triggered: of.triggered,
-      label: of.triggered ? "Off-platform payment language" : "No off-platform payment language",
+      label: of.triggered ? t("heuristicOffPlatformPayment") : t("heuristicNoOffPlatformPayment"),
     });
   }
 
@@ -289,7 +304,7 @@ function renderHeuristics(container, heuristics) {
   if (af) {
     rows.push({
       triggered: af.triggered,
-      label: af.triggered ? "Advance fee language detected" : "No advance fee language",
+      label: af.triggered ? t("heuristicAdvanceFee") : t("heuristicNoAdvanceFee"),
     });
   }
 
@@ -541,10 +556,6 @@ function makeActionBtn(label, onClick) {
 }
 
 function openOptionsPage() {
-  if (chromeRuntime?.sendMessage) {
-    chromeRuntime.sendMessage({ type: "OPEN_OPTIONS" }).catch(() => {});
-  }
-  // Fallback for extension context.
   if (typeof chrome !== "undefined" && chrome.runtime?.openOptionsPage) {
     chrome.runtime.openOptionsPage();
   }
@@ -560,7 +571,7 @@ function openOptionsPage() {
  */
 function buildReportText(report) {
   const lines = [];
-  lines.push(`ScamGuard Report`);
+  lines.push(t("appName") + " Report");
   lines.push(`Verdict: ${report.verdict} (${report.score}/100)`);
   lines.push("");
   if (report.listingTitle) lines.push(`Listing: ${report.listingTitle}`);
@@ -591,7 +602,7 @@ function buildReportText(report) {
     }
     lines.push("");
   }
-  lines.push("Checked with ScamGuard — your key, your data, your verdict.");
+  lines.push(t("reportTagline"));
   return lines.join("\n");
 }
 
@@ -746,11 +757,11 @@ async function runMessageCheck(input) {
     if (response && response.ok && response.report) {
       renderMessageCheckResult(response.report);
     } else {
-      $.mcVerdict.innerHTML = `<span>Could not check this message.</span>`;
+      $.mcVerdict.innerHTML = `<span>${escapeHtml(t("messageCheckError"))}</span>`;
       $.mcCoreFact.textContent = "";
     }
   } catch {
-    $.mcVerdict.innerHTML = `<span>Could not check this message.</span>`;
+    $.mcVerdict.innerHTML = `<span>${escapeHtml(t("messageCheckError"))}</span>`;
     $.mcCoreFact.textContent = "";
   }
 }
@@ -792,6 +803,26 @@ function renderHistory(historyList) {
 let currentReport = null;
 
 /**
+ * Fetch the current settings to get the provider label, then update the
+ * analyzing LLM text to show "Analyzing with {provider}…".
+ */
+async function populateAnalyzingProvider() {
+  try {
+    const response = await chromeRuntime.sendMessage({ type: "GET_SETTINGS" });
+    if (response?.ok && response.settings?.providerId) {
+      const providerId = response.settings.providerId;
+      const labelKey = `provider${providerId.charAt(0).toUpperCase() + providerId.slice(1)}`;
+      const label = t(labelKey);
+      if ($.analyzingLlmText) {
+        $.analyzingLlmText.textContent = t("analyzingWith", { provider: label });
+      }
+    }
+  } catch {
+    // Silent — default "Analyzing…" text stays.
+  }
+}
+
+/**
  * Start the full analysis flow: GET_LISTING → ANALYZE → render.
  * Called when the popup opens on a listing page and there's no prior result.
  */
@@ -830,6 +861,7 @@ async function startAnalysis() {
     // Show Analyzing state immediately with the heuristic pre-check.
     showState(PopupState.Analyzing);
     renderHeuristics($.analyzingHeuristics, null); // heuristics come from the SW in the ANALYZE response
+    populateAnalyzingProvider();
 
     // Start the LLM analysis.
     const analysisResponse = await chromeRuntime.sendMessage({
@@ -986,7 +1018,7 @@ async function init() {
         // Still analyzing — show the analyzing state with heuristics.
         showState(PopupState.Analyzing);
         renderHeuristics($.analyzingHeuristics, session.heuristics);
-        // The analyzing LLM text stays as the default "Analyzing…"
+        populateAnalyzingProvider();
       } else {
         // No session — start fresh analysis if on a listing page.
         startAnalysis();

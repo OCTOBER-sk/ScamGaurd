@@ -698,14 +698,14 @@ test("options.css reuses §1.2 design tokens", () => {
   const tokens = {
     "--sg-ink": "#F2EFE9",
     "--sg-paper": "#161412",
-    "--sg-paper-raised": "#1E1B18",
+    "--sg-paper-raised": "#221D19",
     "--sg-brass": "#C89B54",
     "--sg-safe": "#4CAF7E",
     "--sg-review": "#D4A24A",
     "--sg-suspicious": "#E07B3F",
     "--sg-high-risk": "#D1544A",
-    "--sg-line": "rgba(255, 255, 255, 0.08)",
-    "--sg-muted": "#A8A29A",
+    "--sg-border": "rgba(255, 255, 255, 0.10)",
+    "--sg-muted": "#B9B3A9",
   };
 
   for (const [name, val] of Object.entries(tokens)) {
