@@ -203,18 +203,19 @@ test("verdict→seal CSS class mapping matches §1.2 palette tokens", async () =
     "High-Risk": "high-risk",
   };
 
+  // Light palette values (§1.2 system light default)
   const expectedTokens = {
-    safe: "#4CAF7E",
-    review: "#D4A24A",
-    suspicious: "#E07B3F",
-    "high-risk": "#D1544A",
+    safe: "#2F6B4A",
+    review: "#8A6A1F",
+    suspicious: "#B3541E",
+    "high-risk": "#9A2B24",
   };
 
   for (const [verdict, className] of Object.entries(verdictToClass)) {
     assert.ok(expectedTokens[className], `Class "${className}" should map to a §1.2 token`);
     assert.equal(
       expectedTokens[className],
-      { Safe: "#4CAF7E", Review: "#D4A24A", Suspicious: "#E07B3F", "High-Risk": "#D1544A" }[verdict],
+      { Safe: "#2F6B4A", Review: "#8A6A1F", Suspicious: "#B3541E", "High-Risk": "#9A2B24" }[verdict],
       `Token for ${verdict} matches §1.2`
     );
   }
@@ -720,17 +721,18 @@ test("§2.10 back button exists in message check view", async () => {
 test("§1.2 CSS contains all exact palette tokens", () => {
   const css = readFileSync(new URL("../popup.css", import.meta.url), "utf8");
 
+  // Light palette values (§1.2 system light default — :root)
   const tokens = {
-    "--sg-ink": "#F2EFE9",
-    "--sg-paper": "#161412",
-    "--sg-paper-raised": "#221D19",
-    "--sg-brass": "#C89B54",
-    "--sg-safe": "#4CAF7E",
-    "--sg-review": "#D4A24A",
-    "--sg-suspicious": "#E07B3F",
-    "--sg-high-risk": "#D1544A",
-    "--sg-border": "rgba(255, 255, 255, 0.10)",
-    "--sg-muted": "#B9B3A9",
+    "--sg-ink": "#1C1B1A",
+    "--sg-paper": "#FAF7F2",
+    "--sg-paper-raised": "#FFFFFF",
+    "--sg-brass": "#8A6427",
+    "--sg-safe": "#2F6B4A",
+    "--sg-review": "#8A6A1F",
+    "--sg-suspicious": "#B3541E",
+    "--sg-high-risk": "#9A2B24",
+    "--sg-line": "rgba(28,27,26,0.10)",
+    "--sg-muted": "#6B665D",
   };
 
   for (const [name, val] of Object.entries(tokens)) {
@@ -738,6 +740,38 @@ test("§1.2 CSS contains all exact palette tokens", () => {
     const escaped = val.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const pattern = new RegExp(`${name}\\s*:\\s*${escaped}`, "i");
     assert.match(css, pattern, `CSS contains ${name}: ${val}`);
+  }
+});
+
+test("§1.2 dark palette tokens in @media (prefers-color-scheme: dark)", () => {
+  const css = readFileSync(new URL("../popup.css", import.meta.url), "utf8");
+
+  // Dark palette values (§1.2 dark override)
+  const darkTokens = {
+    "--sg-ink": "#F2EFE9",
+    "--sg-paper": "#161412",
+    "--sg-paper-raised": "#1F1C19",
+    "--sg-paper-sunken": "#100E0D",
+    "--sg-brass": "#C89B54",
+    "--sg-safe": "#4CAF7E",
+    "--sg-review": "#D4A24A",
+    "--sg-suspicious": "#E07B3F",
+    "--sg-high-risk": "#DD5E54",
+    "--sg-line": "rgba(255,255,255,0.10)",
+    "--sg-border-strong": "#6E675E",
+    "--sg-muted": "#B9B3A9",
+    "--sg-focus": "#C89B54",
+  };
+
+  // Extract the dark media query block.
+  const darkBlock = css.match(/@media\s*\(prefers-color-scheme\s*:\s*dark\)\s*\{[\s\S]*?\n\}/);
+  assert.ok(darkBlock, "CSS contains @media (prefers-color-scheme: dark) block");
+  const darkCss = darkBlock[0];
+
+  for (const [name, val] of Object.entries(darkTokens)) {
+    const escaped = val.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const pattern = new RegExp(`${name}\\s*:\\s*${escaped}`, "i");
+    assert.match(darkCss, pattern, `Dark palette contains ${name}: ${val}`);
   }
 });
 

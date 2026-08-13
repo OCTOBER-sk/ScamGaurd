@@ -2,7 +2,7 @@
 
 ## Currently true (verified)
 - 254/254 unit+integration tests pass; lint 0 violations; CI green 4/4 on GitHub
-- Frontend rebuild 2026-08-13: design tokens updated (--sg-paper-raised #221D19, --sg-border-strong #6E675E, --sg-paper-sunken #100E0D, --sg-muted #B9B3A9), verdict seal legibility fixed (16px verdict word, 26px score), all hover lifts removed from non-interactive elements, radiogroup keyboard nav added, aria-live on mc-result-screen and test-result, all hardcoded UI strings routed through t()
+- Theme rebuild 2026-08-13: system light/dark dual-theme via `prefers-color-scheme` — light palette (warm paper #FAF7F2, brass #8A6427) as :root default, dark palette (charcoal #161412, brass #C89B54) in `@media (prefers-color-scheme: dark)`. Token-driven: zero hardcoded hex/rgba in component rules (documented exception: intentional light canvas export card). `color-scheme: light dark` on :root. All component styles restyled: seal uses verdict-colored concentric rings via currentColor, three button tiers (primary/secondary/tertiary), cards use Notion-style shadows in light / border-only in dark, inputs with brass focus ring + glow, toggle switch token-driven, hover transforms removed from non-interactive elements.
 - Real-browser E2E (real Chrome, real chrome APIs): popup states, options grid, message-check click-through, NoKey first-run, real 401 failure state — all PASS
 - Message & Payment Check module: 6 patterns, offline, coreFact always — UNIT + REAL-E2E PASS
 - LLM fusion real call: gpt-oss-20b:free, llmScore 65 → fused 54 "Suspicious" — PASS

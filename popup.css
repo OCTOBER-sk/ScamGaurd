@@ -1,26 +1,51 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    popup.css — ScamGuard popup stylesheet
-   Premium dark redesign — warm-charcoal surfaces, brass accent, real depth.
+   System light/dark dual-theme — warm paper (light) / layered charcoal (dark).
    Monitor surface — glanceable hierarchy, density, no hero layouts.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ─── §1.2 Design tokens (dark warm-charcoal palette, rebuilt) ──────────── */
+/* ─── §1.2 Design tokens (system light default, dark override) ──────────── */
 :root {
-  /* Surface & text */
-  --sg-ink: #F2EFE9;
-  --sg-paper: #161412;
-  --sg-paper-raised: #221D19;
-  --sg-paper-sunken: #100E0D;
-  --sg-brass: #C89B54;
-  /* Verdict scale — bright on dark, contrast >= 4.5:1 */
-  --sg-safe: #4CAF7E;
-  --sg-review: #D4A24A;
-  --sg-suspicious: #E07B3F;
-  --sg-high-risk: #D1544A;
+  color-scheme: light dark;
+
+  /* Surface & text — LIGHT palette */
+  --sg-ink: #1C1B1A;
+  --sg-paper: #FAF7F2;
+  --sg-paper-raised: #FFFFFF;
+  --sg-paper-sunken: #F1EDE6;
+  --sg-brass: #8A6427;
+  --sg-brass-soft: rgba(138,100,39,0.10);
+  /* Verdict scale — light on white, contrast >= 4.5:1 */
+  --sg-safe: #2F6B4A;
+  --sg-review: #8A6A1F;
+  --sg-suspicious: #B3541E;
+  --sg-high-risk: #9A2B24;
+
   /* Borders & muted */
-  --sg-border: rgba(255, 255, 255, 0.10);
-  --sg-border-strong: #6E675E;
-  --sg-muted: #B9B3A9;
+  --sg-line: rgba(28,27,26,0.10);
+  --sg-border-strong: #8A857C;
+  --sg-muted: #6B665D;
+
+  /* Focus */
+  --sg-focus: #8A6427;
+
+  /* Shadows — light mode: Notion-style layered, individual opacity <= 0.05 */
+  --sg-shadow-card: 0 1px 2px rgba(28,27,26,0.05), 0 2px 8px rgba(28,27,26,0.05);
+  --sg-shadow-seal: 0 2px 8px rgba(0,0,0,0.12);
+  --sg-shadow-sm: 0 1px 2px rgba(28,27,26,0.04), 0 1px 3px rgba(28,27,26,0.03);
+  --sg-shadow-md: 0 2px 6px rgba(28,27,26,0.05), 0 1px 2px rgba(28,27,26,0.03);
+
+  /* Button & interaction */
+  --sg-primary-text: #FFFFFF;
+  --sg-primary-hover: #7D5B23;
+  --sg-danger-hover: rgba(154,43,36,0.08);
+
+  /* Toggle */
+  --sg-toggle-thumb: #FFFFFF;
+
+  /* Washes */
+  --sg-wash-hover: rgba(28,27,26,0.04);
+  --sg-wash-active: rgba(28,27,26,0.06);
 
   /* Typography stacks */
   --sg-font-display: "Fraunces", "Georgia", "Cambria", "Times New Roman", serif;
@@ -37,17 +62,50 @@
   --sg-space-md: 12px;
   --sg-space-lg: 16px;
   --sg-space-xl: 24px;
+}
 
-  /* Dark-surface border & shadows */
-  --sg-border-decorative: 1px solid rgba(255, 255, 255, 0.10);
-  /* Layered soft shadows — dark-appropriate */
-  --sg-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3),
-                  0 1px 2px rgba(0, 0, 0, 0.2);
-  --sg-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4),
-                  0 2px 4px rgba(0, 0, 0, 0.25);
-  /* Card shadow (per spec: layered on dark) */
-  --sg-shadow-card: rgba(0, 0, 0, 0.4) 0px 8px 24px,
-                    rgba(0, 0, 0, 0.25) 0px 2px 8px;
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Surface & text — DARK palette */
+    --sg-ink: #F2EFE9;
+    --sg-paper: #161412;
+    --sg-paper-raised: #1F1C19;
+    --sg-paper-sunken: #100E0D;
+    --sg-brass: #C89B54;
+    --sg-brass-soft: rgba(200,155,84,0.14);
+
+    /* Verdict scale — bright on dark, contrast >= 4.5:1 */
+    --sg-safe: #4CAF7E;
+    --sg-review: #D4A24A;
+    --sg-suspicious: #E07B3F;
+    --sg-high-risk: #DD5E54;
+
+    /* Borders & muted */
+    --sg-line: rgba(255,255,255,0.10);
+    --sg-border-strong: #6E675E;
+    --sg-muted: #B9B3A9;
+
+    /* Focus */
+    --sg-focus: #C89B54;
+
+    /* Shadows — dark mode: minimal, borders over shadows */
+    --sg-shadow-card: none;
+    --sg-shadow-seal: 0 2px 8px rgba(0,0,0,0.35);
+    --sg-shadow-sm: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+    --sg-shadow-md: 0 4px 12px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.25);
+
+    /* Button & interaction */
+    --sg-primary-text: #1C1A17;
+    --sg-primary-hover: #D4A860;
+    --sg-danger-hover: rgba(209,84,74,0.14);
+
+    /* Toggle */
+    --sg-toggle-thumb: #1C1A17;
+
+    /* Washes */
+    --sg-wash-hover: rgba(255,255,255,0.04);
+    --sg-wash-active: rgba(255,255,255,0.06);
+  }
 }
 
 /* ─── §1.3 Typography — @font-face (actual filenames in fonts/) ────────── */
@@ -99,8 +157,8 @@
 }
 
 html {
-  font-size: 14px;
-  line-height: 1.55;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 body {
@@ -128,10 +186,11 @@ body {
   border: 0;
 }
 
-/* ─── §6 Focus-visible (2px brass outline on all focusable elements) ────── */
+/* ─── §6 Focus-visible (2px brass outline + soft glow ring) ────────────── */
 :focus-visible {
-  outline: 2px solid var(--sg-brass);
+  outline: 2px solid var(--sg-focus);
   outline-offset: 2px;
+  box-shadow: 0 0 0 3px var(--sg-brass-soft);
 }
 
 button:focus-visible,
@@ -140,21 +199,20 @@ input:focus-visible,
 textarea:focus-visible,
 select:focus-visible,
 summary:focus-visible {
-  outline: 2px solid var(--sg-brass);
+  outline: 2px solid var(--sg-focus);
   outline-offset: 2px;
+  box-shadow: 0 0 0 3px var(--sg-brass-soft);
 }
 
-/* ─── §1.4 Header — subtle glass (backdrop-filter blur + tint) ─────────── */
+/* ─── §1.4 Header ─────────────────────────────────────────────────────── */
 .sg-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 40px;
   padding: 0 var(--sg-space-md);
-  border-bottom: 1px solid var(--sg-border);
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--sg-line);
+  background: var(--sg-paper);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -184,12 +242,12 @@ summary:focus-visible {
   gap: var(--sg-space-sm);
 }
 
-/* Ghost button — transparent + border */
+/* Secondary button — transparent + border (§4.2) */
 .sg-header-btn {
   font-family: var(--sg-font-body);
   font-size: 12px;
   font-weight: 500;
-  color: var(--sg-brass);
+  color: var(--sg-ink);
   background: transparent;
   border: 1px solid var(--sg-border-strong);
   border-radius: var(--sg-radius-sm);
@@ -201,12 +259,12 @@ summary:focus-visible {
 }
 
 .sg-header-btn:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.24);
+  background: var(--sg-brass-soft);
+  border-color: var(--sg-brass);
 }
 
 .sg-header-btn:active {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--sg-wash-active);
 }
 
 /* ─── §1.4 State container ─────────────────────────────────────────────── */
@@ -226,7 +284,7 @@ summary:focus-visible {
   display: none !important;
 }
 
-/* ─── §1.1 Verdict seal — glowing stamp with concentric rings ──────────── */
+/* ─── §1.1 Verdict seal — crisp stamp with concentric rings ───────────── */
 /* Container: column layout — circle (score) on top, verdict word below */
 .sg-seal {
   display: flex;
@@ -239,7 +297,7 @@ summary:focus-visible {
   z-index: 0;
 }
 
-/* The 72px circle: score number inside, concentric rings, brass glow */
+/* The 72px circle: score number inside, concentric rings */
 .sg-seal-score {
   width: 72px;
   height: 72px;
@@ -249,14 +307,11 @@ summary:focus-visible {
   justify-content: center;
   flex-shrink: 0;
   position: relative;
-  /* Paper-circle fill — slightly lighter than surface */
-  background: radial-gradient(circle, rgba(200, 155, 84, 0.06) 0%, var(--sg-paper-raised) 80%);
-  /* No default border — pseudo-elements handle the concentric rings */
+  /* Paper-circle fill — raised surface */
+  background: var(--sg-paper-raised);
   border: none;
-  /* Outer glow — brass glow + depth shadow */
-  box-shadow: 0 0 24px color-mix(in srgb, var(--sg-brass) 35%, transparent),
-              0 0 24px rgba(200, 155, 84, 0.35),
-              0 2px 8px rgba(0, 0, 0, 0.3);
+  /* Subtle ring shadow — light/dark via token */
+  box-shadow: var(--sg-shadow-seal);
   font-family: var(--sg-font-display);
   font-weight: 700;
   font-size: 26px;
@@ -265,23 +320,24 @@ summary:focus-visible {
   z-index: 2;
 }
 
-/* Outer concentric ring — gradient stroke brass → light brass */
+/* Outer concentric ring — border in verdict color via currentColor */
 .sg-seal-score::before {
   content: '';
   position: absolute;
   inset: -4px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--sg-brass), #E0BE72);
+  border: 2px solid currentColor;
   z-index: -1;
 }
 
-/* Inner concentric ring — subtle brass tint */
+/* Inner concentric ring — subtle border in verdict color */
 .sg-seal-score::after {
   content: '';
   position: absolute;
   inset: 2px;
   border-radius: 50%;
-  border: 1px solid rgba(200, 155, 84, 0.3);
+  border: 1px solid currentColor;
+  opacity: 0.3;
   z-index: 1;
   pointer-events: none;
 }
@@ -336,11 +392,11 @@ summary:focus-visible {
   stroke: var(--sg-muted);
 }
 
-/* ─── §2.3 Heuristic block — card depth on dark ───────────────────────── */
+/* ─── §2.3 Heuristic block — card (§4.4) ─────────────────────────────── */
 .sg-heuristic-block {
   width: 100%;
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-border);
+  border: 1px solid var(--sg-line);
   border-radius: var(--sg-radius-lg);
   padding: var(--sg-space-md);
   box-shadow: var(--sg-shadow-card);
@@ -350,7 +406,7 @@ summary:focus-visible {
   display: none;
 }
 
-/* Section eyebrows — 11px Inter 600 uppercase spacing */
+/* Section eyebrows — 11px Inter 600 uppercase spacing (§4.8) */
 .sg-heuristic-title {
   font-family: var(--sg-font-body);
   font-size: 11px;
@@ -397,7 +453,7 @@ summary:focus-visible {
   width: 100%;
   padding: var(--sg-space-md);
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-border);
+  border: 1px solid var(--sg-line);
   border-radius: var(--sg-radius-lg);
   font-size: 13px;
   color: var(--sg-muted);
@@ -459,7 +515,7 @@ summary:focus-visible {
 
 .sg-red-flag {
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-border);
+  border: 1px solid var(--sg-line);
   border-radius: var(--sg-radius-lg);
   overflow: hidden;
   box-shadow: var(--sg-shadow-card);
@@ -486,7 +542,7 @@ summary:focus-visible {
 }
 
 .sg-red-flag-header:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--sg-wash-hover);
 }
 
 /* §1.6 addendum — severity scale (distinct from verdict scale) */
@@ -533,7 +589,7 @@ summary:focus-visible {
   font-size: 12px;
   color: var(--sg-muted);
   line-height: 1.45;
-  border-top: 1px solid var(--sg-border);
+  border-top: 1px solid var(--sg-line);
 }
 
 /* Summary */
@@ -593,7 +649,7 @@ summary:focus-visible {
 .sg-report-resources {
   width: 100%;
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-border);
+  border: 1px solid var(--sg-line);
   border-radius: var(--sg-radius-lg);
   padding: var(--sg-space-md);
   box-shadow: var(--sg-shadow-card);
@@ -601,7 +657,7 @@ summary:focus-visible {
 
 .sg-report-resources[hidden] { display: none; }
 
-/* Section eyebrows — 11px Inter 600 uppercase spacing */
+/* Section eyebrows — 11px Inter 600 uppercase spacing (§4.8) */
 .sg-report-resources-title {
   font-size: 11px;
   font-weight: 600;
@@ -634,7 +690,7 @@ summary:focus-visible {
 .sg-vision-notes {
   width: 100%;
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-border);
+  border: 1px solid var(--sg-line);
   border-radius: var(--sg-radius-lg);
   padding: var(--sg-space-md);
   box-shadow: var(--sg-shadow-card);
@@ -642,7 +698,7 @@ summary:focus-visible {
 
 .sg-vision-notes[hidden] { display: none; }
 
-/* Section eyebrows — 11px Inter 600 uppercase spacing */
+/* Section eyebrows — 11px Inter 600 uppercase spacing (§4.8) */
 .sg-vision-title {
   font-size: 11px;
   font-weight: 600;
@@ -667,12 +723,12 @@ summary:focus-visible {
   flex-wrap: wrap;
 }
 
-/* Ghost action button — transparent + border */
+/* Ghost action button — transparent + border (§4.2 secondary) */
 .sg-action-btn {
   font-family: var(--sg-font-body);
   font-size: 12px;
   font-weight: 500;
-  color: var(--sg-brass);
+  color: var(--sg-ink);
   background: transparent;
   border: 1px solid var(--sg-border-strong);
   border-radius: var(--sg-radius-sm);
@@ -684,12 +740,12 @@ summary:focus-visible {
 }
 
 .sg-action-btn:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.24);
+  background: var(--sg-brass-soft);
+  border-color: var(--sg-brass);
 }
 
 .sg-action-btn:active {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--sg-wash-active);
 }
 
 .sg-action-btn--copied {
@@ -705,7 +761,7 @@ summary:focus-visible {
 .sg-raw-data {
   width: 100%;
   background: var(--sg-paper-sunken);
-  border: 1px solid var(--sg-border);
+  border: 1px solid var(--sg-line);
   border-radius: var(--sg-radius-lg);
   padding: var(--sg-space-md);
   font-family: var(--sg-font-mono);
@@ -753,7 +809,7 @@ summary:focus-visible {
 .sg-error-card {
   width: 100%;
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-border);
+  border: 1px solid var(--sg-line);
   border-left: 3px solid var(--sg-suspicious);
   border-radius: var(--sg-radius-lg);
   padding: var(--sg-space-md);
@@ -794,29 +850,27 @@ summary:focus-visible {
   margin-bottom: var(--sg-space-lg);
 }
 
-/* Primary button — brass filled, dark text */
+/* Primary button — brass filled (§4.2) */
 .sg-primary-btn {
   font-family: var(--sg-font-body);
   font-size: 13px;
   font-weight: 600;
-  color: #1C1A17;
+  color: var(--sg-primary-text);
   background: var(--sg-brass);
   border: none;
-  border-radius: var(--sg-radius);
+  border-radius: var(--sg-radius-sm);
   padding: var(--sg-space-sm) var(--sg-space-lg);
   min-height: 32px;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  transition: background-color 150ms ease, box-shadow 150ms ease;
+  transition: background-color 150ms ease;
 }
 
 .sg-primary-btn:hover {
-  background: #D4A860;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 0 12px rgba(200, 155, 84, 0.25);
+  background: var(--sg-primary-hover);
 }
 
 .sg-primary-btn:active {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  filter: brightness(0.92);
 }
 
 /* ─── §2.10 Message & Payment Check view ────────────────────────────────── */
@@ -831,6 +885,7 @@ summary:focus-visible {
   margin-bottom: var(--sg-space-md);
 }
 
+/* Tertiary/link button (§4.2) */
 .sg-back-btn {
   font-family: var(--sg-font-body);
   font-size: 13px;
@@ -845,6 +900,7 @@ summary:focus-visible {
 
 .sg-back-btn:hover {
   color: var(--sg-ink);
+  text-decoration: underline;
 }
 
 .sg-view-title {
@@ -875,7 +931,7 @@ summary:focus-visible {
   width: 100%;
   padding: var(--sg-space-md);
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-border);
+  border: 1px solid var(--sg-line);
   border-radius: var(--sg-radius-lg);
   cursor: pointer;
   font-family: var(--sg-font-body);
@@ -886,12 +942,12 @@ summary:focus-visible {
 }
 
 .sg-mc-mode-btn:hover {
-  border-color: rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--sg-border-strong);
+  background: var(--sg-wash-hover);
 }
 
 .sg-mc-mode-btn:active {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--sg-wash-active);
 }
 
 .sg-mc-mode-icon {
@@ -914,11 +970,11 @@ summary:focus-visible {
 
 .sg-textarea {
   font-family: var(--sg-font-body);
-  font-size: 13px;
+  font-size: 14px;
   color: var(--sg-ink);
   background: var(--sg-paper-raised);
   border: 1px solid var(--sg-border-strong);
-  border-radius: var(--sg-radius);
+  border-radius: var(--sg-radius-sm);
   padding: var(--sg-space-sm);
   resize: vertical;
   min-height: 80px;
@@ -928,12 +984,13 @@ summary:focus-visible {
 
 .sg-textarea:focus {
   border-color: var(--sg-brass);
-  box-shadow: 0 0 0 3px rgba(200, 155, 84, 0.22);
+  box-shadow: 0 0 0 3px var(--sg-brass-soft);
   outline: none;
 }
 
 .sg-textarea::placeholder {
   color: var(--sg-muted);
+  opacity: 0.6;
 }
 
 .sg-mc-fieldset {
@@ -981,11 +1038,11 @@ summary:focus-visible {
 
 .sg-input {
   font-family: var(--sg-font-body);
-  font-size: 13px;
+  font-size: 14px;
   color: var(--sg-ink);
   background: var(--sg-paper-raised);
   border: 1px solid var(--sg-border-strong);
-  border-radius: var(--sg-radius);
+  border-radius: var(--sg-radius-sm);
   padding: var(--sg-space-sm);
   line-height: 1.55;
   transition: border-color 150ms ease, box-shadow 150ms ease;
@@ -993,12 +1050,13 @@ summary:focus-visible {
 
 .sg-input:focus {
   border-color: var(--sg-brass);
-  box-shadow: 0 0 0 3px rgba(200, 155, 84, 0.22);
+  box-shadow: 0 0 0 3px var(--sg-brass-soft);
   outline: none;
 }
 
 .sg-input::placeholder {
   color: var(--sg-muted);
+  opacity: 0.6;
 }
 
 /* §2.10 Result view */
@@ -1029,10 +1087,10 @@ summary:focus-visible {
 .sg-mc-verdict--caution { color: var(--sg-review); }
 .sg-mc-verdict--safe { color: var(--sg-safe); }
 
-/* §2.10 coreFact card — 2px brass left border, ALWAYS renders (PLAN-mandated) */
+/* §2.10 coreFact card — 2px brass left border, ALWAYS renders (PLAN-mandated §4.4) */
 .sg-mc-core-fact {
   background: var(--sg-paper-raised);
-  border: 1px solid var(--sg-border);
+  border: 1px solid var(--sg-line);
   border-left: 2px solid var(--sg-brass);
   border-radius: var(--sg-radius-lg);
   padding: var(--sg-space-md);
@@ -1078,7 +1136,7 @@ summary:focus-visible {
 .sg-payment-nudge {
   width: 100%;
   padding: var(--sg-space-sm) var(--sg-space-md);
-  border-top: 1px solid var(--sg-border);
+  border-top: 1px solid var(--sg-line);
   display: flex;
   align-items: center;
   gap: var(--sg-space-sm);
@@ -1091,6 +1149,7 @@ summary:focus-visible {
   flex-shrink: 0;
 }
 
+/* Tertiary/link button (§4.2) */
 .sg-nudge-btn {
   font-family: var(--sg-font-body);
   font-size: 12px;
@@ -1112,7 +1171,7 @@ summary:focus-visible {
 /* ─── §1.4 History footer ──────────────────────────────────────────────── */
 .sg-footer {
   width: 100%;
-  border-top: 1px solid var(--sg-border);
+  border-top: 1px solid var(--sg-line);
   padding-top: var(--sg-space-md);
   margin-top: var(--sg-space-md);
 }
@@ -1124,7 +1183,7 @@ summary:focus-visible {
   margin-bottom: var(--sg-space-sm);
 }
 
-/* Section eyebrows — 11px Inter 600 uppercase spacing */
+/* Section eyebrows — 11px Inter 600 uppercase spacing (§4.8) */
 .sg-footer-title {
   font-size: 11px;
   font-weight: 600;
@@ -1133,6 +1192,7 @@ summary:focus-visible {
   letter-spacing: 0.08em;
 }
 
+/* Tertiary/link button (§4.2) */
 .sg-footer-link {
   font-family: var(--sg-font-body);
   font-size: 12px;
@@ -1156,6 +1216,7 @@ summary:focus-visible {
   gap: var(--sg-space-xs);
 }
 
+/* History items — display-only (§4.9), no pointer cursor */
 .sg-history-item {
   display: flex;
   align-items: center;
@@ -1201,9 +1262,15 @@ summary:focus-visible {
   color: var(--sg-muted);
 }
 
-/* ─── Reduced motion: disable hover lifts globally ──────────────────────── */
+/* ─── Reduced motion: disable transitions globally ──────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .sg-mc-mode-btn {
+  .sg-mc-mode-btn,
+  .sg-action-btn,
+  .sg-header-btn,
+  .sg-primary-btn,
+  .sg-back-btn,
+  .sg-nudge-btn,
+  .sg-footer-link {
     transition: none;
   }
 }

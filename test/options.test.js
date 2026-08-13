@@ -695,17 +695,18 @@ test("options.html has no inline scripts", () => {
 test("options.css reuses §1.2 design tokens", () => {
   const css = readFileSync(new URL("../options.css", import.meta.url), "utf8");
 
+  // Light palette values (§1.2 system light default — :root)
   const tokens = {
-    "--sg-ink": "#F2EFE9",
-    "--sg-paper": "#161412",
-    "--sg-paper-raised": "#221D19",
-    "--sg-brass": "#C89B54",
-    "--sg-safe": "#4CAF7E",
-    "--sg-review": "#D4A24A",
-    "--sg-suspicious": "#E07B3F",
-    "--sg-high-risk": "#D1544A",
-    "--sg-border": "rgba(255, 255, 255, 0.10)",
-    "--sg-muted": "#B9B3A9",
+    "--sg-ink": "#1C1B1A",
+    "--sg-paper": "#FAF7F2",
+    "--sg-paper-raised": "#FFFFFF",
+    "--sg-brass": "#8A6427",
+    "--sg-safe": "#2F6B4A",
+    "--sg-review": "#8A6A1F",
+    "--sg-suspicious": "#B3541E",
+    "--sg-high-risk": "#9A2B24",
+    "--sg-line": "rgba(28,27,26,0.10)",
+    "--sg-muted": "#6B665D",
   };
 
   for (const [name, val] of Object.entries(tokens)) {
@@ -713,6 +714,38 @@ test("options.css reuses §1.2 design tokens", () => {
     const escaped = val.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const pattern = new RegExp(`${name}\\s*:\\s*${escaped}`, "i");
     assert.match(css, pattern, `options.css contains ${name}: ${val}`);
+  }
+});
+
+test("options.css dark palette tokens in @media (prefers-color-scheme: dark)", () => {
+  const css = readFileSync(new URL("../options.css", import.meta.url), "utf8");
+
+  // Dark palette values (§1.2 dark override)
+  const darkTokens = {
+    "--sg-ink": "#F2EFE9",
+    "--sg-paper": "#161412",
+    "--sg-paper-raised": "#1F1C19",
+    "--sg-paper-sunken": "#100E0D",
+    "--sg-brass": "#C89B54",
+    "--sg-safe": "#4CAF7E",
+    "--sg-review": "#D4A24A",
+    "--sg-suspicious": "#E07B3F",
+    "--sg-high-risk": "#DD5E54",
+    "--sg-line": "rgba(255,255,255,0.10)",
+    "--sg-border-strong": "#6E675E",
+    "--sg-muted": "#B9B3A9",
+    "--sg-focus": "#C89B54",
+  };
+
+  // Extract the dark media query block.
+  const darkBlock = css.match(/@media\s*\(prefers-color-scheme\s*:\s*dark\)\s*\{[\s\S]*?\n\}/);
+  assert.ok(darkBlock, "options.css contains @media (prefers-color-scheme: dark) block");
+  const darkCss = darkBlock[0];
+
+  for (const [name, val] of Object.entries(darkTokens)) {
+    const escaped = val.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const pattern = new RegExp(`${name}\\s*:\\s*${escaped}`, "i");
+    assert.match(darkCss, pattern, `Dark palette contains ${name}: ${val}`);
   }
 });
 

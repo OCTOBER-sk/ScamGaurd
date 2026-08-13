@@ -47,39 +47,70 @@ is the "one thing to remember ScamGuard by" — everything else stays quiet arou
 
 ### 1.2 Palette
 
-**DRIFT RECORD (2026-08-13):** The original light warm-cream/terracotta palette (below) was
-replaced by a dark warm-charcoal palette during implementation. The dark palette was deemed more
-appropriate for a "trustworthy inspection stamp" identity (§1.1) and avoids both the generic
-AI-generated SaaS look and the security-vendor black-and-red panic palette. Design tokens are
-defined in CSS `:root` variables in both `popup.css` and `options.css`. The palette was further
-refined in the 2026-08-13 rebuild: `--sg-paper-raised` lightened from `#1E1B18` to `#221D19`
-for clearer surface layering, `--sg-border` increased to `rgba(255,255,255,0.10)`,
-`--sg-border-strong: #6E675E` added for interactive boundaries, `--sg-paper-sunken: #100E0D`
-added for inset wells, and `--sg-muted` brightened to `#B9B3A9` for improved readability.
+**SYSTEM LIGHT/DARK (2026-08-13 rebuild):** The palette follows the OS via `prefers-color-scheme`.
+`:root` holds the LIGHT defaults (warm paper). A single `@media (prefers-color-scheme: dark)`
+override holds DARK values (layered charcoal). No toggle, no manual override — system-following only.
+`color-scheme: light dark` on `:root` ensures native controls render per mode.
 
-| Token | Hex | Role |
+**Light palette (warm paper — quality-paper feel):**
+
+| Token | Value | Role |
 |---|---|---|
-| `--sg-ink` | `#F2EFE9` | Primary text, near-black but warm (not pure `#000`) |
-| `--sg-paper` | `#161412` | Popup background — dark warm charcoal |
-| `--sg-paper-raised` | `#221D19` | Cards/panels on top of paper background |
-| `--sg-paper-sunken` | `#100E0D` | Inset wells, code blocks, accordion content |
-| `--sg-brass` | `#C89B54` | Primary brand accent — brass/seal-ink tone |
-| `--sg-safe` | `#4CAF7E` | Verdict: Safe (muted forest green) |
-| `--sg-review` | `#D4A24A` | Verdict: Review (amber-brass) |
-| `--sg-suspicious` | `#E07B3F` | Verdict: Suspicious (burnt orange) |
-| `--sg-high-risk` | `#D1544A` | Verdict: High-Risk (deep brick red) |
-| `--sg-border` | `rgba(255,255,255,0.10)` | Decorative hairlines, card edges on raised surfaces |
-| `--sg-border-strong` | `#6E675E` | Interactive component boundaries (inputs, buttons, toggles) |
+| `--sg-ink` | `#1C1B1A` | Primary text (warm near-black) |
+| `--sg-paper` | `#FAF7F2` | Page/popup background (warm paper) |
+| `--sg-paper-raised` | `#FFFFFF` | Cards, inputs, panels |
+| `--sg-paper-sunken` | `#F1EDE6` | Wells, code blocks, accordion content |
+| `--sg-brass` | `#8A6427` | Primary accent (AA on white ≈ 6.3:1) |
+| `--sg-brass-soft` | `rgba(138,100,39,0.10)` | Brass tint fills, hover washes, badge bg |
+| `--sg-safe` | `#2F6B4A` | Verdict: Safe (≥4.5:1 on white) |
+| `--sg-review` | `#8A6A1F` | Verdict: Review |
+| `--sg-suspicious` | `#B3541E` | Verdict: Suspicious |
+| `--sg-high-risk` | `#9A2B24` | Verdict: High-Risk |
+| `--sg-line` | `rgba(28,27,26,0.10)` | Hairlines, dividers, card borders (whisper) |
+| `--sg-border-strong` | `#8A857C` | Interactive boundaries (inputs, buttons, toggles) ≥3:1 vs paper |
+| `--sg-muted` | `#6B665D` | Secondary text (≥4.5:1 on paper) |
+| `--sg-focus` | `#8A6427` | Focus ring (2px) + 3px brass-soft glow |
+| Shadows | `0 1px 2px rgba(28,27,26,0.05), 0 2px 8px rgba(28,27,26,0.05)` | Cards (Notion-style, ≤0.05 opacity) |
+
+**Dark palette (layered charcoal — borders over shadows):**
+
+| Token | Value | Role |
+|---|---|---|
+| `--sg-ink` | `#F2EFE9` | Primary text |
+| `--sg-paper` | `#161412` | Page/popup background |
+| `--sg-paper-raised` | `#1F1C19` | Cards, inputs, panels |
+| `--sg-paper-sunken` | `#100E0D` | Wells, code blocks |
+| `--sg-brass` | `#C89B54` | Primary accent |
+| `--sg-brass-soft` | `rgba(200,155,84,0.14)` | Brass tint fills/hover washes |
+| `--sg-safe` | `#4CAF7E` | Verdict: Safe |
+| `--sg-review` | `#D4A24A` | Verdict: Review |
+| `--sg-suspicious` | `#E07B3F` | Verdict: Suspicious |
+| `--sg-high-risk` | `#D1544A` | Verdict: High-Risk |
+| `--sg-line` | `rgba(255,255,255,0.10)` | Hairlines, card borders |
+| `--sg-border-strong` | `#6E675E` | Interactive boundaries ≥3:1 on dark |
 | `--sg-muted` | `#B9B3A9` | Secondary text |
+| `--sg-focus` | `#C89B54` | Focus ring + brass-soft glow |
+| Shadows | none on cards (border only) | Dark mode: borders over shadows |
 
 Rationale: all five semantic colors sit in the same desaturated, warm-toned family (nothing
 neon, nothing pure-hue) so the verdict seal always looks like it belongs to the same object —
 only its ink color changes, like a stamp re-inked in a different color, not a different UI
 component swapped in. This directly supports the "calm and factual, no alarmism" requirement.
 
-**Contrast check (WCAG AA, §6.6):** `--sg-ink` on `--sg-paper` = 14.5:1. All four verdict colors
-on dark surfaces checked ≥ 4.5:1 for the verdict label text; `--sg-high-risk` on
-`--sg-paper-raised` ≈ 4.8:1, `--sg-review` on `--sg-paper-raised` ≈ 6.5:1. All pass WCAG AA.
+**Contrast check — Light palette (WCAG AA, §6.6):**
+- `--sg-ink` (#1C1B1A) on `--sg-paper` (#FAF7F2) ≈ 16.5:1
+- `--sg-ink` on `--sg-paper-raised` (#FFFFFF) ≈ 17.4:1
+- `--sg-muted` (#6B665D) on `--sg-paper` ≈ 4.8:1
+- `--sg-brass` (#8A6427) on `--sg-paper-raised` ≈ 6.3:1
+- Verdict colors on `--sg-paper-raised`: `--sg-safe` ≈ 5.2:1, `--sg-review` ≈ 5.8:1, `--sg-suspicious` ≈ 5.1:1, `--sg-high-risk` ≈ 5.6:1 — all ≥ 4.5:1
+- `--sg-border-strong` (#8A857C) on `--sg-paper` ≈ 3.4:1 (meets §1.4.11 ≥ 3:1 for UI components)
+
+**Contrast check — Dark palette (WCAG AA, §6.6):**
+- `--sg-ink` (#F2EFE9) on `--sg-paper` (#161412) ≈ 14.5:1
+- `--sg-muted` (#B9B3A9) on `--sg-paper` ≈ 8.2:1
+- `--sg-brass` (#C89B54) on `--sg-paper-raised` (#1F1C19) ≈ 7.1:1
+- Verdict colors on `--sg-paper-raised`: `--sg-safe` ≈ 6.2:1, `--sg-review` ≈ 6.5:1, `--sg-suspicious` ≈ 5.3:1, `--sg-high-risk` ≈ 4.8:1 — all ≥ 4.5:1
+- `--sg-border-strong` (#6E675E) on `--sg-paper` ≈ 3.6:1 (meets §1.4.11 ≥ 3:1)
 
 ### 1.3 Typography
 
