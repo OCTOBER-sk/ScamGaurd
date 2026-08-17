@@ -24,7 +24,7 @@
     ],
     "imageCount": 1,
     "extractionConfidence": "partial",
-    "extractedAt": "2026-08-12T14:49:28.299Z"
+    "extractedAt": "2026-08-17T11:17:52.921Z"
   },
   "heuristics": {
     "priceAnomaly": {
@@ -60,83 +60,79 @@
       "matchedPhrases": []
     },
     "heuristicScore": 40,
-    "computedAt": "2026-08-12T14:49:28.315Z"
+    "computedAt": "2026-08-17T11:17:52.953Z"
   },
   "llmRaw": "\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n    ",
   "parsedVerdict": {
-    "llmScore": 65,
+    "llmScore": 70,
     "redFlags": [
       {
         "id": "PRICE_ANOMALY",
         "label": "Implausibly Low Price",
         "severity": "high",
-        "explanation": "₹6,500 for a 32\" Mi LED TV is far below typical market rates, suggesting possible misrepresentation or a fake listing."
+        "explanation": "Listing price is significantly below market value for a 32\" smart Android TV, suggesting potential misrepresentation."
       },
       {
         "id": "LOW_PHOTO_COUNT",
-        "label": "Limited Visual Evidence",
+        "label": "Insufficient Photos",
         "severity": "medium",
-        "explanation": "Only one photo is provided, making it difficult to verify the TV’s condition or authenticity."
+        "explanation": "Only one photo is provided, limiting visual verification of condition and authenticity."
       }
     ],
-    "summary": "The listing advertises a 32\" Mi LED TV for ₹6,500, a price markedly lower than comparable models, which raises suspicion. Only a single photo is available, limiting visual confirmation of the item’s condition. The seller has an established account but no urgency or off‑platform payment requests. Overall, the listing presents moderate risk; proceed with caution.",
+    "summary": "The listing advertises a 32\" Mi smart TV at ₹6,500, which is far below typical market prices. Only a single photo is available, and the seller has a long-standing account with several listings, which is reassuring but not conclusive. The low price and limited visual evidence raise moderate concern. Buyers should request additional photos and verify the TV’s condition before proceeding.",
     "checklistAdditions": [
-      "Request additional photos of the TV’s back, side, and any visible serial number or warranty card.",
-      "Verify the model and serial number against official Mi specifications before agreeing to a transaction.",
-      "Confirm the TV is physically present and functional in person before making any payment."
+      "Request additional photos of the TV’s serial number, packaging, and any warranty documents.",
+      "Ask the seller to provide proof of ownership or a receipt.",
+      "Prefer meeting in person or a secure location to inspect the TV."
     ],
-    "visionNotes": [
-      "Only one photo is provided; no evidence of AI generation or stock imagery is apparent, but the limited images reduce confidence in the item’s stated condition."
-    ]
+    "visionNotes": []
   },
   "validation": {
     "valid": true,
     "errors": []
   },
-  "fusedScore": 54,
+  "fusedScore": 57,
   "verdict": "Suspicious",
   "fusionSource": "fused",
   "confidence": "high",
-  "latencyMs": 68816,
+  "latencyMs": 34063,
   "pinnedModel": "deepseek/deepseek-chat-v3-0324:free",
   "model": "openai/gpt-oss-20b:free",
   "providerCall": {
     "status": "ok",
     "llmVerdict": {
-      "llmScore": 65,
+      "llmScore": 70,
       "redFlags": [
         {
           "id": "PRICE_ANOMALY",
           "label": "Implausibly Low Price",
           "severity": "high",
-          "explanation": "₹6,500 for a 32\" Mi LED TV is far below typical market rates, suggesting possible misrepresentation or a fake listing."
+          "explanation": "Listing price is significantly below market value for a 32\" smart Android TV, suggesting potential misrepresentation."
         },
         {
           "id": "LOW_PHOTO_COUNT",
-          "label": "Limited Visual Evidence",
+          "label": "Insufficient Photos",
           "severity": "medium",
-          "explanation": "Only one photo is provided, making it difficult to verify the TV’s condition or authenticity."
+          "explanation": "Only one photo is provided, limiting visual verification of condition and authenticity."
         }
       ],
-      "summary": "The listing advertises a 32\" Mi LED TV for ₹6,500, a price markedly lower than comparable models, which raises suspicion. Only a single photo is available, limiting visual confirmation of the item’s condition. The seller has an established account but no urgency or off‑platform payment requests. Overall, the listing presents moderate risk; proceed with caution.",
+      "summary": "The listing advertises a 32\" Mi smart TV at ₹6,500, which is far below typical market prices. Only a single photo is available, and the seller has a long-standing account with several listings, which is reassuring but not conclusive. The low price and limited visual evidence raise moderate concern. Buyers should request additional photos and verify the TV’s condition before proceeding.",
       "checklistAdditions": [
-        "Request additional photos of the TV’s back, side, and any visible serial number or warranty card.",
-        "Verify the model and serial number against official Mi specifications before agreeing to a transaction.",
-        "Confirm the TV is physically present and functional in person before making any payment."
+        "Request additional photos of the TV’s serial number, packaging, and any warranty documents.",
+        "Ask the seller to provide proof of ownership or a receipt.",
+        "Prefer meeting in person or a secure location to inspect the TV."
       ],
-      "visionNotes": [
-        "Only one photo is provided; no evidence of AI generation or stock imagery is apparent, but the limited images reduce confidence in the item’s stated condition."
-      ]
+      "visionNotes": []
     },
     "provider": {
       "id": "openrouter",
       "model": "openai/gpt-oss-20b:free",
-      "latencyMs": 68816,
+      "latencyMs": 34063,
       "usedFallbackRepair": false
     },
     "usage": {
       "inputTokens": 1042,
-      "outputTokens": 739
+      "outputTokens": 919
     }
   },
   "modelAttempts": [
@@ -156,11 +152,11 @@
       "model": "openai/gpt-oss-20b:free",
       "format": "json_schema",
       "status": "ok",
-      "detail": "latency=68816ms repair=false"
+      "detail": "latency=34063ms repair=false"
     }
   ],
   "paymentCheck": {
-    "reportId": "2bda5d7d-818c-4d1d-970a-3f452af69028",
+    "reportId": "828388a3-3b53-4e12-b101-eded15bf7f09",
     "verdict": "LikelyScam",
     "matchedPatterns": [
       {
@@ -171,13 +167,13 @@
     ],
     "coreFact": "A QR code or payment request can only ever be used to send money, never to receive it. If anyone — no matter how convincing — asks you to scan something or enter your PIN/OTP to 'receive' a payment, that is always false, with no exceptions.",
     "summary": "This matches patterns used in marketplace payment fraud. Do not scan anything, do not approve any payment request, and do not share any PIN, OTP, or CVV — no matter what the other person says.",
-    "createdAt": "2026-08-12T14:50:41.798Z"
+    "createdAt": "2026-08-17T11:18:31.732Z"
   },
   "report": {
-    "reportId": "74042001-7dd8-44f6-8410-acb3965963bd",
+    "reportId": "613038d0-79b5-4dd7-99f5-270e57e733fc",
     "listingUrl": "https://www.olx.in/item/mi-led-32-smart-android-led-tv-iid-1827354630.html",
     "listingTitle": "Mi LED 32\" Smart Android LED TV",
-    "score": 54,
+    "score": 57,
     "verdict": "Suspicious",
     "confidence": "high",
     "source": "fused",
@@ -186,20 +182,20 @@
         "id": "PRICE_ANOMALY",
         "label": "Implausibly Low Price",
         "severity": "high",
-        "explanation": "₹6,500 for a 32\" Mi LED TV is far below typical market rates, suggesting possible misrepresentation or a fake listing."
+        "explanation": "Listing price is significantly below market value for a 32\" smart Android TV, suggesting potential misrepresentation."
       },
       {
         "id": "LOW_PHOTO_COUNT",
-        "label": "Limited Visual Evidence",
+        "label": "Insufficient Photos",
         "severity": "medium",
-        "explanation": "Only one photo is provided, making it difficult to verify the TV’s condition or authenticity."
+        "explanation": "Only one photo is provided, limiting visual verification of condition and authenticity."
       }
     ],
-    "summary": "The listing advertises a 32\" Mi LED TV for ₹6,500, a price markedly lower than comparable models, which raises suspicion. Only a single photo is available, limiting visual confirmation of the item’s condition. The seller has an established account but no urgency or off‑platform payment requests. Overall, the listing presents moderate risk; proceed with caution.",
+    "summary": "The listing advertises a 32\" Mi smart TV at ₹6,500, which is far below typical market prices. Only a single photo is available, and the seller has a long-standing account with several listings, which is reassuring but not conclusive. The low price and limited visual evidence raise moderate concern. Buyers should request additional photos and verify the TV’s condition before proceeding.",
     "checklist": [
-      "Request additional photos of the TV’s back, side, and any visible serial number or warranty card.",
-      "Verify the model and serial number against official Mi specifications before agreeing to a transaction.",
-      "Confirm the TV is physically present and functional in person before making any payment."
+      "Request additional photos of the TV’s serial number, packaging, and any warranty documents.",
+      "Ask the seller to provide proof of ownership or a receipt.",
+      "Prefer meeting in person or a secure location to inspect the TV."
     ],
     "reportingResources": [
       {
@@ -214,14 +210,12 @@
     "visionAnalysis": {
       "performed": false,
       "skippedReason": "Text-only E2E harness — no listing photos sent.",
-      "notes": [
-        "Only one photo is provided; no evidence of AI generation or stock imagery is apparent, but the limited images reduce confidence in the item’s stated condition."
-      ]
+      "notes": []
     },
     "provider": {
       "id": "openrouter",
       "model": "openai/gpt-oss-20b:free",
-      "latencyMs": 68816,
+      "latencyMs": 34063,
       "usedFallbackRepair": false
     },
     "rawListing": {
@@ -249,9 +243,9 @@
       ],
       "imageCount": 1,
       "extractionConfidence": "partial",
-      "extractedAt": "2026-08-12T14:49:28.299Z"
+      "extractedAt": "2026-08-17T11:17:52.921Z"
     },
-    "createdAt": "2026-08-12T14:50:41.795Z"
+    "createdAt": "2026-08-17T11:18:31.728Z"
   },
-  "ranAt": "2026-08-12T14:50:41.798Z"
+  "ranAt": "2026-08-17T11:18:31.732Z"
 }

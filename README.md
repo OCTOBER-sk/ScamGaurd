@@ -40,11 +40,11 @@ Most damage on OLX & Quikr doesn't happen on the listing page. It happens afterw
 
 ## What it does
 
-- 🕵️ **Listing check** — instant heuristic risk score on any OLX item or Quikr listing, plus an optional LLM verdict from your own key. Verdict seal in the popup, with the *reasons* behind it.
+- 🕵️ **Listing check** — a deterministic heuristic score (price-vs-market, seller age, photo and language signals) is computed instantly and offline, then fused with an LLM verdict from your own key into the verdict seal. Adding a provider key is required to see the full listing verdict; without one you'll see a one-tap "connect a provider" prompt.
 - 💬 **Message & Payment Check** — paste the chat message before you act. Catches six payment-scam patterns — UPI collect-request and QR "scan-to-receive" tricks, overpayment refunds, OTP/screen-share plays — in English **and** Hinglish.
 - 🔑 **Bring your own key** — 10 providers: Groq, OpenRouter, OpenAI, Anthropic, Mistral, DeepSeek, Cerebras, Gemini, local Ollama, or a custom endpoint. No accounts, no subscriptions.
 - 🖼️ **Vision analysis** — optional check of listing photos for AI-generation and stock-photo tells.
-- 🔒 **Private by design** — keys stay in `chrome.storage.local`, never synced. Heuristic-only mode works fully offline and sends nothing.
+- 🔒 **Private by design** — keys stay in `chrome.storage.local`, never synced. The Message & Payment Check needs no key and runs fully offline (sends nothing); the listing check only contacts the provider you choose, and only when the LLM verdict is enabled.
 
 ### The six payment patterns
 

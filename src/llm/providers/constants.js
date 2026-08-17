@@ -60,7 +60,7 @@ export const ANTHROPIC_TOOL_NAME = "submit_risk_verdict";
  *
  * @type {string}
  */
-export const OPENROUTER_DEFAULT_MODEL = "qwen/qwen3-8b:free";
+export const OPENROUTER_DEFAULT_MODEL = "openai/gpt-oss-20b:free";
 
 /**
  * Name required by OpenRouter's `json_schema` response_format variant

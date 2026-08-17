@@ -391,11 +391,11 @@ test("§9.2 no-key: NoKey result with zero network calls (§6 row 1)", async () 
 // ─── §9.2 openrouter-model-gone ──────────────────────────────────────────────
 
 test("§9.2 openrouter-model-gone: the SPECIFIC §6 rotation message, no generic error", async () => {
-  assert.equal(OPENROUTER_DEFAULT_MODEL, "qwen/qwen3-8b:free");
+  assert.equal(OPENROUTER_DEFAULT_MODEL, "openai/gpt-oss-20b:free");
   const fetchImpl = createFetchMock([
     {
       status: 404,
-      body: { error: { message: "The model qwen/qwen3-8b:free does not exist or you do not have access to it." } },
+      body: { error: { message: "The model openai/gpt-oss-20b:free does not exist or you do not have access to it." } },
     },
   ]);
   const { app, settings } = makeApp({ fetchImpl });
