@@ -17,9 +17,9 @@ export const TEMPERATURE = 0.2;
  *
  * @type {number}
  */
-export const MAX_TOKENS_TEXT = 1024;
+export const MAX_TOKENS_TEXT = 3072;
 /** @type {number} */
-export const MAX_TOKENS_VISION = 1536;
+export const MAX_TOKENS_VISION = 4096;
 
 /**
  * Default per-provider request timeout (ms). §4.4: Groq/Cerebras 12s,
@@ -60,7 +60,7 @@ export const ANTHROPIC_TOOL_NAME = "submit_risk_verdict";
  *
  * @type {string}
  */
-export const OPENROUTER_DEFAULT_MODEL = "openai/gpt-oss-20b:free";
+export const OPENROUTER_DEFAULT_MODEL = "nvidia/nemotron-3-super-120b-a12b:free";
 
 /**
  * Name required by OpenRouter's `json_schema` response_format variant

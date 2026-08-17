@@ -304,10 +304,10 @@ test("gemini request shape: legacy generateContent + responseSchema (§0.3)", ()
   assert.equal(body.generationConfig.responseSchema.type, "object");
   assert.ok(body.generationConfig.responseSchema.properties.redFlags, "schema carries §4.5 properties");
   assert.equal(body.generationConfig.temperature, 0.2);
-  assert.equal(body.generationConfig.maxOutputTokens, 1024);
+  assert.equal(body.generationConfig.maxOutputTokens, 3072);
 });
 
-test("gemini request shape with imageParts: inlineData parts + 1536 max tokens", () => {
+test("gemini request shape with imageParts: inlineData parts + 4096 max tokens", () => {
   const req = get("gemini").buildRequest({
     listing: null, heuristics: null, systemPrompt: "SYS", userPrompt: "USER",
     model: "gemini-2.5-flash", apiKey: "k",
@@ -315,7 +315,7 @@ test("gemini request shape with imageParts: inlineData parts + 1536 max tokens",
   });
   assert.equal(req.body.contents[0].parts.length, 2);
   assert.deepEqual(req.body.contents[0].parts[1], { inlineData: { mimeType: "image/jpeg", data: "abc" } });
-  assert.equal(req.body.generationConfig.maxOutputTokens, 1536);
+  assert.equal(req.body.generationConfig.maxOutputTokens, 4096);
 });
 
 test("groq request shape: OpenAI-compatible json_object mode (§3.2 row 2)", () => {
@@ -332,7 +332,7 @@ test("groq request shape: OpenAI-compatible json_object mode (§3.2 row 2)", () 
   assert.equal(req.body.messages[1].content, "USER");
   assert.deepEqual(req.body.response_format, { type: "json_object" });
   assert.equal(req.body.temperature, 0.2);
-  assert.equal(req.body.max_tokens, 1024);
+  assert.equal(req.body.max_tokens, 3072);
 });
 
 test("anthropic request shape: forced tool-use JSON + x-api-key + anthropic-version", () => {
@@ -348,7 +348,7 @@ test("anthropic request shape: forced tool-use JSON + x-api-key + anthropic-vers
   assert.deepEqual(req.body.tool_choice, { type: "tool", name: "submit_risk_verdict" });
   assert.equal(req.body.tools[0].name, "submit_risk_verdict");
   assert.equal(req.body.tools[0].input_schema, RISK_VERDICT_SCHEMA, "tool input_schema is the §4.5 schema");
-  assert.equal(req.body.max_tokens, 1024);
+  assert.equal(req.body.max_tokens, 3072);
 });
 
 test("openrouter: pinned :free default, NEVER openrouter/free, json_schema format", () => {

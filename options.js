@@ -506,13 +506,26 @@ async function loadHealthDots() {
 // ─── §2.5 Free default CTA ──────────────────────────────────────────────
 
 /**
- * Apply the free default: set provider to openrouter, clear model override,
- * and show test-connection success.
+ * Apply the free default: set provider to openrouter, clear model override.
+ * OpenRouter requires a real key even for `:free` models (401 without one),
+ * so if the user hasn't saved a key yet, focus the key field and explain —
+ * never silently save a config that will fail on the first call.
  */
 async function applyFreeDefault() {
+  if (!currentSettings.apiKey || !String(currentSettings.apiKey).trim()) {
+    const keyInput = document.getElementById("input-api-key");
+    keyInput?.focus();
+    keyInput?.scrollIntoView({ block: "center", behavior: "smooth" });
+    const note = document.getElementById("free-default-card-note");
+    if (note) {
+      note.textContent = t("freeDefaultNeedsKey");
+      note.hidden = false;
+    }
+    return;
+  }
+
   currentSettings.providerId = "openrouter";
   currentSettings.modelOverride = null;
-  currentSettings.apiKey = currentSettings.apiKey || "";
 
   // Update card selection.
   selectProvider("openrouter");

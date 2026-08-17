@@ -141,5 +141,6 @@
   "reportProvenance": "Decided on your device \u00B7 via {{provider}}",
   "useFreeDefault": "Use ScamGuard\u2019s free default",
   "useFreeDefaultNote": "Sets OpenRouter with ScamGuard\u2019s curated free model \u2014 no config needed.",
-  "freeDefaultApplied": "Free default applied \u2014 OpenRouter selected."
+  "freeDefaultApplied": "Free default applied \u2014 OpenRouter selected.",
+  "freeDefaultNeedsKey": "Add an OpenRouter API key first: free models on OpenRouter still require a key. Paste the key below, then click Use free default again."
 }
