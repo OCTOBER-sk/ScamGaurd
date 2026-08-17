@@ -264,11 +264,11 @@ function renderSeal(container, verdict, score, confidence) {
   container.className = `sg-seal sg-seal--${verdictClass}`;
   container.innerHTML = `
     <svg class="sg-seal-svg" width="72" height="72" viewBox="0 0 72 72" fill="none" aria-hidden="true">
-      <circle cx="36" cy="36" r="${r}" stroke="currentColor" stroke-width="4" opacity="0.15" fill="none"/>
+      <circle cx="36" cy="36" r="${r}" stroke="var(--sg-seal-track)" stroke-width="4" fill="none"/>
       <circle cx="36" cy="36" r="${r}" stroke="${verdictColorVar}" stroke-width="4" fill="none"
         stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"
         stroke-linecap="round" transform="rotate(-90 36 36)"/>
-      <circle cx="36" cy="36" r="24" stroke="currentColor" stroke-width="2" opacity="0.12" fill="none"/>
+      <circle cx="36" cy="36" r="24" stroke="var(--sg-seal-track)" stroke-width="2" fill="none"/>
       <circle cx="36" cy="36" r="24" stroke="var(--sg-muted)" stroke-width="2" fill="none"
         stroke-dasharray="${circumference * 24 / r}" stroke-dashoffset="${(circumference * 24 / r) - confFrac * (circumference * 24 / r)}"
         stroke-linecap="round" transform="rotate(-90 36 36)"/>

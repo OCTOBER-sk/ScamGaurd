@@ -4,7 +4,7 @@
   "short_name": "ScamGuard",
   "description": "Bring-your-own-key scam risk checker for marketplace listings (OLX, Quikr, Facebook Marketplace, Craigslist). Message & Payment Check works worldwide.",
   "default_locale": "en",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

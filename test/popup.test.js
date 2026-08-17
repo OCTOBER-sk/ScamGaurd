@@ -721,18 +721,19 @@ test("§2.10 back button exists in message check view", async () => {
 test("§1.2 CSS contains all exact palette tokens", () => {
   const css = readFileSync(new URL("../popup.css", import.meta.url), "utf8");
 
-  // Light palette values (§1.2 system light default — :root)
+  // Red/black/whitish palette (logo-derived, single dark theme — §1.2 v2)
   const tokens = {
-    "--sg-ink": "#1C1B1A",
-    "--sg-paper": "#FAF7F2",
-    "--sg-paper-raised": "#FFFFFF",
-    "--sg-brass": "#8A6427",
-    "--sg-safe": "#2F6B4A",
-    "--sg-review": "#8A6A1F",
-    "--sg-suspicious": "#B3541E",
-    "--sg-high-risk": "#9A2B24",
-    "--sg-line": "rgba(28,27,26,0.10)",
-    "--sg-muted": "#6B665D",
+    "--sg-ink": "#F4F4F6",
+    "--sg-paper": "#0E0E10",
+    "--sg-paper-raised": "#16161A",
+    "--sg-red": "#E0202E",
+    "--sg-red-bright": "#FF2D3F",
+    "--sg-safe": "#36C98A",
+    "--sg-review": "#E0A11E",
+    "--sg-suspicious": "#E0202E",
+    "--sg-high-risk": "#FF2D3F",
+    "--sg-line": "rgba(255,255,255,0.08)",
+    "--sg-muted": "#8C8C96",
   };
 
   for (const [name, val] of Object.entries(tokens)) {
@@ -743,36 +744,13 @@ test("§1.2 CSS contains all exact palette tokens", () => {
   }
 });
 
-test("§1.2 dark palette tokens in @media (prefers-color-scheme: dark)", () => {
+test("§1.2 single dark theme — color-scheme: dark in :root", () => {
   const css = readFileSync(new URL("../popup.css", import.meta.url), "utf8");
 
-  // Dark palette values (§1.2 dark override)
-  const darkTokens = {
-    "--sg-ink": "#F2EFE9",
-    "--sg-paper": "#161412",
-    "--sg-paper-raised": "#1F1C19",
-    "--sg-paper-sunken": "#100E0D",
-    "--sg-brass": "#C89B54",
-    "--sg-safe": "#4CAF7E",
-    "--sg-review": "#D4A24A",
-    "--sg-suspicious": "#E07B3F",
-    "--sg-high-risk": "#DD5E54",
-    "--sg-line": "rgba(255,255,255,0.10)",
-    "--sg-border-strong": "#6E675E",
-    "--sg-muted": "#B9B3A9",
-    "--sg-focus": "#C89B54",
-  };
-
-  // Extract the dark media query block.
-  const darkBlock = css.match(/@media\s*\(prefers-color-scheme\s*:\s*dark\)\s*\{[\s\S]*?\n\}/);
-  assert.ok(darkBlock, "CSS contains @media (prefers-color-scheme: dark) block");
-  const darkCss = darkBlock[0];
-
-  for (const [name, val] of Object.entries(darkTokens)) {
-    const escaped = val.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const pattern = new RegExp(`${name}\\s*:\\s*${escaped}`, "i");
-    assert.match(darkCss, pattern, `Dark palette contains ${name}: ${val}`);
-  }
+  // The design is a single deliberate dark theme (no brass light/dark split).
+  assert.match(css, /:root\s*\{[\s\S]*?color-scheme\s*:\s*dark/, "Root declares color-scheme: dark");
+  // Dark surfaces are the default, not a media-query override.
+  assert.doesNotMatch(css, /prefers-color-scheme\s*:\s*dark/, "No separate dark media block (dark is the default)");
 });
 
 // ─── §1.5 Motion: prefers-reduced-motion in CSS ──────────────────────────
@@ -786,10 +764,10 @@ test("§1.5 CSS respects prefers-reduced-motion for seal animation", () => {
 
 // ─── §1.3 Typography: font-face declarations in CSS ──────────────────────
 
-test("§1.3 CSS declares @font-face for Fraunces and Inter", () => {
+test("§1.3 CSS declares @font-face for Space Grotesk and Inter", () => {
   const css = readFileSync(new URL("../popup.css", import.meta.url), "utf8");
 
-  assert.match(css, /@font-face[\s\S]*?font-family\s*:\s*["']?Fraunces/, "Fraunces @font-face declared");
+  assert.match(css, /@font-face[\s\S]*?font-family\s*:\s*["']?Space Grotesk/, "Space Grotesk @font-face declared");
   assert.match(css, /@font-face[\s\S]*?font-family\s*:\s*["']?Inter/, "Inter @font-face declared");
   // Verify woff2 format is specified.
   assert.match(css, /format\(["']woff2["']\)/, "Font format is woff2");

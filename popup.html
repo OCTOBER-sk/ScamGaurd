@@ -100,13 +100,15 @@
     <!-- §2.8 State: NoKey (first run / key cleared) -->
     <section id="state-no-key" class="sg-state sg-state-no-key" role="region" aria-label="Setup required" hidden>
       <div class="sg-seal-placeholder sg-seal-placeholder--neutral" aria-hidden="true">
-        <svg class="sg-seal-svg" width="72" height="72" viewBox="0 0 72 72" fill="none">
-          <circle cx="36" cy="36" r="32" stroke="var(--sg-muted)" stroke-width="2" fill="none"/>
-          <circle cx="36" cy="36" r="8" stroke="var(--sg-muted)" stroke-width="1.5" fill="none"/>
-        </svg>
+        <span class="sg-shield-badge">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </span>
       </div>
       <h2 class="sg-no-key-title">Connect a free AI provider to get started</h2>
-      <p class="sg-no-key-message">ScamGuard uses your own API key &mdash; free tiers from Groq or Cerebras work great and cost nothing.</p>
+      <p class="sg-no-key-message">ScamGuard runs AI checks on your own key &mdash; pick a free tier (Groq, Cerebras, or Gemini) and paste the key once. No account with us, no cost.</p>
       <button class="sg-primary-btn" id="btn-choose-provider" type="button">Choose a provider &rarr;</button>
     </section>
 

@@ -261,7 +261,7 @@ test("§3.2 presets: endpoints, default models, timeoutMs (§4.4), vision capabi
   const expected = {
     gemini: ["https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent", "gemini-2.5-flash", 20000, true],
     groq: ["https://api.groq.com/openai/v1/chat/completions", "llama-3.3-70b-versatile", 12000, false],
-    cerebras: ["https://api.cerebras.ai/v1/chat/completions", "llama3.1-8b", 12000, false],
+    cerebras: ["https://api.cerebras.ai/v1/chat/completions", "gemma-4-31b", 12000, false],
     openrouter: ["https://openrouter.ai/api/v1/chat/completions", OPENROUTER_DEFAULT_MODEL, 20000, true],
     mistral: ["https://api.mistral.ai/v1/chat/completions", "mistral-small-latest", 20000, false],
     deepseek: ["https://api.deepseek.com/v1/chat/completions", "deepseek-chat", 20000, false],

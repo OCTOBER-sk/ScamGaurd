@@ -618,7 +618,7 @@ async function init() {
   // About section.
   const versionEl = document.getElementById("about-version");
   if (versionEl) {
-    versionEl.textContent = t("aboutVersion", { version: "1.0.0" });
+    versionEl.textContent = t("aboutVersion", { version: "1.1.0" });
   }
 
   // Load history.

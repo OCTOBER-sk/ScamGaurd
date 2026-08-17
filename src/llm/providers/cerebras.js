@@ -3,7 +3,7 @@
  *
  * OpenAI-compatible chat-completions endpoint. §0.2: free tier is generous
  * (~1M tokens/day, 30 RPM) but the free-tier CONTEXT is capped at ~8,192
- * tokens, so the default model is the fast llama3.1-8b and the prompt layer
+ * tokens, so the default model is the fast gemma-4-31b and the prompt layer
  * truncates long descriptions (§4.6). Text-only. 12s timeout per §4.4.
  */
 
@@ -20,7 +20,7 @@ export const cerebras = {
   defaultEndpoint: "https://api.cerebras.ai/v1/chat/completions",
   authStyle: "bearer",
   authKeyName: "Authorization",
-  defaultModel: "llama3.1-8b",
+  defaultModel: "gemma-4-31b",
   visionCapableModels: [],
   supportsJsonMode: true,
   jsonModeStyle: "openai-response-format",
