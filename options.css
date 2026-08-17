@@ -26,6 +26,9 @@
   --sg-border-strong: #8A857C;
   --sg-muted: #6B665D;
 
+  /* Alert red — surgical only (§2.1) */
+  --sg-alert: #D91A05;
+
   /* Focus */
   --sg-focus: #8A6427;
 
@@ -88,6 +91,9 @@
     --sg-line: rgba(255,255,255,0.10);
     --sg-border-strong: #6E675E;
     --sg-muted: #B9B3A9;
+
+    /* Alert red — surgical only (§2.1), brightened for contrast on charcoal */
+    --sg-alert: #E5483B;
 
     /* Focus */
     --sg-focus: #C89B54;
@@ -468,17 +474,19 @@ summary:focus-visible {
   border-left: 3px solid var(--sg-review);
 }
 
-/* ─── Trust statement (§3.1 item 1) ─────────────────────────────────────── */
+/* ─── Trust statement (§3.1 item 1) — §2.7 privacy disclosure emphasis ─── */
 .sg-trust-statement {
   font-size: 12px;
   color: var(--sg-muted);
   line-height: 1.55;
-  padding: var(--sg-space-sm) 0;
+  padding: var(--sg-space-sm) var(--sg-space-md);
   border-top: 1px solid var(--sg-line);
   margin-top: var(--sg-space-sm);
   display: flex;
   align-items: flex-start;
   gap: var(--sg-space-xs);
+  background: var(--sg-brass-soft);
+  border-radius: var(--sg-radius-sm);
 }
 
 .sg-trust-shield {
@@ -687,6 +695,56 @@ summary:focus-visible {
 /* ─── About section (§3.1 item 5) ───────────────────────────────────────── */
 .sg-section--about {
   border-bottom: none;
+}
+
+.sg-about-logo {
+  border-radius: 4px;
+  margin-bottom: var(--sg-space-sm);
+  display: block;
+}
+
+/* ─── §2.5 Provider health dot ──────────────────────────────────────────── */
+.sg-provider-health {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.sg-provider-health--ok {
+  background: var(--sg-safe);
+}
+
+.sg-provider-health--unknown {
+  background: var(--sg-muted);
+  opacity: 0.4;
+}
+
+/* ─── §2.5 Free default CTA card ────────────────────────────────────────── */
+.sg-free-default-card {
+  width: 100%;
+  background: var(--sg-brass-soft);
+  border: 1px solid var(--sg-brass);
+  border-radius: var(--sg-radius-lg);
+  padding: var(--sg-space-md) var(--sg-space-lg);
+  margin-bottom: var(--sg-space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sg-space-md);
+}
+
+.sg-free-default-card[hidden] { display: none; }
+
+.sg-free-default-text {
+  font-size: 13px;
+  color: var(--sg-ink);
+  line-height: 1.55;
+}
+
+.sg-free-default-text strong {
+  font-weight: 600;
 }
 
 .sg-about-version {

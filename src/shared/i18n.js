@@ -9,6 +9,10 @@
  * and options pages. Component code must NEVER use string literals for
  * visible text — always route through this helper so adding a locale file
  * later is additive, not a refactor (§7).
+ *
+ * §2.6: When chrome.i18n exists (extension context), delegates to
+ * chrome.i18n.getMessage(key, vars) with a fallback to the bundled
+ * en.json (so jsdom unit tests, which have no chrome.i18n, still pass).
  */
 
 import en from "../strings/en.json" with { type: "json" };
@@ -39,7 +43,21 @@ function interpolate(template, vars) {
 }
 
 /**
+ * Check whether chrome.i18n.getMessage is available (extension context).
+ *
+ * @returns {boolean}
+ */
+function hasChromeI18n() {
+  return typeof chrome !== "undefined"
+    && chrome.i18n
+    && typeof chrome.i18n.getMessage === "function";
+}
+
+/**
  * Look up a UI string by key and interpolate any {{var}} placeholders.
+ * When chrome.i18n is available, delegates to chrome.i18n.getMessage()
+ * with a fallback to the bundled English strings (§2.6).
+ *
  * Returns the raw English string if the key exists, or the key itself as a
  * fallback (so missing keys are visible during development instead of
  * rendering nothing).
@@ -49,7 +67,20 @@ function interpolate(template, vars) {
  * @returns {string}
  */
 export function t(key, vars) {
-  const template = strings[key];
+  let template;
+
+  if (hasChromeI18n()) {
+    // chrome.i18n.getMessage returns "" for missing keys, and uses $1/$2
+    // positional placeholders (NOT {{var}}). Run our {{var}} interpolate so
+    // callers can use one consistent interpolation syntax across both paths.
+    const msg = chrome.i18n.getMessage(key);
+    if (msg) return interpolate(msg, vars);
+    // Fallback to bundled strings.
+    template = strings[key];
+  } else {
+    template = strings[key];
+  }
+
   if (typeof template !== "string") return key;
   return interpolate(template, vars);
 }
@@ -63,5 +94,9 @@ export function t(key, vars) {
  * @returns {boolean}
  */
 export function hasKey(key) {
+  if (hasChromeI18n()) {
+    const msg = chrome.i18n.getMessage(key);
+    if (msg) return true;
+  }
   return typeof strings[key] === "string";
 }

@@ -202,14 +202,17 @@ function showState(state) {
 
 /**
  * Render the verdict seal at the 72px popup-header scale (§1.1).
+ * §2.2: The score circle is now an SVG with a progress arc (score/100)
+ * and a second thin inner arc representing backend confidence.
  * The seal's color/label is driven by RiskReport.verdict — the frontend
  * never recomputes a band from the score (§2.4).
  *
  * @param {HTMLElement} container
  * @param {string} verdict   "Safe" | "Review" | "Suspicious" | "High-Risk"
  * @param {number | null} score  0-100
+ * @param {number | null} confidence  0-1 (backend confidence, optional)
  */
-function renderSeal(container, verdict, score) {
+function renderSeal(container, verdict, score, confidence) {
   const verdictClass = {
     "Safe": "safe",
     "Review": "review",
@@ -224,9 +227,35 @@ function renderSeal(container, verdict, score) {
     "High-Risk": "sealHighRisk",
   }[verdict] || "sealSafe";
 
+  const verdictColorVar = {
+    "Safe": "var(--sg-safe)",
+    "Review": "var(--sg-review)",
+    "Suspicious": "var(--sg-suspicious)",
+    "High-Risk": "var(--sg-high-risk)",
+  }[verdict] || "var(--sg-safe)";
+
+  const r = 30;
+  const circumference = 2 * Math.PI * r;
+  const scoreVal = score != null ? Math.round(score) : 0;
+  const dashOffset = circumference - (scoreVal / 100) * circumference;
+
+  // Confidence arc: high=full, medium=2/3, low=1/3
+  const confFrac = confidence === "high" ? 1 : confidence === "medium" ? 2 / 3 : confidence === "low" ? 1 / 3 : 0.5;
+  const confOffset = circumference - confFrac * circumference;
+
   container.className = `sg-seal sg-seal--${verdictClass}`;
   container.innerHTML = `
-    ${score != null ? `<span class="sg-seal-score">${Math.round(score)}</span>` : ""}
+    <svg class="sg-seal-svg" width="72" height="72" viewBox="0 0 72 72" fill="none" aria-hidden="true">
+      <circle cx="36" cy="36" r="${r}" stroke="currentColor" stroke-width="4" opacity="0.15" fill="none"/>
+      <circle cx="36" cy="36" r="${r}" stroke="${verdictColorVar}" stroke-width="4" fill="none"
+        stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"
+        stroke-linecap="round" transform="rotate(-90 36 36)"/>
+      <circle cx="36" cy="36" r="24" stroke="currentColor" stroke-width="2" opacity="0.12" fill="none"/>
+      <circle cx="36" cy="36" r="24" stroke="var(--sg-muted)" stroke-width="2" fill="none"
+        stroke-dasharray="${circumference * 24 / r}" stroke-dashoffset="${(circumference * 24 / r) - confFrac * (circumference * 24 / r)}"
+        stroke-linecap="round" transform="rotate(-90 36 36)"/>
+    </svg>
+    <span class="sg-seal-score-text">${scoreVal}</span>
     <span class="sg-seal-verdict">${escapeHtml(t(verdictKey))}</span>
   `;
 }
@@ -388,11 +417,13 @@ function renderChecklist(detailsEl, listEl, checklist) {
 
 /**
  * Render reporting resources (§2.4): only shown on Suspicious/High-Risk.
+ * §2.1: High-Risk gets a left border accent on the resource row.
  *
  * @param {HTMLElement} container
  * @param {Array<{label: string; value: string}>} resources
+ * @param {boolean} isHighRisk
  */
-function renderResources(container, resources) {
+function renderResources(container, resources, isHighRisk) {
   if (!Array.isArray(resources) || resources.length === 0) {
     container.hidden = true;
     return;
@@ -403,8 +434,9 @@ function renderResources(container, resources) {
     ${resources.map(r => {
       const isPhone = /^\d{10,}$/.test(r.value);
       const href = isPhone ? `tel:${r.value}` : `https://${r.value}`;
+      const rowClass = isHighRisk ? "sg-resource-row sg-resource-row--alert" : "sg-resource-row";
       return `
-        <div class="sg-resource-row">
+        <div class="${rowClass}">
           <a class="sg-resource-link" href="${escapeHtml(href)}" target="_blank" rel="noopener">${escapeHtml(r.value)}</a>
           <span>${escapeHtml(r.label)}</span>
         </div>
@@ -462,7 +494,7 @@ function renderError(result, heuristics) {
  * @param {object} report  RiskReport from the SW.
  */
 function renderReport(report) {
-  renderSeal($.reportSeal, report.verdict, report.score);
+  renderSeal($.reportSeal, report.verdict, report.score, report.confidence);
   renderHeuristics($.reportHeuristics, report.rawListing ? null : null);
   renderRedFlags($.reportRedFlags, report.redFlags);
   renderSummary($.reportSummary, report.summary);
@@ -471,12 +503,15 @@ function renderReport(report) {
   // §2.4: reporting resources only on Suspicious/High-Risk.
   const showResources = report.verdict === "Suspicious" || report.verdict === "High-Risk";
   if (showResources) {
-    renderResources($.reportResources, report.reportingResources);
+    renderResources($.reportResources, report.reportingResources, report.verdict === "High-Risk");
   } else {
     $.reportResources.hidden = true;
   }
 
   renderVision($.reportVision, report.visionAnalysis);
+
+  // §2.3: Provenance footer.
+  renderProvenance(report);
 
   // Raw data (§2.4): Listing object in mono font for power users.
   $.reportRawData.hidden = true;
@@ -536,6 +571,43 @@ function renderMessageCheckResult(report) {
 
   // AI review row — hidden by default, shown if AI refines.
   $.mcAiReview.hidden = true;
+}
+
+// ─── §2.3 Provenance footer ─────────────────────────────────────────────
+
+/**
+ * Render the provenance line under the report body (§2.3).
+ * Shows "Decided on your device · via {provider}".
+ *
+ * @param {object} report
+ */
+async function renderProvenance(report) {
+  let provider = "your provider";
+  try {
+    const response = await chromeRuntime.sendMessage({ type: "GET_SETTINGS" });
+    if (response?.ok && response.settings?.providerId) {
+      const providerId = response.settings.providerId;
+      const labelKey = `provider${providerId.charAt(0).toUpperCase() + providerId.slice(1)}`;
+      provider = t(labelKey);
+    }
+  } catch {
+    // fallback to "your provider"
+  }
+
+  // Find or create the provenance element in the report body.
+  let provenanceEl = $.stateReport.querySelector(".sg-provenance");
+  if (!provenanceEl) {
+    provenanceEl = document.createElement("div");
+    provenanceEl.className = "sg-provenance";
+    // Insert after the actions row, before payment nudge.
+    const actionsEl = $.stateReport.querySelector(".sg-actions");
+    if (actionsEl && actionsEl.nextSibling) {
+      actionsEl.parentNode.insertBefore(provenanceEl, actionsEl.nextSibling);
+    } else {
+      $.stateReport.querySelector(".sg-report-body")?.appendChild(provenanceEl);
+    }
+  }
+  provenanceEl.textContent = t("reportProvenance", { provider });
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
@@ -770,6 +842,7 @@ async function runMessageCheck(input) {
 
 /**
  * Render the last 5 history entries in the footer (§1.4).
+ * §2.4: Each row is a <button> that re-renders the stored RiskReport.
  *
  * @param {Array<object>} historyList
  */
@@ -790,17 +863,53 @@ function renderHistory(historyList) {
     const dotColor = verdictColors[item.verdict] || "var(--sg-muted)";
     return `
       <li class="sg-history-item" data-report-id="${escapeHtml(item.reportId || "")}">
-        <span class="sg-history-dot" style="background:${dotColor}" aria-hidden="true"></span>
-        <span class="sg-history-title">${escapeHtml(item.listingTitle || "Untitled")}</span>
-        <span class="sg-history-score">${item.score != null ? item.score : ""}</span>
+        <button class="sg-history-btn" type="button" data-report-id="${escapeHtml(item.reportId || "")}">
+          <span class="sg-history-dot" style="background:${dotColor}" aria-hidden="true"></span>
+          <span class="sg-history-title">${escapeHtml(item.listingTitle || "Untitled")}</span>
+          <span class="sg-history-score">${item.score != null ? item.score : ""}</span>
+        </button>
       </li>
     `;
   }).join("");
+
+  // §2.4: Attach click handlers to history buttons.
+  $.historyList.querySelectorAll(".sg-history-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const reportId = btn.dataset.reportId;
+      if (!reportId) return;
+      openHistoryReport(reportId);
+    });
+  });
+}
+
+/**
+ * §2.4: Re-open a stored report by id, rendering it via the same
+ * report-render function used for live results.
+ *
+ * @param {string} reportId
+ */
+async function openHistoryReport(reportId) {
+  const report = cachedHistory.find(r => r.reportId === reportId);
+  if (report) {
+    currentReport = report;
+    renderReport(report);
+    showState(PopupState.Report);
+    $.paymentNudge.hidden = false;
+    // Scroll to top.
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+  }
 }
 
 // ─── Analysis flow ────────────────────────────────────────────────────────
 
 let currentReport = null;
+
+/**
+ * Cached history list for re-opening reports (§2.4).
+ * @type {Array<object>}
+ */
+let cachedHistory = [];
 
 /**
  * Fetch the current settings to get the provider label, then update the
@@ -1034,6 +1143,7 @@ async function init() {
   try {
     const historyResponse = await chromeRuntime.sendMessage({ type: "GET_HISTORY" });
     if (historyResponse?.ok && Array.isArray(historyResponse.history)) {
+      cachedHistory = historyResponse.history;
       renderHistory(historyResponse.history);
     }
   } catch {

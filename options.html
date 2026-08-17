@@ -23,6 +23,13 @@
       <h2 class="sg-section-title" id="heading-provider">Provider &amp; API key</h2>
 
       <!-- §3.2 card-grid provider picker -->
+      <div class="sg-free-default-card" id="free-default-card">
+        <div class="sg-free-default-text">
+          <strong>Use ScamGuard's free default</strong><br>
+          Sets OpenRouter with ScamGuard's curated free model — no config needed.
+        </div>
+        <button type="button" class="sg-primary-btn" id="btn-free-default">Use free default</button>
+      </div>
       <div class="sg-provider-grid" id="provider-grid" role="radiogroup" aria-label="Select provider">
         <!-- Populated by options.js -->
       </div>
@@ -127,6 +134,7 @@
     <!-- §3.1 item 5: About -->
     <section class="sg-section sg-section--about" id="section-about" aria-labelledby="heading-about">
       <h2 class="sg-section-title" id="heading-about">About</h2>
+      <img class="sg-about-logo" src="assets/logo.png" width="24" height="24" alt="ScamGuard logo">
       <p class="sg-about-version" id="about-version"></p>
       <p class="sg-about-license">MIT License</p>
       <p class="sg-about-tagline">Your key, your data, your verdict.</p>

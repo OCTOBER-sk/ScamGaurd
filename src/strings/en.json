@@ -21,9 +21,9 @@
   "actionsRawDataHide": "Hide raw data \u25BE",
   "copiedLabel": "Copied \u2713",
   "noAnalysisTitle": "Not a listing page",
-  "noAnalysisMessage": "This doesn't look like a listing page. ScamGuard works on individual OLX or Quikr listing pages \u2014 try opening a specific item.",
+  "noAnalysisMessage": "This doesn\u2019t look like a listing page. ScamGuard works on individual marketplace listings (like OLX, Quikr, Facebook Marketplace, or Craigslist) \u2014 try opening a specific item.",
   "noListingTitle": "Couldn\u2019t read this page",
-  "noListingMessage": "Couldn\u2019t read this page reliably. If you\u2019re on an OLX or Quikr listing, try refreshing \u2014 otherwise this page may not be a listing ScamGuard recognizes yet.",
+  "noListingMessage": "Couldn\u2019t read this page reliably. If you\u2019re on a marketplace listing (like OLX, Quikr, Facebook Marketplace, or Craigslist), try refreshing \u2014 otherwise this page may not be a listing ScamGuard recognizes yet.",
   "errorTitle": "Something went wrong",
   "noKeyTitle": "Connect a free AI provider",
   "noKeyMessage": "ScamGuard uses your own API key \u2014 free tiers from Groq or Cerebras work great and cost nothing.",
@@ -137,5 +137,9 @@
   "testConnectionFailed": "Could not reach the service worker.",
   "providerPaidNote": "No free tier",
   "messageCheckError": "Could not check this message.",
-  "reportTagline": "Checked with ScamGuard \u2014 your key, your data, your verdict."
+  "reportTagline": "Checked with ScamGuard \u2014 your key, your data, your verdict.",
+  "reportProvenance": "Decided on your device \u00B7 via {{provider}}",
+  "useFreeDefault": "Use ScamGuard\u2019s free default",
+  "useFreeDefaultNote": "Sets OpenRouter with ScamGuard\u2019s curated free model \u2014 no config needed.",
+  "freeDefaultApplied": "Free default applied \u2014 OpenRouter selected."
 }

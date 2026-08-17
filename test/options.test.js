@@ -463,7 +463,7 @@ test("§8.1 manifest name, short_name, description, version match plan", () => {
   const manifest = JSON.parse(readFileSync(new URL("../manifest.json", import.meta.url), "utf8"));
   assert.equal(manifest.name, "ScamGuard");
   assert.equal(manifest.short_name, "ScamGuard");
-  assert.equal(manifest.description, "Bring-your-own-key scam risk checker for OLX & Quikr listings.");
+  assert.equal(manifest.description, "Bring-your-own-key scam risk checker for marketplace listings (OLX, Quikr, Facebook Marketplace, Craigslist). Message & Payment Check works worldwide.");
   assert.equal(manifest.version, "1.0.0");
 });
 

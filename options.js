@@ -70,6 +70,7 @@ let keyVisible = false;
 /**
  * Render the §3.2 card grid. Each card shows label, one-line "why you'd
  * pick this" note, and whether it needs a paid account.
+ * §2.5: Each card gets a health dot (green if last test succeeded, grey otherwise).
  *
  * @param {HTMLElement} gridEl
  * @param {import("./src/llm/providers/registry.js").ProviderAdapter[]} providers
@@ -104,6 +105,13 @@ function renderProviderGrid(gridEl, providers) {
       paidEl.textContent = t("providerPaidNote");
       card.appendChild(paidEl);
     }
+
+    // §2.5: Health dot — green if last test succeeded, grey otherwise.
+    const healthDot = document.createElement("span");
+    healthDot.className = "sg-provider-health sg-provider-health--unknown";
+    healthDot.dataset.providerHealth = provider.id;
+    healthDot.setAttribute("aria-hidden", "true");
+    card.appendChild(healthDot);
 
     card.addEventListener("click", () => selectProvider(provider.id));
     gridEl.appendChild(card);
@@ -300,6 +308,7 @@ function toggleKeyVisibility() {
 
 /**
  * Run the §3.6 test connection and render one of four outcomes verbatim.
+ * §2.5: Persists lastTestOk:<providerId> in storage when test passes.
  */
 async function runTestConnection() {
   const resultEl = document.getElementById("test-result");
@@ -323,14 +332,18 @@ async function runTestConnection() {
     if (response?.ok) {
       resultEl.className = "sg-test-result sg-test-result--success";
       resultText.textContent = response.message;
+      // §2.5: Persist health status for this provider.
+      await persistHealthDot(currentSettings.providerId, true);
     } else {
       resultEl.className = "sg-test-result sg-test-result--failure";
       resultText.textContent = response?.message || "Connection failed.";
+      await persistHealthDot(currentSettings.providerId, false);
     }
   } catch {
     resultEl.hidden = false;
     resultEl.className = "sg-test-result sg-test-result--failure";
     resultText.textContent = t("testConnectionFailed");
+    await persistHealthDot(currentSettings.providerId, false);
   } finally {
     btn.disabled = false;
     btn.textContent = t("testConnection");
@@ -425,6 +438,93 @@ async function clearHistory() {
   }
   hideClearHistoryConfirm();
   await loadHistory();
+}
+
+// ─── §2.5 Provider health dot persistence ───────────────────────────────
+
+/**
+ * Persist a test-connection health status for a provider.
+ * Stores lastTestOk:<providerId> = boolean in chrome.storage.local directly.
+ *
+ * @param {string} providerId
+ * @param {boolean} ok
+ */
+async function persistHealthDot(providerId, ok) {
+  try {
+    if (typeof chrome !== "undefined" && chrome.storage?.local) {
+      await new Promise((resolve, reject) => {
+        chrome.storage.local.set({ [`lastTestOk:${providerId}`]: ok }, () => {
+          if (chrome.runtime.lastError) reject(chrome.runtime.lastError);
+          else resolve();
+        });
+      });
+    }
+  } catch {
+    // silent
+  }
+  // Update the UI immediately.
+  updateHealthDot(providerId, ok);
+}
+
+/**
+ * Update a single provider card's health dot.
+ *
+ * @param {string} providerId
+ * @param {boolean} ok
+ */
+function updateHealthDot(providerId, ok) {
+  const dot = document.querySelector(`[data-provider-health="${providerId}"]`);
+  if (!dot) return;
+  dot.className = ok
+    ? "sg-provider-health sg-provider-health--ok"
+    : "sg-provider-health sg-provider-health--unknown";
+}
+
+/**
+ * Load all provider health dots from storage and update the UI.
+ */
+async function loadHealthDots() {
+  try {
+    if (typeof chrome !== "undefined" && chrome.storage?.local) {
+      const items = await new Promise((resolve) => {
+        chrome.storage.local.get(null, (items) => {
+          resolve(items || {});
+        });
+      });
+      for (const [key, value] of Object.entries(items)) {
+        if (key.startsWith("lastTestOk:")) {
+          const providerId = key.slice("lastTestOk:".length);
+          updateHealthDot(providerId, value === true);
+        }
+      }
+    }
+  } catch {
+    // silent — health dots are best-effort
+  }
+}
+
+// ─── §2.5 Free default CTA ──────────────────────────────────────────────
+
+/**
+ * Apply the free default: set provider to openrouter, clear model override,
+ * and show test-connection success.
+ */
+async function applyFreeDefault() {
+  currentSettings.providerId = "openrouter";
+  currentSettings.modelOverride = null;
+  currentSettings.apiKey = currentSettings.apiKey || "";
+
+  // Update card selection.
+  selectProvider("openrouter");
+
+  // Persist.
+  await saveSettings();
+
+  // Show the free default card as applied.
+  const card = document.getElementById("free-default-card");
+  if (card) {
+    card.hidden = true;
+  }
 }
 
 // ─── Settings persistence ─────────────────────────────────────────────────
@@ -523,6 +623,15 @@ async function init() {
 
   // Load history.
   await loadHistory();
+
+  // §2.5: Load provider health dots.
+  await loadHealthDots();
+
+  // §2.5: Free default button.
+  const freeDefaultBtn = document.getElementById("btn-free-default");
+  if (freeDefaultBtn) {
+    freeDefaultBtn.addEventListener("click", applyFreeDefault);
+  }
 
   // Check onboarding (§4).
   checkOnboarding();

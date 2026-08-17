@@ -26,6 +26,9 @@
   --sg-border-strong: #8A857C;
   --sg-muted: #6B665D;
 
+  /* Alert red — surgical only (§2.1) */
+  --sg-alert: #D91A05;
+
   /* Focus */
   --sg-focus: #8A6427;
 
@@ -84,6 +87,9 @@
     --sg-line: rgba(255,255,255,0.10);
     --sg-border-strong: #6E675E;
     --sg-muted: #B9B3A9;
+
+    /* Alert red — surgical only (§2.1), brightened for contrast on charcoal */
+    --sg-alert: #E5483B;
 
     /* Focus */
     --sg-focus: #C89B54;
@@ -229,6 +235,11 @@ summary:focus-visible {
   flex-shrink: 0;
 }
 
+.sg-header-logo {
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
 .sg-header-name {
   font-family: var(--sg-font-body);
   font-weight: 600;
@@ -297,49 +308,46 @@ summary:focus-visible {
   z-index: 0;
 }
 
-/* The 72px circle: score number inside, concentric rings */
-.sg-seal-score {
+/* The 72px SVG circle: score number overlaid on the SVG */
+.sg-seal-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Score number text centered inside the SVG circle */
+.sg-seal-score-text {
   width: 72px;
   height: 72px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   position: relative;
-  /* Paper-circle fill — raised surface */
-  background: var(--sg-paper-raised);
-  border: none;
-  /* Subtle ring shadow — light/dark via token */
-  box-shadow: var(--sg-shadow-seal);
   font-family: var(--sg-font-display);
   font-weight: 700;
   font-size: 26px;
   line-height: 1;
   font-variant-numeric: tabular-nums;
   z-index: 2;
-}
-
-/* Outer concentric ring — border in verdict color via currentColor */
-.sg-seal-score::before {
-  content: '';
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  border: 2px solid currentColor;
-  z-index: -1;
-}
-
-/* Inner concentric ring — subtle border in verdict color */
-.sg-seal-score::after {
-  content: '';
-  position: absolute;
-  inset: 2px;
-  border-radius: 50%;
-  border: 1px solid currentColor;
-  opacity: 0.3;
-  z-index: 1;
   pointer-events: none;
+}
+
+/* Legacy class kept for backward compat — same as score-text */
+.sg-seal-score {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  font-family: var(--sg-font-display);
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  z-index: 2;
 }
 
 /* Verdict word: straight horizontal text BELOW the seal ring */
@@ -1083,7 +1091,7 @@ summary:focus-visible {
   margin-top: 1px;
 }
 
-.sg-mc-verdict--scam { color: var(--sg-high-risk); }
+.sg-mc-verdict--scam { color: var(--sg-alert); }
 .sg-mc-verdict--caution { color: var(--sg-review); }
 .sg-mc-verdict--safe { color: var(--sg-safe); }
 
@@ -1098,6 +1106,18 @@ summary:focus-visible {
   line-height: 1.55;
   color: var(--sg-ink);
   box-shadow: var(--sg-shadow-card);
+}
+
+/* §2.1 LikelyScam verdict icon + border accent */
+.sg-mc-verdict--scam .sg-mc-verdict-icon {
+  color: var(--sg-alert);
+}
+
+/* §2.1 High-Risk resource row left border accent */
+.sg-resource-row--alert {
+  border-left: 3px solid var(--sg-alert);
+  padding-left: var(--sg-space-sm);
+  margin-left: calc(-1 * var(--sg-space-sm));
 }
 
 .sg-mc-patterns {
@@ -1216,15 +1236,40 @@ summary:focus-visible {
   gap: var(--sg-space-xs);
 }
 
-/* History items — display-only (§4.9), no pointer cursor */
+/* History items — §2.4 clickable button rows */
 .sg-history-item {
   display: flex;
   align-items: center;
   gap: var(--sg-space-sm);
-  padding: var(--sg-space-xs) var(--sg-space-sm);
   border-radius: var(--sg-radius-xs);
   font-size: 12px;
   color: var(--sg-ink);
+  padding: 0;
+}
+
+.sg-history-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--sg-space-sm);
+  width: 100%;
+  padding: var(--sg-space-xs) var(--sg-space-sm);
+  background: none;
+  border: none;
+  border-radius: var(--sg-radius-xs);
+  cursor: pointer;
+  font-family: var(--sg-font-body);
+  font-size: 12px;
+  color: var(--sg-ink);
+  text-align: left;
+  transition: background-color 150ms ease;
+}
+
+.sg-history-btn:hover {
+  background: var(--sg-wash-hover);
+}
+
+.sg-history-btn:active {
+  background: var(--sg-wash-active);
 }
 
 .sg-history-dot {
@@ -1254,6 +1299,14 @@ summary:focus-visible {
   font-size: 12px;
   color: var(--sg-muted);
   padding: var(--sg-space-xs) 0;
+}
+
+/* ─── §2.3 Provenance footer ────────────────────────────────────────────── */
+.sg-provenance {
+  font-size: 11px;
+  color: var(--sg-muted);
+  text-align: center;
+  margin-top: var(--sg-space-md);
 }
 
 /* ─── Idle state text ───────────────────────────────────────────────────── */

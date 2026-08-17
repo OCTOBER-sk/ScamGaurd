@@ -1,0 +1,431 @@
+{
+  "appName": {
+    "message": "ScamGuard"
+  },
+  "checkingPage": {
+    "message": "Checking this page…"
+  },
+  "sealSafe": {
+    "message": "Safe"
+  },
+  "sealReview": {
+    "message": "Review"
+  },
+  "sealSuspicious": {
+    "message": "Suspicious"
+  },
+  "sealHighRisk": {
+    "message": "High-Risk"
+  },
+  "heuristicTitle": {
+    "message": "Heuristic pre-check"
+  },
+  "aiTitle": {
+    "message": "AI analysis"
+  },
+  "analyzingWith": {
+    "message": "Analyzing with {{provider}}…"
+  },
+  "stillWorking": {
+    "message": "Still working — {{provider}} can be slow on free tiers"
+  },
+  "redFlagsTitle": {
+    "message": "Red flags ({{count}})"
+  },
+  "summaryTitle": {
+    "message": "Summary"
+  },
+  "checklistTitle": {
+    "message": "Safe-buying checklist ({{count}})"
+  },
+  "checklistExpand": {
+    "message": "▸ Safe-buying checklist ({{count}}) ▾"
+  },
+  "reportResourcesTitle": {
+    "message": "Report this"
+  },
+  "visionNotesTitle": {
+    "message": "Vision analysis"
+  },
+  "actionsCopy": {
+    "message": "Copy report"
+  },
+  "actionsExport": {
+    "message": "Export card"
+  },
+  "actionsRawData": {
+    "message": "View raw data ▴"
+  },
+  "actionsRawDataHide": {
+    "message": "Hide raw data ▾"
+  },
+  "copiedLabel": {
+    "message": "Copied ✓"
+  },
+  "noAnalysisTitle": {
+    "message": "Not a listing page"
+  },
+  "noAnalysisMessage": {
+    "message": "This doesn’t look like a listing page. ScamGuard works on individual marketplace listings (like OLX, Quikr, Facebook Marketplace, or Craigslist) — try opening a specific item."
+  },
+  "noListingTitle": {
+    "message": "Couldn’t read this page"
+  },
+  "noListingMessage": {
+    "message": "Couldn’t read this page reliably. If you’re on a marketplace listing (like OLX, Quikr, Facebook Marketplace, or Craigslist), try refreshing — otherwise this page may not be a listing ScamGuard recognizes yet."
+  },
+  "errorTitle": {
+    "message": "Something went wrong"
+  },
+  "noKeyTitle": {
+    "message": "Connect a free AI provider"
+  },
+  "noKeyMessage": {
+    "message": "ScamGuard uses your own API key — free tiers from Groq or Cerebras work great and cost nothing."
+  },
+  "noKeyButton": {
+    "message": "Choose a provider →"
+  },
+  "actionOpenSettings": {
+    "message": "Open Settings"
+  },
+  "actionTryAgain": {
+    "message": "Try again"
+  },
+  "actionSwitchProvider": {
+    "message": "Switch provider"
+  },
+  "messageCheckTitle": {
+    "message": "Message check"
+  },
+  "messageCheckBack": {
+    "message": "← Back"
+  },
+  "messageCheckPaste": {
+    "message": "Paste the message"
+  },
+  "messageCheckGuided": {
+    "message": "Answer 3 quick questions instead"
+  },
+  "pastePlaceholder": {
+    "message": "Paste what they sent you — chat, WhatsApp, or describe what they’re asking you to do."
+  },
+  "guidedQuestionRole": {
+    "message": "Are you buying or selling?"
+  },
+  "guidedRoleBuying": {
+    "message": "Buying"
+  },
+  "guidedRoleSelling": {
+    "message": "Selling"
+  },
+  "guidedQuestionScan": {
+    "message": "Did they ask you to scan a QR code or approve a payment request?"
+  },
+  "guidedYes": {
+    "message": "Yes"
+  },
+  "guidedNo": {
+    "message": "No"
+  },
+  "guidedNotSure": {
+    "message": "Not sure"
+  },
+  "guidedQuestionReason": {
+    "message": "What did they say the code or request was for?"
+  },
+  "guidedReasonPlaceholder": {
+    "message": "Optional — describe what they claimed"
+  },
+  "guidedSubmit": {
+    "message": "Check this message"
+  },
+  "pasteSubmit": {
+    "message": "Check this message"
+  },
+  "resultLikelyScam": {
+    "message": "This looks like a common scam pattern"
+  },
+  "resultCaution": {
+    "message": "Part of this resembles a known pattern"
+  },
+  "resultNoRedFlags": {
+    "message": "No known payment-scam patterns found"
+  },
+  "aiReviewLoading": {
+    "message": "Reviewing for context…"
+  },
+  "copyForSomeone": {
+    "message": "Copy this to show someone"
+  },
+  "callHelpline": {
+    "message": "Call 1930"
+  },
+  "historyTitle": {
+    "message": "History"
+  },
+  "historySeeAll": {
+    "message": "See all →"
+  },
+  "historyEmpty": {
+    "message": "No checks yet"
+  },
+  "paymentNudge": {
+    "message": "💬 About to pay or get paid? Check the message →"
+  },
+  "optionsTitle": {
+    "message": "ScamGuard Settings"
+  },
+  "providerSection": {
+    "message": "Provider & API key"
+  },
+  "providerDropdownLabel": {
+    "message": "Select provider"
+  },
+  "apiKeyLabel": {
+    "message": "API key"
+  },
+  "apiKeyPlaceholder": {
+    "message": "Enter your API key"
+  },
+  "modelOverrideLabel": {
+    "message": "Model override"
+  },
+  "modelOverridePlaceholder": {
+    "message": "Leave blank for default"
+  },
+  "testConnection": {
+    "message": "Test connection"
+  },
+  "testSuccess": {
+    "message": "Connected — {{model}} responded in {{ms}}ms."
+  },
+  "testKeyRejected": {
+    "message": "Key rejected by provider. Double-check you copied the full key."
+  },
+  "testRateLimited": {
+    "message": "Provider rate-limited this key right now. Your key is valid — try again in a minute."
+  },
+  "testMalformedJson": {
+    "message": "Connected, but the model’s response wasn’t valid JSON. This provider/model may not support ScamGuard’s structured-output mode — try another model."
+  },
+  "testTimeout": {
+    "message": "No response within {{seconds}}s. Check your internet connection or try a different provider."
+  },
+  "testSuccessModel": {
+    "message": "Connected — {{model}} responded in {{ms}}ms."
+  },
+  "trustStatement": {
+    "message": "Your key is stored only on this device and sent only to {{provider}}. ScamGuard’s developers never see it."
+  },
+  "clearKey": {
+    "message": "Clear key"
+  },
+  "clearKeyConfirm": {
+    "message": "Clear saved key for {{provider}}? This can’t be undone."
+  },
+  "visionSection": {
+    "message": "Vision analysis"
+  },
+  "visionLabel": {
+    "message": "Analyze listing photos for AI-generation and stock-photo tells (uses more of your free-tier quota per check)."
+  },
+  "visionDisabled": {
+    "message": "Selected provider does not support vision"
+  },
+  "historySection": {
+    "message": "History"
+  },
+  "historyCount": {
+    "message": "{{count}} reports saved"
+  },
+  "clearHistory": {
+    "message": "Clear history"
+  },
+  "historyRetention": {
+    "message": "ScamGuard keeps your last {{count}} checks on this device. Nothing is ever uploaded."
+  },
+  "advancedSection": {
+    "message": "Advanced"
+  },
+  "customEndpointLabel": {
+    "message": "Custom endpoint URL"
+  },
+  "customEndpointPlaceholder": {
+    "message": "https://your-api.example.com/v1/chat/completions"
+  },
+  "openrouterFreeLabel": {
+    "message": "Experimental — routing is unpredictable on this option"
+  },
+  "aboutSection": {
+    "message": "About"
+  },
+  "aboutVersion": {
+    "message": "Version {{version}}"
+  },
+  "aboutLicense": {
+    "message": "MIT License"
+  },
+  "aboutTagline": {
+    "message": "Your key, your data, your verdict."
+  },
+  "aboutRepo": {
+    "message": "View source on GitHub"
+  },
+  "providerGroq": {
+    "message": "Groq"
+  },
+  "providerGroqNote": {
+    "message": "Fastest free tier"
+  },
+  "providerGemini": {
+    "message": "Gemini"
+  },
+  "providerGeminiNote": {
+    "message": "Best overall quality, built-in vision"
+  },
+  "providerCerebras": {
+    "message": "Cerebras"
+  },
+  "providerCerebrasNote": {
+    "message": "Most generous free quota"
+  },
+  "providerOpenrouter": {
+    "message": "OpenRouter"
+  },
+  "providerOpenrouterNote": {
+    "message": "Many models, variable free tier"
+  },
+  "providerMistral": {
+    "message": "Mistral"
+  },
+  "providerMistralNote": {
+    "message": "Good balance of speed and quality"
+  },
+  "providerDeepseek": {
+    "message": "DeepSeek"
+  },
+  "providerDeepseekNote": {
+    "message": "Strong reasoning, free tier available"
+  },
+  "providerOpenai": {
+    "message": "OpenAI"
+  },
+  "providerOpenaiNote": {
+    "message": "Powerful reasoning and vision models"
+  },
+  "providerAnthropic": {
+    "message": "Anthropic"
+  },
+  "providerAnthropicNote": {
+    "message": "Excellent long-context reasoning"
+  },
+  "providerOllama": {
+    "message": "Ollama"
+  },
+  "providerOllamaNote": {
+    "message": "Local, no API key needed"
+  },
+  "providerCustom": {
+    "message": "Custom"
+  },
+  "providerCustomNote": {
+    "message": "Self-hosted or custom endpoint"
+  },
+  "flagPriceAnomaly": {
+    "message": "Price far below typical market"
+  },
+  "flagNewSeller": {
+    "message": "New or low-activity seller account"
+  },
+  "flagLowPhotos": {
+    "message": "Very few photos for a high-value item"
+  },
+  "flagContactLeak": {
+    "message": "Contact details shared in the listing"
+  },
+  "flagUrgency": {
+    "message": "Urgency-pressure language"
+  },
+  "flagAdvanceFee": {
+    "message": "Advance / booking-fee language"
+  },
+  "flagOffPlatform": {
+    "message": "Off-platform payment demanded"
+  },
+  "heuristicPriceBelow": {
+    "message": "Price {{pct}}% below typical"
+  },
+  "heuristicPriceWithin": {
+    "message": "Price within typical range"
+  },
+  "heuristicNewSeller": {
+    "message": "New seller ({{count}} {{countPlural}})"
+  },
+  "heuristicEstablishedSeller": {
+    "message": "Established seller ({{count}} {{countPlural}})"
+  },
+  "heuristicLowPhotos": {
+    "message": "Low photo count ({{count}} photos)"
+  },
+  "heuristicAdequatePhotos": {
+    "message": "Adequate photos ({{count}})"
+  },
+  "heuristicContactLeak": {
+    "message": "Contact details in listing"
+  },
+  "heuristicNoContactLeak": {
+    "message": "No contact leaks"
+  },
+  "heuristicUrgency": {
+    "message": "Urgency language detected"
+  },
+  "heuristicNoUrgency": {
+    "message": "No urgency language"
+  },
+  "heuristicOffPlatformPayment": {
+    "message": "Off-platform payment language"
+  },
+  "heuristicNoOffPlatformPayment": {
+    "message": "No off-platform payment language"
+  },
+  "heuristicAdvanceFee": {
+    "message": "Advance fee language detected"
+  },
+  "heuristicNoAdvanceFee": {
+    "message": "No advance fee language"
+  },
+  "showKey": {
+    "message": "Show API key"
+  },
+  "hideKey": {
+    "message": "Hide API key"
+  },
+  "testing": {
+    "message": "Testing…"
+  },
+  "testConnectionFailed": {
+    "message": "Could not reach the service worker."
+  },
+  "providerPaidNote": {
+    "message": "No free tier"
+  },
+  "messageCheckError": {
+    "message": "Could not check this message."
+  },
+  "reportTagline": {
+    "message": "Checked with ScamGuard — your key, your data, your verdict."
+  },
+  "reportProvenance": {
+    "message": "Decided on your device · via {{provider}}"
+  },
+  "useFreeDefault": {
+    "message": "Use ScamGuard’s free default"
+  },
+  "useFreeDefaultNote": {
+    "message": "Sets OpenRouter with ScamGuard’s curated free model — no config needed."
+  },
+  "freeDefaultApplied": {
+    "message": "Free default applied — OpenRouter selected."
+  }
+}
