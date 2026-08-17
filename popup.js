@@ -89,6 +89,24 @@ export function resolveState(result, sessionInfo) {
   return PopupState.Idle;
 }
 
+/**
+ * Whether the configured provider can actually run an analysis.
+ * Ollama is keyless (local). Custom needs a customEndpoint. Every other
+ * provider requires a non-empty apiKey. Used by startAnalysis() to route a
+ * first-run / key-cleared user to the NoKey setup screen instead of a
+ * confusing "Couldn't read this page".
+ *
+ * @param {{ providerId?: string|null, apiKey?: string|null, customEndpoint?: string|null }|null} settings
+ * @returns {boolean}
+ */
+function isProviderUsable(settings) {
+  if (!settings || !settings.providerId) return false;
+  const id = String(settings.providerId);
+  if (id === "ollama") return true;
+  if (id === "custom") return Boolean(settings.customEndpoint);
+  return Boolean(settings.apiKey);
+}
+
 // ─── DOM element cache ───────────────────────────────────────────────────
 
 /**
@@ -939,6 +957,17 @@ async function startAnalysis() {
   showState(PopupState.Idle);
 
   try {
+    // §2.8: First check whether a usable provider is configured. A user
+    // with no key (and a provider that needs one) must see the setup screen
+    // (NoKey), not a confusing "Couldn't read this page" — the listing flow
+    // is pointless without a provider that can actually analyze.
+    const settingsResponse = await chromeRuntime.sendMessage({ type: "GET_SETTINGS" });
+    const settings = settingsResponse?.ok ? settingsResponse.settings : null;
+    if (!isProviderUsable(settings)) {
+      showState(PopupState.NoKey);
+      return;
+    }
+
     // Get the active tab.
     const tabs = await chromeTabs.query({ active: true, currentWindow: true });
     const tab = tabs?.[0];
